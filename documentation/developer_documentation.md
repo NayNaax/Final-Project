@@ -1,6 +1,6 @@
 # Developer Documentation
 
-This document tracks key functions, scripts, and configurations created during the development of First Fund Finance.
+This document tracks key functions, scripts, and configurations created during the development of First Fund.
 
 ## Important Functions
 
@@ -26,6 +26,24 @@ This document tracks key functions, scripts, and configurations created during t
     1.  Starts the React Frontend (Vite) on port `5173`.
     2.  Uses `wait-on` to pause the Electron launch until `tcp:5173` is active.
     3.  Starts Electron once the port is ready.
+
+## Frontend Architecture
+
+### Structure
+
+- **Framework**: React (Vite)
+- **Entry Point**: `frontend/src/main.jsx`
+- **Main Component**: `App.jsx` handling routing (tab switching) and layout.
+- **Styling**: `index.css` using CSS Variables for theming.
+
+### Theming System
+
+- **Implementation**: CSS Variables defined in `:root` (Light) and `[data-theme='dark']` (Dark).
+- **Variables**:
+    - `--bg-primary`, `--bg-secondary`, `--bg-tertiary` for backgrounds.
+    - `--text-primary`, `--text-secondary` for typography.
+    - `--accent-primary` for brand color (Blue).
+- **Toggle Logic**: `App.jsx` manages `theme` state and updates `document.documentElement` attribute.
 
 ### Vite Configuration (`frontend/vite.config.js`)
 

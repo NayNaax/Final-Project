@@ -26,3 +26,9 @@ This document records issues encountered during development and how they were re
 
 - **Problem**: `main.js` had `http://localhost:5173` hardcoded, making it fragile for production or custom environments.
 - **Fix**: Updated `main.js` to look for `process.env.ELECTRON_START_URL` first, allowing flexibility in how the start URL is defined.
+
+## Issue 5: Missing Theme Toggle Button
+
+- **Problem**: The theme toggle button defined in CSS was not appearing in the UI.
+- **Cause**: The compiled code or HMR update didn't properly reflect the new JSX structure in `App.jsx`.
+- **Fix**: Manually updated `App.jsx` to correctly include the `<button>` element and the associated `toggleTheme` logic.

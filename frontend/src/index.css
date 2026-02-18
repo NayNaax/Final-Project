@@ -117,7 +117,6 @@ body {
 
 .nav-item.active {
     background-color: var(--active-nav-bg);
-    color: [data-theme= "dark"] var(--text-primary); /* Fix for dark mode text color on active */
 }
 /* Specific active state adjustment for dark vs light */
 [data-theme="dark"] .nav-item.active {
