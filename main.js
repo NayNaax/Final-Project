@@ -12,8 +12,8 @@ function createWindow() {
         },
     });
 
-    // Reverted to simple loading for bug reproduction
-    win.loadURL("http://localhost:5173");
+    const startUrl = process.env.ELECTRON_START_URL || "http://localhost:5173";
+    win.loadURL(startUrl);
 }
 
 app.whenReady().then(() => {
