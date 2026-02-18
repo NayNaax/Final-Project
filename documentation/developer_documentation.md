@@ -30,3 +30,11 @@ This document tracks key functions, scripts, and configurations created during t
 ### Vite Configuration (`frontend/vite.config.js`)
 
 - **Strict Port**: Configured with `server.strictPort: true` and `port: 5173`. This prevents Vite from silently switching ports if 5173 is occupied, which would break the Electron connection.
+
+## Environment Variables
+
+### `ELECTRON_START_URL`
+
+- **Usage**: Used in `main.js` to determine the URL to load in the main window.
+- **Default**: `http://localhost:5173` if not specified.
+- **Production**: In production builds, this variable usually won't be set, causing the app to fall back to loading the local `index.html`.
