@@ -12,7 +12,8 @@ function createWindow() {
         },
     });
 
-    win.loadFile("index.html");
+    // Reverted to simple loading for bug reproduction
+    win.loadURL("http://localhost:5173");
 }
 
 app.whenReady().then(() => {

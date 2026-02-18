@@ -1,0 +1,24 @@
+:root {
+    --primary-color: #646cff;
+    --bg-color: #242424;
+    --text-color: rgba(255, 255, 255, 0.87);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
