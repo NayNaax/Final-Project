@@ -31,3 +31,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Frontend specific
+dist-ssr
+*.local
+*.log
+logs
