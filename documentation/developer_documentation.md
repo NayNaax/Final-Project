@@ -36,6 +36,14 @@ This document tracks key functions, scripts, and configurations created during t
 - **Main Component**: `App.jsx` handling routing (tab switching) and layout.
 - **Styling**: `index.css` using CSS Variables for theming.
 
+### Component Logic (`App.jsx`)
+
+- **State Management**:
+    - `activeTab` (String): Controls which view component is currently rendered (Overview, Tracker, Sandbox, Learning). Using conditional rendering via a `switch` statement.
+    - `theme` (String): Tracks specifically 'light' or 'dark'. Defaults to 'light'.
+- **Effects**:
+    - `useEffect` monitors the `theme` state and updates the `data-theme` attribute on `document.documentElement`, triggering the CSS variable switch.
+
 ### Theming System
 
 - **Implementation**: CSS Variables defined in `:root` (Light) and `[data-theme='dark']` (Dark).
