@@ -51,5 +51,5 @@ npm run dev
 
 ## Documentation
 
-- [Functions](./documentation/Functions.md) - Technical implementation details and functions.
-- [Issue Log](./documentation/IssueLog.md) - Record of bugs and fixes.
+- [Functions](./Documentation/Functions.md) - Technical implementation details and functions.
+- [Issue Log](./Documentation/IssueLog.md) - Record of bugs and fixes.

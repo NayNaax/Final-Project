@@ -31,10 +31,10 @@ This document tracks key functions, scripts, and configurations created during t
 
 ### Structure
 
-- **Framework**: React (Vite)
+- **Frontend**: React (v19) + Vite
 - **Entry Point**: `frontend/src/main.jsx`
 - **Main Component**: `App.jsx` handling routing (tab switching) and layout.
-- **Styling**: `index.css` using CSS Variables for theming.
+- **Styling**: `frontend/src/index.css` using CSS Variables for theming.
 
 ### Component Logic (`App.jsx`)
 
