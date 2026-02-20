@@ -37,3 +37,7 @@ dist-ssr
 *.local
 *.log
 logs
+
+# Extras
+.tmp.driveupload
+.tmp.drivedownload

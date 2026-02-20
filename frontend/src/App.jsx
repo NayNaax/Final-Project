@@ -34,6 +34,9 @@ function App() {
 
     useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);
+        if (window.electronAPI && window.electronAPI.onThemeChanged) {
+            window.electronAPI.onThemeChanged(theme);
+        }
     }, [theme]);
 
     const toggleTheme = () => {

@@ -32,25 +32,32 @@ This document tracks key functions, scripts, and configurations created during t
 ### Structure
 
 - **Frontend**: React (v19) + Vite
+- **Dependencies**: `lucide-react` (icons), `recharts` (financial charting)
 - **Entry Point**: `frontend/src/main.jsx`
-- **Main Component**: `App.jsx` handling routing (tab switching) and layout.
-- **Styling**: `frontend/src/index.css` using CSS Variables for theming.
+- **Main Component**: `App.jsx` handling routing (tab switching), layout, and the main dashboard cards/charts.
+- **Styling**: `frontend/src/index.css` using CSS Variables for theming and Glassmorphism effects.
 
 ### Component Logic (`App.jsx`)
 
 - **State Management**:
     - `activeTab` (String): Controls which view component is currently rendered (Overview, Tracker, Sandbox, Learning). Using conditional rendering via a `switch` statement.
-    - `theme` (String): Tracks specifically 'light' or 'dark'. Defaults to 'light'.
+    - `theme` (String): Tracks specifically 'light' or 'dark'. Defaults to 'dark' for a premium feel.
+- **Key Modules Rendered**:
+    - **Overview Tab**: Includes a Dashboard Grid for key metrics (Portfolio Value, Return), a `ResponsiveContainer` wrapping a `recharts` `AreaChart` for 7-day performance, and a Recent Activity transaction list.
+    - **Sidebar Navigation**: Utilizes `lucide-react` icons mapped to tabs.
 - **Effects**:
     - `useEffect` monitors the `theme` state and updates the `data-theme` attribute on `document.documentElement`, triggering the CSS variable switch.
 
 ### Theming System
 
-- **Implementation**: CSS Variables defined in `:root` (Light) and `[data-theme='dark']` (Dark).
+- **Implementation**: Premium Glassmorphism UI with CSS Variables defined in `:root` (Light) and `[data-theme='dark']` (Dark).
+- **Styling Features**:
+    - **Glassmorphism**: `.glass` utility class applying `backdrop-filter: blur(12px)` and semi-transparent backgrounds to sidebar and cards.
+    - **Animations**: Keyframes for `fadeIn` and `slideUp` for smooth page loading, and hover transition scales (`transform: translateY`).
 - **Variables**:
-    - `--bg-primary`, `--bg-secondary`, `--bg-tertiary` for backgrounds.
-    - `--text-primary`, `--text-secondary` for typography.
-    - `--accent-primary` for brand color (Blue).
+    - `--bg-primary`, `--bg-secondary`, `--bg-tertiary` for background depths.
+    - `--text-primary`, `--text-secondary` for typography (Using `Outfit` for headings, `Inter` for body).
+    - `--accent-primary` and glowing shadows for brand color highlighting.
 - **Toggle Logic**: `App.jsx` manages `theme` state and updates `document.documentElement` attribute.
 
 ### Vite Configuration (`frontend/vite.config.js`)
