@@ -16,6 +16,8 @@ import {
     LogOut,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
 
 // Mock data for the chart
 const data = [
@@ -29,6 +31,8 @@ const data = [
 ];
 
 function App() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authView, setAuthView] = useState("login"); // 'login' or 'register'
     const [activeTab, setActiveTab] = useState("overview");
     const [theme, setTheme] = useState("dark"); // Defaulting to premium dark mode
 
@@ -266,6 +270,18 @@ function App() {
         }
     };
 
+    if (!isAuthenticated) {
+        return (
+            <div className="auth-layout">
+                {authView === "login" ? (
+                    <Login onLogin={() => setIsAuthenticated(true)} onToggleView={() => setAuthView("register")} />
+                ) : (
+                    <Register onRegister={() => setIsAuthenticated(true)} onToggleView={() => setAuthView("login")} />
+                )}
+            </div>
+        );
+    }
+
     return (
         <div className="app-container">
             {/* Sidebar Navigation */}
@@ -334,7 +350,11 @@ function App() {
                     >
                         {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
                     </button>
-                    <a className="nav-item" style={{ color: "var(--danger)" }}>
+                    <a
+                        className="nav-item"
+                        style={{ color: "var(--danger)" }}
+                        onClick={() => setIsAuthenticated(false)}
+                    >
                         <LogOut size={20} />
                         Logout
                     </a>
