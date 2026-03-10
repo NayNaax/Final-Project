@@ -13,6 +13,14 @@
     "devDependencies": {
         "concurrently": "^9.2.1",
         "electron": "^40.4.1",
+        "prisma": "^7.4.2",
         "wait-on": "^9.0.4"
+    },
+    "dependencies": {
+        "@prisma/client": "^7.4.2",
+        "axios": "^1.13.6",
+        "cors": "^2.8.6",
+        "dotenv": "^17.3.1",
+        "express": "^5.2.1"
     }
 }
