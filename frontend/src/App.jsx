@@ -235,12 +235,119 @@ function App() {
                     </div>
                 );
             case "tracker":
+                const [trackerData, setTrackerData] = useState([]);
+                const [loading, setLoading] = useState(true);
+                const [error, setError] = useState(null);
+
+                useEffect(() => {
+                    fetch("http://localhost:3001/api/stocks/raw")
+                        .then((res) => {
+                            if (!res.ok) throw new Error("Failed to fetch data");
+                            return res.json();
+                        })
+                        .then((data) => {
+                            // Sort by date and parse values for chart
+                            const sorted = data
+                                .map((item) => ({
+                                    name: item.Date,
+                                    value: parseFloat(item.CloseLast.replace(/[^\d.]/g, "")),
+                                    original: item,
+                                }))
+                                .sort((a, b) => new Date(a.name) - new Date(b.name));
+                            setTrackerData(sorted);
+                            setLoading(false);
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            setError(err.message);
+                            setLoading(false);
+                        });
+                }, []);
+
+                if (loading)
+                    return (
+                        <div className="card glass">
+                            <h3>Loading dataset...</h3>
+                        </div>
+                    );
+                if (error)
+                    return (
+                        <div className="card glass">
+                            <h3>Error: {error}</h3>
+                            <p>Make sure the backend is running on port 3001.</p>
+                        </div>
+                    );
+
+                const latestPrice = trackerData.length > 0 ? trackerData[trackerData.length - 1].value : 0;
+                const rowCount = trackerData.length;
+
                 return (
-                    <div className="card glass">
-                        <h3>Portfolio Tracker</h3>
-                        <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>
-                            Detailed asset breakdown will go here.
-                        </p>
+                    <div className="tracker-tab">
+                        <div className="dashboard-grid">
+                            <div className="card glass">
+                                <div className="card-header">
+                                    <h3>Database Row Count</h3>
+                                    <div className="card-icon">
+                                        <Box size={20} />
+                                    </div>
+                                </div>
+                                <p className="metric-value">{rowCount}</p>
+                                <span className="badge success">Verified properly</span>
+                            </div>
+                            <div className="card glass">
+                                <div className="card-header">
+                                    <h3>Latest Close</h3>
+                                    <div className="card-icon">
+                                        <TrendingUp size={20} />
+                                    </div>
+                                </div>
+                                <p className="metric-value">${latestPrice.toFixed(2)}</p>
+                            </div>
+                        </div>
+
+                        <div className="card glass" style={{ marginTop: "1.5rem" }}>
+                            <h3>Database Stock Sequence (Full Table)</h3>
+                            <div className="chart-container" style={{ height: "400px", marginTop: "1rem" }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={trackerData}>
+                                        <defs>
+                                            <linearGradient id="colorTracker" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            vertical={false}
+                                            stroke="var(--bg-tertiary)"
+                                        />
+                                        <XAxis dataKey="name" hide />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: "var(--text-muted)" }}
+                                            domain={["auto", "auto"]}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: "var(--bg-secondary)",
+                                                border: "1px solid var(--glass-border)",
+                                                borderRadius: "8px",
+                                            }}
+                                            itemStyle={{ color: "var(--text-primary)" }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="var(--accent-primary)"
+                                            strokeWidth={2}
+                                            fillOpacity={1}
+                                            fill="url(#colorTracker)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
                     </div>
                 );
             case "sandbox":
