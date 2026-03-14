@@ -11,6 +11,16 @@ export const getLatestPrices = async (req: Request, res: Response, next: NextFun
     }
 };
 
+export const getRawStocks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { prisma } = await import("../lib/prisma");
+        const stocks = await prisma.stock.findMany();
+        res.json(stocks);
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const getStockData = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { symbol } = req.params;
