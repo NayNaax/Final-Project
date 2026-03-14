@@ -1,0 +1,25 @@
+src/controllers/stocks.controller.ts(17,60): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/watchlists.controller.ts(31,81): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/watchlists.controller.ts(44,63): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/watchlists.controller.ts(56,84): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/watchlists.controller.ts(68,87): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/controllers/watchlists.controller.ts(68,96): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/lib/prisma.ts(1,30): error TS2307: Cannot find module '../../generated/prisma' or its corresponding type declarations.
+src/middleware/validate.ts(13,36): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/server.ts(2,18): error TS7016: Could not find a declaration file for module 'cors'. 'C:/Users/Nayem/Documents/Final Project/node_modules/cors/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/cors` if it exists or add a new declaration (.d.ts) file containing `declare module 'cors';`
+src/services/portfolio.service.ts(19,44): error TS7006: Parameter 'pos' implicitly has an 'any' type.
+src/services/portfolio.service.ts(59,43): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/services/portfolio.service.ts(124,43): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/services/settings.service.ts(54,46): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/services/settings.service.ts(54,49): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/services/settings.service.ts(57,37): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/services/settings.service.ts(63,44): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/services/settings.service.ts(65,28): error TS7006: Parameter 'snapshot' implicitly has an 'any' type.
+src/services/watchlists.service.ts(96,57): error TS7006: Parameter 's' implicitly has an 'any' type.
