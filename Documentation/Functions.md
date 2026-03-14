@@ -16,6 +16,29 @@ This document tracks key functions, scripts, and configurations created during t
         - If present (Dev mode), loads the URL (e.g., `http://localhost:5173`).
         - If absent (Prod mode), loads the local `index.html` file.
 
+## Data Layer & Database
+
+### Prisma (`prisma/schema.prisma`)
+
+- **Purpose**: Defines the data model and database schema.
+- **Model**: `Stock`
+    - Fields: `id`, `Date`, `CloseLast`, `Volume`, `Open`, `High`, `Low`.
+- **Output**: Generates the client in the `generated/prisma` directory (ignored by Git).
+
+### Data Seeding (`seed.ts`)
+
+- **Purpose**: Batch imports historical stock data from CSV files into the PostgreSQL database.
+- **Workflow**:
+    1.  Reads filenames from `["stock1.csv", "stock2.csv", "stock3.csv"]` in the `Data/` directory.
+    2.  Parses CSV headers and validates them against `REQUIRED_HEADERS`.
+    3.  Connects to the database using `DATABASE_URL`.
+    4.  **Transaction**:
+        - Creates the `Stock` table if it doesn't exist.
+        - Truncates existing data.
+        - Batch inserts rows from all CSV files.
+    5.  Provides a summary of the total imported rows and date ranges.
+- **Running**: Use `npm run db:seed`.
+
 ## Scripts & Configuration
 
 ### `npm run dev`

@@ -49,6 +49,21 @@ Start the development server (runs React + Electron concurrently):
 npm run dev
 ```
 
+### Database Setup
+
+The project uses **Prisma** for database management and a custom script for seeding historical stock data.
+
+1.  **Configure Environment**: Ensure your `.env` file has a valid `DATABASE_URL`.
+2.  **Generate Prisma Client**:
+    ```bash
+    npx prisma generate
+    ```
+3.  **Seed Data**:
+    Historical CSV data from the `Data/` folder can be imported using:
+    ```bash
+    npm run db:seed
+    ```
+
 ## Documentation
 
 - [Functions](./Documentation/Functions.md) - Technical implementation details and functions.
