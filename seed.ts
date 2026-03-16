@@ -1,4 +1,4 @@
-
+import "dotenv/config";
 import { Client } from "pg";
 import fs from "node:fs";
 import path from "node:path";
@@ -29,6 +29,12 @@ type PgClient = InstanceType<typeof Client>;
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
     throw new Error("Missing DATABASE_URL environment variable.");
+}
+
+if (!/^postgres(ql)?:\/\//i.test(connectionString)) {
+    throw new Error(
+        "Invalid DATABASE_URL for seed script. Use a PostgreSQL URL starting with postgres:// or postgresql://.",
+    );
 }
 
 const dataDir = path.join(process.cwd(), "Data");

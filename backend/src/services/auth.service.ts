@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
+import { getJwtSecret } from "../lib/jwtSecret";
 import { z } from "zod";
 
 export const authSchema = z.object({
@@ -22,7 +23,6 @@ export class AuthService {
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(data.password, salt);
-
         // Create user and portfolio together
         const user = await prisma.user.create({
             data: {
@@ -77,7 +77,7 @@ export class AuthService {
 
     private static generateToken(userId: number, email: string) {
         const payload = { userId, email };
-        const secret = process.env.JWT_SECRET;
+        const secret = getJwtSecret();
         if (!secret) {
             throw new Error("JWT_SECRET environment variable is not defined");
         }

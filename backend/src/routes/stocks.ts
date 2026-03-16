@@ -4,10 +4,11 @@ import { requireAuth } from "../middleware/requireAuth";
 
 const router = Router();
 
-// Generally we require authentication to interact with the finance endpoints
-router.use(requireAuth);
+// Health/Debug routes don't necessarily need auth for this specific DB verification task
+router.get("/raw", stocksController.getRawStocks);
 
-router.get("/", stocksController.getLatestPrices);
-router.get("/:symbol", stocksController.getStockData);
+// Finance endpoints generally require authentication
+router.get("/", requireAuth, stocksController.getLatestPrices);
+router.get("/:symbol", requireAuth, stocksController.getStockData);
 
 export default router;
