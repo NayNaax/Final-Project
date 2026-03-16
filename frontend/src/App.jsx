@@ -7,16 +7,12 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { StocksPage } from "./pages/StocksPage";
-import {
-    PortfolioPage,
-    TradePage,
-    WatchlistsPage,
-    AlertsPage,
-    BudgetPage,
-    LeaderboardPage,
-    SettingsPage,
-    StockDetailPage,
-} from "./pages/PlaceholderPage";
+import { StockDetailPage } from "./pages/StockDetailPage";
+import { PortfolioPage } from "./pages/PortfolioPage";
+import { TradePage } from "./pages/TradePage";
+import { WatchlistsPage } from "./pages/WatchlistsPage";
+import { AlertsPage } from "./pages/AlertsPage";
+import { BudgetPage, LeaderboardPage, SettingsPage } from "./pages/PlaceholderPage";
 import "./index.css";
 
 // Dashboard layout placeholder - will be implemented in phases 3-8
