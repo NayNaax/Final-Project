@@ -1,11 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// FirstFund Prisma schema
+// Full data model for paper trading platform
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -13,7 +10,135 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─────────────────── Users & Settings ───────────────────
+model User {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique
+  passwordHash    String
+  portfolio       Portfolio?
+  settings        UserSettings?
+  watchlists      Watchlist[]
+  priceAlerts     PriceAlert[]
+  trades          Trade[]
+  portfolioSnapshots PortfolioSnapshot[]
+  budget          Budget?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+}
 
+model UserSettings {
+  id              Int               @id @default(autoincrement())
+  userId          Int               @unique
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme           String            @default("dark")    // "dark", "light", "system"
+  currency        String            @default("USD")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+}
+
+// ─────────────────── Portfolio & Trading ───────────────────
+model Portfolio {
+  id              Int               @id @default(autoincrement())
+  userId          Int               @unique
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cash            Float             @default(10000)
+  positions       Position[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+}
+
+model Position {
+  id              Int               @id @default(autoincrement())
+  portfolioId     Int
+  portfolio       Portfolio         @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  symbol          String            // Stock symbol (e.g. "AAPL")
+  shares          Int
+  avgCost         Float             // Average cost per share
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@unique([portfolioId, symbol])
+}
+
+model Trade {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol          String
+  side            String            // "BUY" or "SELL"
+  shares          Int
+  price           Float             // Price per share
+  total           Float             // Total cost (shares * price)
+  realizedPL      Float?            // Realized profit/loss (for SELL trades)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+model PortfolioSnapshot {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalValue      Float             // Portfolio total value at snapshot time
+  snapshotDate    DateTime          @default(now())
+
+  @@index([userId, snapshotDate])
+}
+
+// ─────────────────── Watchlists ───────────────────
+model Watchlist {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  symbols         String[]          // Array of stock symbols
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@unique([userId, name])
+}
+
+// ─────────────────── Price Alerts ───────────────────
+model PriceAlert {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symbol          String
+  targetPrice     Float
+  direction       String            // "ABOVE" or "BELOW"
+  triggered       Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+// ─────────────────── Budget & Allocations ───────────────────
+model Budget {
+  id              Int               @id @default(autoincrement())
+  userId          Int               @unique
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allocations     Allocation[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+}
+
+model Allocation {
+  id              Int               @id @default(autoincrement())
+  budgetId        Int
+  budget          Budget            @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  category        String            // "Tech", "Healthcare", "ETF", "Cash Reserve", etc.
+  targetPct       Float             // Target percentage (e.g. 40.0)
+  color           String            @default("#3b82f6")  // For chart rendering
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now()) @updatedAt
+
+  @@unique([budgetId, category])
+}
+
+// ─────────────────── Stock (Legacy - for reference) ───────────────────
+// Keep for backward compatibility with existing data, but not used in new code
 model Stock {
   id        Int    @id @default(autoincrement())
   Date      String

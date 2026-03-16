@@ -7,8 +7,9 @@ const router = Router();
 router.use(requireAuth);
 
 router.get("/", portfolioController.getPortfolio);
+router.get("/history", portfolioController.getPortfolioHistory);
+router.get("/trades", portfolioController.getTradeHistory);
 router.post("/buy", portfolioController.buy);
 router.post("/sell", portfolioController.sell);
-router.get("/trades", portfolioController.getTradeHistory);
 
 export default router;

@@ -183,4 +183,11 @@ export class PortfolioService {
             orderBy: { createdAt: "desc" },
         });
     }
+
+    static async getPortfolioHistory(userId: number) {
+        return prisma.portfolioSnapshot.findMany({
+            where: { userId },
+            orderBy: { snapshotDate: "asc" },
+        });
+    }
 }
