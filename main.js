@@ -1,5 +1,30 @@
 const { app, BrowserWindow, nativeTheme, ipcMain } = require("electron");
 const path = require("path");
+const http = require("http");
+
+// Helper function to test if a port is accessible
+async function findVitePort() {
+    const ports = [5173, 5174, 5175, 5176, 5177];
+    for (const port of ports) {
+        try {
+            await new Promise((resolve, reject) => {
+                const req = http.get(`http://localhost:${port}`, { timeout: 1000 }, (res) => {
+                    resolve();
+                    req.destroy();
+                });
+                req.on("error", reject);
+                req.on("timeout", () => {
+                    req.destroy();
+                    reject(new Error("Timeout"));
+                });
+            });
+            return port;
+        } catch (error) {
+            // Port not available, try next
+        }
+    }
+    return 5173; // Fallback
+}
 
 function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -65,6 +90,7 @@ function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        show: false,
         titleBarStyle: "hidden",
         titleBarOverlay: {
             color: currentBg,
@@ -80,9 +106,22 @@ function createWindow() {
     });
 
     win.setMenu(null);
+    win.once("ready-to-show", () => {
+        win.maximize();
+        win.show();
+    });
 
-    const startUrl = process.env.ELECTRON_START_URL || "http://localhost:5173";
-    win.loadURL(startUrl);
+    // Try to load from environment variable, or auto-detect Vite port
+    if (process.env.ELECTRON_START_URL) {
+        win.loadURL(process.env.ELECTRON_START_URL);
+    } else {
+        // Auto-detect which port Vite is running on
+        findVitePort().then((port) => {
+            const startUrl = `http://localhost:${port}`;
+            console.log(`Loading app from ${startUrl}`);
+            win.loadURL(startUrl);
+        });
+    }
 
     ipcMain.removeAllListeners("theme-changed"); // Prevent duplicate listeners on hot reload
     ipcMain.on("theme-changed", (event, theme) => {

@@ -54,3 +54,12 @@ export const getTradeHistory = async (req: Request, res: Response, next: NextFun
         next(error);
     }
 };
+
+export const getPortfolioHistory = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const snapshots = await PortfolioService.getPortfolioHistory(req.user!.id);
+        res.json(snapshots);
+    } catch (error) {
+        next(error);
+    }
+};

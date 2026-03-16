@@ -1,471 +1,152 @@
-import { useState, useEffect } from "react";
-import "./index.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { DashboardLayout } from "./components/DashboardLayout";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { StocksPage } from "./pages/StocksPage";
 import {
-    LayoutDashboard,
-    LineChart,
-    BookOpen,
-    Box,
-    Bell,
-    Wallet,
-    Briefcase,
-    Activity,
-    CreditCard,
-    ArrowUpRight,
-    ArrowDownRight,
-    TrendingUp,
-    LogOut,
-} from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+    PortfolioPage,
+    TradePage,
+    WatchlistsPage,
+    AlertsPage,
+    BudgetPage,
+    LeaderboardPage,
+    SettingsPage,
+    StockDetailPage,
+} from "./pages/PlaceholderPage";
+import "./index.css";
 
-// Mock data for the chart
-const data = [
-    { name: "Mon", value: 118000 },
-    { name: "Tue", value: 119500 },
-    { name: "Wed", value: 118200 },
-    { name: "Thu", value: 121000 },
-    { name: "Fri", value: 123400 },
-    { name: "Sat", value: 123800 },
-    { name: "Sun", value: 124592 },
-];
+// Dashboard layout placeholder - will be implemented in phases 3-8
+const DashboardShell = ({ children }) => <DashboardLayout>{children}</DashboardLayout>;
 
 function App() {
-    const [activeTab, setActiveTab] = useState("overview");
-    const [theme, setTheme] = useState("dark"); // Defaulting to premium dark mode
-
-    useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        if (window.electronAPI && window.electronAPI.onThemeChanged) {
-            window.electronAPI.onThemeChanged(theme);
-        }
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme((prev) => (prev === "light" ? "dark" : "light"));
-    };
-
-    const renderContent = () => {
-        switch (activeTab) {
-            case "overview":
-                return (
-                    <div className="overview-tab">
-                        {/* Top Metric Cards */}
-                        <div className="dashboard-grid">
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Portfolio Value</h3>
-                                    <div className="card-icon">
-                                        <Wallet size={20} />
-                                    </div>
-                                </div>
-                                <p className="metric-value">$124,592.00</p>
-                                <span className="badge success">
-                                    <ArrowUpRight size={14} /> 2.4% today
-                                </span>
-                            </div>
-
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Active Trades</h3>
-                                    <div className="card-icon">
-                                        <Briefcase size={20} />
-                                    </div>
-                                </div>
-                                <p className="metric-value">8</p>
-                                <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginTop: "0.5rem" }}>
-                                    3 Pending execution
-                                </p>
-                            </div>
-
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Monthly Return</h3>
-                                    <div className="card-icon">
-                                        <Activity size={20} />
-                                    </div>
-                                </div>
-                                <p className="metric-value">$3,490.50</p>
-                                <span className="badge success">
-                                    <TrendingUp size={14} /> 1.8% vs last
-                                </span>
-                            </div>
-
-                            <div
-                                className="card glass"
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    textAlign: "center",
-                                }}
-                            >
-                                <div
-                                    className="card-icon"
-                                    style={{
-                                        marginBottom: "1rem",
-                                        width: "48px",
-                                        height: "48px",
-                                        background: "var(--bg-tertiary)",
-                                    }}
-                                >
-                                    <CreditCard size={24} />
-                                </div>
-                                <h3>Quick Actions</h3>
-                                <button className="btn" style={{ marginTop: "0.5rem", width: "100%" }}>
-                                    Deposit Funds
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Chart and Transactions */}
-                        <div className="dashboard-layout">
-                            <div className="card glass" style={{ display: "flex", flexDirection: "column" }}>
-                                <div className="card-header">
-                                    <h3>Performance (7D)</h3>
-                                </div>
-                                <div className="chart-container" style={{ flex: 1, minHeight: "300px" }}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop
-                                                        offset="5%"
-                                                        stopColor="var(--accent-primary)"
-                                                        stopOpacity={0.8}
-                                                    />
-                                                    <stop
-                                                        offset="95%"
-                                                        stopColor="var(--accent-primary)"
-                                                        stopOpacity={0}
-                                                    />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid
-                                                strokeDasharray="3 3"
-                                                vertical={false}
-                                                stroke="var(--bg-tertiary)"
-                                            />
-                                            <XAxis
-                                                dataKey="name"
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: "var(--text-muted)" }}
-                                                dy={10}
-                                            />
-                                            <YAxis
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tick={{ fill: "var(--text-muted)" }}
-                                                tickFormatter={(value) => `$${value / 1000}k`}
-                                            />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: "var(--bg-secondary)",
-                                                    border: "1px solid var(--glass-border)",
-                                                    borderRadius: "8px",
-                                                }}
-                                                itemStyle={{ color: "var(--text-primary)" }}
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="value"
-                                                stroke="var(--accent-primary)"
-                                                strokeWidth={3}
-                                                fillOpacity={1}
-                                                fill="url(#colorValue)"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Recent Activity</h3>
-                                </div>
-                                <div className="transaction-list">
-                                    <div className="transaction-item">
-                                        <div className="tx-info">
-                                            <div
-                                                className="tx-icon"
-                                                style={{ background: "var(--success-bg)", color: "var(--success)" }}
-                                            >
-                                                <ArrowDownRight size={18} />
-                                            </div>
-                                            <div>
-                                                <p className="tx-title">Deposit</p>
-                                                <p className="tx-date">Today, 10:24 AM</p>
-                                            </div>
-                                        </div>
-                                        <span className="tx-amount positive">+$5,000.00</span>
-                                    </div>
-                                    <div className="transaction-item">
-                                        <div className="tx-info">
-                                            <div
-                                                className="tx-icon"
-                                                style={{ background: "var(--danger-bg)", color: "var(--danger)" }}
-                                            >
-                                                <ArrowUpRight size={18} />
-                                            </div>
-                                            <div>
-                                                <p className="tx-title">Bought AAPL</p>
-                                                <p className="tx-date">Yesterday, 2:15 PM</p>
-                                            </div>
-                                        </div>
-                                        <span className="tx-amount negative">-$1,240.50</span>
-                                    </div>
-                                    <div className="transaction-item">
-                                        <div className="tx-info">
-                                            <div
-                                                className="tx-icon"
-                                                style={{ background: "var(--danger-bg)", color: "var(--danger)" }}
-                                            >
-                                                <ArrowUpRight size={18} />
-                                            </div>
-                                            <div>
-                                                <p className="tx-title">Bought NVDA</p>
-                                                <p className="tx-date">Oct 24, 9:30 AM</p>
-                                            </div>
-                                        </div>
-                                        <span className="tx-amount negative">-$3,450.00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            case "tracker":
-                const [trackerData, setTrackerData] = useState([]);
-                const [loading, setLoading] = useState(true);
-                const [error, setError] = useState(null);
-
-                useEffect(() => {
-                    fetch("http://localhost:3001/api/stocks/raw")
-                        .then((res) => {
-                            if (!res.ok) throw new Error("Failed to fetch data");
-                            return res.json();
-                        })
-                        .then((data) => {
-                            // Sort by date and parse values for chart
-                            const sorted = data
-                                .map((item) => ({
-                                    name: item.Date,
-                                    value: parseFloat(item.CloseLast.replace(/[^\d.]/g, "")),
-                                    original: item,
-                                }))
-                                .sort((a, b) => new Date(a.name) - new Date(b.name));
-                            setTrackerData(sorted);
-                            setLoading(false);
-                        })
-                        .catch((err) => {
-                            console.error(err);
-                            setError(err.message);
-                            setLoading(false);
-                        });
-                }, []);
-
-                if (loading)
-                    return (
-                        <div className="card glass">
-                            <h3>Loading dataset...</h3>
-                        </div>
-                    );
-                if (error)
-                    return (
-                        <div className="card glass">
-                            <h3>Error: {error}</h3>
-                            <p>Make sure the backend is running on port 3001.</p>
-                        </div>
-                    );
-
-                const latestPrice = trackerData.length > 0 ? trackerData[trackerData.length - 1].value : 0;
-                const rowCount = trackerData.length;
-
-                return (
-                    <div className="tracker-tab">
-                        <div className="dashboard-grid">
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Database Row Count</h3>
-                                    <div className="card-icon">
-                                        <Box size={20} />
-                                    </div>
-                                </div>
-                                <p className="metric-value">{rowCount}</p>
-                                <span className="badge success">Verified properly</span>
-                            </div>
-                            <div className="card glass">
-                                <div className="card-header">
-                                    <h3>Latest Close</h3>
-                                    <div className="card-icon">
-                                        <TrendingUp size={20} />
-                                    </div>
-                                </div>
-                                <p className="metric-value">${latestPrice.toFixed(2)}</p>
-                            </div>
-                        </div>
-
-                        <div className="card glass" style={{ marginTop: "1.5rem" }}>
-                            <h3>Database Stock Sequence (Full Table)</h3>
-                            <div className="chart-container" style={{ height: "400px", marginTop: "1rem" }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={trackerData}>
-                                        <defs>
-                                            <linearGradient id="colorTracker" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid
-                                            strokeDasharray="3 3"
-                                            vertical={false}
-                                            stroke="var(--bg-tertiary)"
-                                        />
-                                        <XAxis dataKey="name" hide />
-                                        <YAxis
-                                            axisLine={false}
-                                            tickLine={false}
-                                            tick={{ fill: "var(--text-muted)" }}
-                                            domain={["auto", "auto"]}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: "var(--bg-secondary)",
-                                                border: "1px solid var(--glass-border)",
-                                                borderRadius: "8px",
-                                            }}
-                                            itemStyle={{ color: "var(--text-primary)" }}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="value"
-                                            stroke="var(--accent-primary)"
-                                            strokeWidth={2}
-                                            fillOpacity={1}
-                                            fill="url(#colorTracker)"
-                                        />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                    </div>
-                );
-            case "sandbox":
-                return (
-                    <div className="card glass">
-                        <h3>Sandbox Environment</h3>
-                        <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>
-                            Test your strategies here without risk.
-                        </p>
-                    </div>
-                );
-            case "learning":
-                return (
-                    <div className="card glass">
-                        <h3>Learning Hub</h3>
-                        <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>
-                            Educational resources and tutorials.
-                        </p>
-                    </div>
-                );
-            default:
-                return <div>Select a tab</div>;
-        }
-    };
-
     return (
-        <div className="app-container">
-            {/* Sidebar Navigation */}
-            <aside className="sidebar glass">
-                <div className="logo-area">
-                    <div
-                        style={{
-                            width: 36,
-                            height: 36,
-                            background: "linear-gradient(135deg, var(--accent-primary), #8b5cf6)",
-                            borderRadius: 10,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "white",
-                            boxShadow: "0 4px 10px rgba(59, 130, 246, 0.4)",
-                        }}
-                    >
-                        <LineChart size={20} strokeWidth={2.5} />
-                    </div>
-                    <span className="logo-text">FirstFund</span>
-                </div>
+        <Router>
+            <AuthProvider>
+                <Routes>
+                    {/* Public routes */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
 
-                <nav className="nav-links">
-                    <a
-                        className={`nav-item ${activeTab === "overview" ? "active" : ""}`}
-                        onClick={() => setActiveTab("overview")}
-                    >
-                        <LayoutDashboard size={20} />
-                        Overview
-                    </a>
-                    <a
-                        className={`nav-item ${activeTab === "tracker" ? "active" : ""}`}
-                        onClick={() => setActiveTab("tracker")}
-                    >
-                        <LineChart size={20} />
-                        Tracker
-                    </a>
-                    <a
-                        className={`nav-item ${activeTab === "sandbox" ? "active" : ""}`}
-                        onClick={() => setActiveTab("sandbox")}
-                    >
-                        <Box size={20} />
-                        Sandbox
-                    </a>
-                    <a
-                        className={`nav-item ${activeTab === "learning" ? "active" : ""}`}
-                        onClick={() => setActiveTab("learning")}
-                    >
-                        <BookOpen size={20} />
-                        Learning
-                    </a>
-                </nav>
+                    {/* Protected routes */}
+                    <Route
+                        path="/"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <DashboardPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <button
-                        className="nav-item"
-                        onClick={toggleTheme}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            width: "100%",
-                            textAlign: "left",
-                            cursor: "pointer",
-                        }}
-                    >
-                        {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-                    </button>
-                    <a className="nav-item" style={{ color: "var(--danger)" }}>
-                        <LogOut size={20} />
-                        Logout
-                    </a>
-                </div>
-            </aside>
+                    <Route
+                        path="/stocks"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <StocksPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
 
-            {/* Main Content Area */}
-            <main className="main-content">
-                <header className="top-bar">
-                    <div>
-                        <h1 className="page-title">{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h1>
-                        <p className="page-subtitle">Welcome back, here's your financial overview.</p>
-                    </div>
-                    <div className="user-actions">
-                        <button className="icon-btn">
-                            <Bell size={20} />
-                        </button>
-                        <div className="avatar"></div>
-                    </div>
-                </header>
+                    <Route
+                        path="/stocks/:symbol"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <StockDetailPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
 
-                {renderContent()}
-            </main>
-        </div>
+                    <Route
+                        path="/portfolio"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <PortfolioPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/trade"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <TradePage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/watchlists"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <WatchlistsPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/alerts"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <AlertsPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/budget"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <BudgetPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/leaderboard"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <LeaderboardPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/settings"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <SettingsPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Catch-all redirect to home */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </AuthProvider>
+        </Router>
     );
 }
 

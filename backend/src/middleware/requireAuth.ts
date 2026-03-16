@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { getJwtSecret } from "../lib/jwtSecret";
 
 // Augment Express Request type to include user payload
 declare global {
@@ -25,7 +26,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
     const token = authHeader.split(" ")[1];
 
-    const secret = process.env.JWT_SECRET;
+    const secret = getJwtSecret();
     if (!secret) {
         return res.status(500).json({
             error: "Internal Server Error - Security configuration missing",
