@@ -57,6 +57,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    transition:
+        background-color 0.4s ease,
+        color 0.4s ease,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
 }
 
 body {
@@ -150,7 +155,7 @@ h6,
     color: var(--text-secondary);
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s ease;
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -235,7 +240,7 @@ h6,
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.4s ease;
 }
 .icon-btn:hover {
     color: var(--text-primary);
@@ -268,7 +273,7 @@ h6,
 .card {
     border-radius: 1.25rem;
     padding: 1.75rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s ease;
     animation: slideUp 0.5s ease-out backwards;
 }
 
@@ -359,7 +364,7 @@ h6,
     padding: 1rem;
     border-radius: 0.75rem;
     background: var(--bg-tertiary);
-    transition: background 0.2s;
+    transition: background-color 0.4s ease;
 }
 .transaction-item:hover {
     background: var(--active-nav-bg);
@@ -409,7 +414,7 @@ h6,
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s ease;
     box-shadow: 0 4px 15px var(--accent-glow);
     font-family: var(--font-body);
 }

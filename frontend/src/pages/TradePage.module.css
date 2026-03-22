@@ -1,0 +1,247 @@
+.container {
+    padding: 2rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    color: var(--text-primary);
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+.tradeForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.searchSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.searchSection label,
+.inputGroup label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.priceDisplay {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.symbolBadge {
+    font-weight: 700;
+    background: var(--bg-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.currentPrice {
+    font-size: 1.25rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+.sideToggle {
+    display: flex;
+    background: var(--bg-tertiary);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+}
+
+.toggleBtn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.4s ease;
+}
+
+.activeBuy {
+    background: var(--success);
+    color: white;
+}
+
+.activeSell {
+    background: var(--danger);
+    color: white;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--glass-border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    outline: none;
+    transition: border-color 0.4s ease;
+}
+
+.input:focus {
+    border-color: var(--accent-primary);
+}
+
+.helperText {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.maxBtn {
+    cursor: pointer;
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.maxBtn:hover {
+    text-decoration: underline;
+}
+
+.orderSummary {
+    background: var(--bg-tertiary);
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.estimatedTotal {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.submitBtn,
+.confirmBtn {
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: filter 0.2s;
+    display: flex;
+    justify-content: center;
+}
+
+.submitBtn:disabled,
+.confirmBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnBuy {
+    background: var(--success);
+}
+.btnBuy:not(:disabled):hover {
+    filter: brightness(1.1);
+}
+.btnSell {
+    background: var(--danger);
+}
+.btnSell:not(:disabled):hover {
+    filter: brightness(1.1);
+}
+
+.cancelBtn {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.cancelBtn:hover {
+    background: var(--bg-tertiary);
+}
+
+.confirmationContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    font-size: 1.125rem;
+}
+
+.confirmDetails {
+    background: var(--bg-tertiary);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.confirmItem {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+}
+
+.confirmHighlight {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.confirmTotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

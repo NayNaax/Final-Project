@@ -15,21 +15,8 @@ export function PlaceholderPage({ title, description }) {
         </div>
     );
 }
-
-export function PortfolioPage() {
-    return <PlaceholderPage title="Portfolio" description="Phase 4: Portfolio management coming soon" />;
-}
-
 export function TradePage() {
     return <PlaceholderPage title="Trade" description="Phase 4: Trading interface coming soon" />;
-}
-
-export function WatchlistsPage() {
-    return <PlaceholderPage title="Watchlists" description="Phase 5: Watchlist management coming soon" />;
-}
-
-export function AlertsPage() {
-    return <PlaceholderPage title="Alerts" description="Phase 6: Price alerts coming soon" />;
 }
 
 export function BudgetPage() {
@@ -42,8 +29,4 @@ export function LeaderboardPage() {
 
 export function SettingsPage() {
     return <PlaceholderPage title="Settings" description="Phase 8: Settings and preferences coming soon" />;
-}
-
-export function StockDetailPage() {
-    return <PlaceholderPage title="Stock Detail" description="Phase 3: Stock detail page coming soon" />;
 }
