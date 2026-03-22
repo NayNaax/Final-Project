@@ -40,6 +40,7 @@ import watchlistsRouter from "./routes/watchlists";
 import portfolioRouter from "./routes/portfolio";
 import alertsRouter from "./routes/alerts";
 import settingsRouter from "./routes/settings";
+import budgetRouter from "./routes/budget";
 
 // Mount routes here as they are implemented
 app.use("/api/auth", authRouter);
@@ -48,6 +49,7 @@ app.use("/api/watchlists", watchlistsRouter);
 app.use("/api/portfolio", portfolioRouter);
 app.use("/api/alerts", alertsRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/budget", budgetRouter);
 // ...
 
 // Global Error Handler (must be the last middleware)

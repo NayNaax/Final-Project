@@ -25,7 +25,7 @@
     font-family: var(--font-body);
     font-size: 1rem;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.4s ease;
 }
 
 .input:focus {
@@ -74,7 +74,7 @@
     padding: 0.75rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background-color 0.4s ease;
 }
 
 .listItem:hover {
