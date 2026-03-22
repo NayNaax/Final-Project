@@ -12,7 +12,9 @@ import { PortfolioPage } from "./pages/PortfolioPage";
 import { TradePage } from "./pages/TradePage";
 import { WatchlistsPage } from "./pages/WatchlistsPage";
 import { AlertsPage } from "./pages/AlertsPage";
-import { BudgetPage, LeaderboardPage, SettingsPage } from "./pages/PlaceholderPage";
+import { BudgetPage } from "./pages/BudgetPage";
+import { LeaderboardPage } from "./pages/LeaderboardPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import "./index.css";
 
 // Dashboard layout placeholder - will be implemented in phases 3-8

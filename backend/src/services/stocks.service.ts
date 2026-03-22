@@ -39,12 +39,9 @@ export class StocksService {
             throw new Error(`Symbol ${symbol} is not currently supported.`);
         }
 
-        // Fetch historical data from DB (seeded earlier)
-        const historicalData = await prisma.stock.findMany({
-            where: { symbol: symbol.toUpperCase() },
-            orderBy: { date: "asc" },
-            take: 365, // Limit 1 year
-        });
+        // NOTE: Legacy Stock table doesn't have symbol. Avoiding DB call for now.
+        // In a real app we would have HistoricalPrice model.
+        const historicalData: any[] = [];
 
         // Fetch the live price from our cache / upstream wrapper
         let liveQuote = null;

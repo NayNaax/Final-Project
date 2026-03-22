@@ -1,4 +1,5 @@
 .container {
+    padding: 2rem;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -79,7 +80,7 @@
     font-weight: 600;
     cursor: pointer;
     color: var(--text-muted);
-    transition: all 0.2s;
+    transition: all 0.4s ease;
 }
 
 .activeBuy {
@@ -106,7 +107,7 @@
     color: var(--text-primary);
     font-size: 1.125rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.4s ease;
 }
 
 .input:focus {

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { NotificationDropdown } from "./NotificationDropdown";
 import {
     LineChart,
     LayoutDashboard,
@@ -12,7 +13,11 @@ import {
     Settings,
     LogOut,
     Bell,
+    Search,
+    X,
+    Menu
 } from "lucide-react";
+import { StockSearch } from "./StockSearch";
 import styles from "./DashboardLayout.module.css";
 
 /**
@@ -24,7 +29,61 @@ import styles from "./DashboardLayout.module.css";
 
 export function DashboardLayout({ children }) {
     const navigate = useNavigate();
-    const { logout, user } = useAuth();
+    const { logout, user, token } = useAuth();
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchAlerts = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/alerts?triggered=true", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (!res.ok) {
+                    const relativeRes = await fetch("/api/alerts?triggered=true", {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    if (relativeRes.ok) {
+                        const data = await relativeRes.json();
+                        const triggered = data.filter((a) => a.triggered === true).sort((a,b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
+                        if(isMounted) {
+                            setNotifications(triggered);
+                            setUnreadCount(triggered.length);
+                        }
+                    }
+                    return;
+                }
+                const data = await res.json();
+                const triggered = data.filter((a) => a.triggered === true).sort((a,b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
+                if(isMounted) {
+                    setNotifications(triggered);
+                    // Just a basic sync for unread count
+                    setUnreadCount(triggered.length);
+                }
+            } catch (err) {
+                console.error("Failed to fetch notifications", err);
+            }
+        };
+
+        fetchAlerts();
+        const intervalId = setInterval(fetchAlerts, 30000);
+        return () => {
+            isMounted = false;
+            clearInterval(intervalId);
+        }
+    }, [token]);
+
+    const handleMarkAllRead = () => {
+        setUnreadCount(0);
+    };
 
     const navigationItems = [
         { label: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -38,18 +97,33 @@ export function DashboardLayout({ children }) {
     ];
 
     const handleNavigation = (path) => {
+        setIsSidebarOpen(false);
         navigate(path);
     };
 
     const handleLogout = () => {
+        setIsSidebarOpen(false);
         logout();
         navigate("/login", { replace: true });
     };
+const handleStockSelect = (symbol) => {
+        setIsSearchExpanded(false);
+        navigate(`/stocks/${symbol}`);
+    };
+
 
     return (
         <div className={styles.layout}>
+            {/* Mobile Backdrop */}
+            {isSidebarOpen && (
+                <div
+                    className={styles.backdrop}
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ""}`}>
                 <div className={styles.logo}>
                     <LineChart size={24} />
                     <span>FirstFund</span>
@@ -78,16 +152,70 @@ export function DashboardLayout({ children }) {
                     </button>
                 </div>
             </aside>
-
-            {/* Main Content */}
             <div className={styles.main}>
                 {/* Top Bar */}
                 <header className={styles.topBar}>
-                    <h1 className={styles.pageTitle}>FirstFund Trading Platform</h1>
-                    <div className={styles.headerActions}>
-                        <button className={styles.iconBtn}>
-                            <Bell size={20} />
+                    <button
+                        className={styles.mobileMenuBtn}
+                        onClick={() => setIsSidebarOpen(true)}
+                        aria-label="Toggle menu"
+                    >
+                        <Menu size={24} />
+                    </button>
+                    <h1 className={`${styles.pageTitle} ${isSearchExpanded ? styles.hideOnMobile : ''}`}>
+                        FirstFund Trading Platform
+                    </h1>
+
+                    <div className={`${styles.searchContainer} ${isSearchExpanded ? styles.expanded : ''}`}>
+                        <button
+                            className={`${styles.iconBtn} ${styles.mobileSearchToggle} ${isSearchExpanded ? styles.hideOnMobile : ''}`}
+                            onClick={() => setIsSearchExpanded(true)}
+                        >
+                            <Search size={20} />
                         </button>
+
+                        <div className={`${styles.searchWrapper} ${isSearchExpanded ? styles.showOnMobile : ''}`}>
+                            <StockSearch
+                                placeholder="Search stocks..."
+                                onSelect={handleStockSelect}
+                                className={styles.globalSearch}
+                            />
+                            {isSearchExpanded && (
+                                <button className={styles.closeSearchBtn} onClick={() => setIsSearchExpanded(false)}>
+                                    <X size={20} />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={`${styles.headerActions} ${isSearchExpanded ? styles.hideOnMobile : ''}`}>
+                        <div style={{ position: "relative" }}>
+                            <button className={styles.iconBtn} onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
+                                <Bell size={20} />
+                                {unreadCount > 0 && (
+                                    <span className={styles.badge} style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        right: 0,
+                                        background: "red",
+                                        color: "white",
+                                        fontSize: "10px",
+                                        borderRadius: "50%",
+                                        padding: "2px 5px",
+                                        transform: "translate(25%, -25%)"
+                                    }}>
+                                        {unreadCount}
+                                    </span>
+                                )}
+                            </button>
+                            {isNotificationOpen && (
+                                <NotificationDropdown
+                                    notifications={notifications}
+                                    onClose={() => setIsNotificationOpen(false)}
+                                    onMarkAllRead={handleMarkAllRead}
+                                />
+                            )}
+                        </div>
                         <div className={styles.userInfo}>
                             <p>{user?.email}</p>
                         </div>

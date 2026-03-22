@@ -1,5 +1,5 @@
 .container {
-    padding: 1rem 0;
+    padding: 2rem;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -11,7 +11,7 @@
     text-decoration: none;
     margin-bottom: 1.5rem;
     font-weight: 500;
-    transition: color 0.2s;
+    transition: color 0.4s ease;
 }
 
 .backLink:hover {
@@ -105,7 +105,7 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 0.875rem;
-    transition: all 0.2s;
+    transition: all 0.4s ease;
 }
 
 .filterBtn:hover {
@@ -185,7 +185,7 @@
     font-weight: 600;
     cursor: pointer;
     color: var(--text-muted);
-    transition: all 0.2s;
+    transition: all 0.4s ease;
 }
 
 .activeBuy {
@@ -217,7 +217,7 @@
     color: var(--text-primary);
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.4s ease;
 }
 
 .input:focus {
