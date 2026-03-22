@@ -8,8 +8,13 @@ async function findVitePort() {
     for (const port of ports) {
         try {
             await new Promise((resolve, reject) => {
-                const req = http.get(`http://localhost:${port}`, { timeout: 1000 }, (res) => {
-                    resolve();
+                const req = http.get(`http://localhost:${port}/@vite/client`, { timeout: 1000 }, (res) => {
+                    if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                        resolve();
+                        req.destroy();
+                        return;
+                    }
+                    reject(new Error(`Unexpected status ${res.statusCode}`));
                     req.destroy();
                 });
                 req.on("error", reject);
@@ -20,10 +25,10 @@ async function findVitePort() {
             });
             return port;
         } catch (error) {
-            // Port not available, try next
+            // No Vite dev server on this port, try next
         }
     }
-    return 5173; // Fallback
+    return null;
 }
 
 function hexToRgb(hex) {
@@ -117,6 +122,12 @@ function createWindow() {
     } else {
         // Auto-detect which port Vite is running on
         findVitePort().then((port) => {
+            if (!port) {
+                win.loadURL(
+                    "data:text/html,<!doctype html><html><body style='font-family:Segoe UI,Arial,sans-serif;padding:24px'><h2>Dev server not found</h2><p>Start the frontend dev server and try again.</p></body></html>",
+                );
+                return;
+            }
             const startUrl = `http://localhost:${port}`;
             console.log(`Loading app from ${startUrl}`);
             win.loadURL(startUrl);

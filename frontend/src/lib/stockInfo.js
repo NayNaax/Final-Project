@@ -1,0 +1,17 @@
+export const STOCK_INFO = {
+    AAPL: { name: "Apple Inc.", sector: "Tech" },
+    MSFT: { name: "Microsoft Corp.", sector: "Tech" },
+    GOOGL: { name: "Alphabet Inc.", sector: "Tech" },
+    NVDA: { name: "NVIDIA Corp.", sector: "Tech" },
+    AMZN: { name: "Amazon.com Inc.", sector: "Consumer" },
+    TSLA: { name: "Tesla Inc.", sector: "Consumer" },
+    JNJ: { name: "Johnson & Johnson", sector: "Healthcare" },
+    UNH: { name: "UnitedHealth Group", sector: "Healthcare" },
+    JPM: { name: "JPMorgan Chase", sector: "Finance" },
+    V: { name: "Visa Inc.", sector: "Finance" },
+    SPY: { name: "S&P 500 ETF", sector: "ETF" },
+    QQQ: { name: "Nasdaq-100 ETF", sector: "ETF" },
+    XOM: { name: "Exxon Mobil", sector: "Energy" },
+    PG: { name: "Procter & Gamble", sector: "Consumer Staples" },
+    DIS: { name: "Walt Disney Co.", sector: "Media" },
+};

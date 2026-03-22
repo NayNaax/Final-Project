@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { api } from "../lib/apiClient";
 
@@ -33,7 +34,7 @@ export function AuthProvider({ children }) {
                 try {
                     const userData = await api.get("/auth/me");
                     setUser(userData);
-                } catch (err) {
+                } catch {
                     // Token is invalid, clear it
                     api.setToken(null);
                     setToken(null);
@@ -59,27 +60,23 @@ export function AuthProvider({ children }) {
             setUser(userData);
 
             return userData;
-        } catch (err) {
-            throw err;
+        } catch {
+            throw new Error("Login failed");
         }
     };
 
     const register = async (email, password) => {
-        try {
-            const response = await api.post("/auth/register", { email, password });
-            const newToken = response.token;
+        const response = await api.post("/auth/register", { email, password });
+        const newToken = response.token;
 
-            api.setToken(newToken);
-            setToken(newToken);
+        api.setToken(newToken);
+        setToken(newToken);
 
-            // Fetch user data
-            const userData = await api.get("/auth/me");
-            setUser(userData);
+        // Fetch user data
+        const userData = await api.get("/auth/me");
+        setUser(userData);
 
-            return userData;
-        } catch (err) {
-            throw err;
-        }
+        return userData;
     };
 
     const logout = () => {

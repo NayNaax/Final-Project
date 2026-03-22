@@ -23,7 +23,7 @@
     border-radius: 0.75rem;
     padding: 1.5rem;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
 }
 
 .card:hover {
@@ -88,7 +88,7 @@
     background: var(--bg-tertiary);
     border-radius: 0.5rem;
     border: 1px solid var(--glass-border);
-    transition: all 0.2s ease;
+    transition: all 0.4s ease;
 }
 
 .transactionItem:hover {
@@ -135,4 +135,130 @@
 .txAmount {
     font-size: 0.95rem;
     font-weight: 600;
+}
+
+.tableContainer {
+    width: 100%;
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.table tr {
+    transition: background-color 0.4s ease;
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+.clickableRow:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.textRight {
+    text-align: right !important;
+}
+
+.chartHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.filterGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filterBtn {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.4s ease;
+}
+
+.filterBtnActive {
+    background: var(--bg-tertiary);
+    border-color: #3b82f6;
+    color: var(--text-primary);
+}
+
+.filterBtn:hover:not(.filterBtnActive) {
+    background: var(--bg-tertiary);
+}
+
+.viewAllLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.viewAllLink:hover {
+    text-decoration: underline;
+}
+
+.moversGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.moverSection h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.moverItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.moverSymbol {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.moverPrice {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.moverChange {
+    font-size: 0.85rem;
+    font-weight: 500;
 }
