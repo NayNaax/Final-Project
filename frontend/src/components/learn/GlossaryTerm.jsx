@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import glossary from '../../data/glossary.json';
-import styles from './GlossaryTerm.module.css';
+import React, { useState } from "react";
+import glossary from "../../data/glossary.json";
+import styles from "./GlossaryTerm.module.css";
 
 export function GlossaryTerm({ term, children }) {
     const defaultDefinition = glossary[term];
@@ -10,7 +10,7 @@ export function GlossaryTerm({ term, children }) {
     const definition = defaultDefinition || "Definition not found.";
 
     return (
-        <span 
+        <span
             className={styles.termWrapper}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}

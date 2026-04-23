@@ -230,10 +230,25 @@ export function CandlestickChart({
                         }}
                     >
                         <div>
-                            <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                            <div
+                                style={{
+                                    fontSize: 11,
+                                    color: "var(--text-muted)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.12em",
+                                }}
+                            >
                                 Hovered candle
                             </div>
-                            <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 700, color: "var(--text-primary)", marginTop: 2 }}>
+                            <div
+                                style={{
+                                    fontFamily: "var(--font-heading)",
+                                    fontSize: 15,
+                                    fontWeight: 700,
+                                    color: "var(--text-primary)",
+                                    marginTop: 2,
+                                }}
+                            >
                                 {getDateLabel(hoveredPoint)}
                             </div>
                         </div>
@@ -270,7 +285,14 @@ export function CandlestickChart({
                                     border: "1px solid rgba(255, 255, 255, 0.05)",
                                 }}
                             >
-                                <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                                <div
+                                    style={{
+                                        fontSize: 10,
+                                        color: "var(--text-muted)",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.12em",
+                                    }}
+                                >
                                     {metric.label}
                                 </div>
                                 <div
@@ -278,7 +300,12 @@ export function CandlestickChart({
                                         marginTop: 4,
                                         fontSize: 15,
                                         fontWeight: 700,
-                                        color: metric.label === "Close" ? (trendIsPositive ? "#4ade80" : "#f87171") : "var(--text-primary)",
+                                        color:
+                                            metric.label === "Close"
+                                                ? trendIsPositive
+                                                    ? "#4ade80"
+                                                    : "#f87171"
+                                                : "var(--text-primary)",
                                         fontVariantNumeric: "tabular-nums",
                                     }}
                                 >

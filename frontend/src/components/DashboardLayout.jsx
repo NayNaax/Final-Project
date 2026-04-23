@@ -17,7 +17,7 @@ import {
     X,
     Menu,
     BookOpen,
-    Newspaper
+    Newspaper,
 } from "lucide-react";
 import { StockSearch } from "./StockSearch";
 import styles from "./DashboardLayout.module.css";
@@ -44,19 +44,21 @@ export function DashboardLayout({ children }) {
             try {
                 const res = await fetch("/api/alerts?triggered=true", {
                     headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
                 if (!res.ok) {
                     const relativeRes = await fetch("/api/alerts?triggered=true", {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`
-                        }
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
                     });
                     if (relativeRes.ok) {
                         const data = await relativeRes.json();
-                        const triggered = data.filter((a) => a.triggered === true).sort((a,b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
-                        if(isMounted) {
+                        const triggered = data
+                            .filter((a) => a.triggered === true)
+                            .sort((a, b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
+                        if (isMounted) {
                             setNotifications(triggered);
                             setUnreadCount(triggered.length);
                         }
@@ -64,8 +66,10 @@ export function DashboardLayout({ children }) {
                     return;
                 }
                 const data = await res.json();
-                const triggered = data.filter((a) => a.triggered === true).sort((a,b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
-                if(isMounted) {
+                const triggered = data
+                    .filter((a) => a.triggered === true)
+                    .sort((a, b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
+                if (isMounted) {
                     setNotifications(triggered);
                     // Just a basic sync for unread count
                     setUnreadCount(triggered.length);
@@ -80,7 +84,7 @@ export function DashboardLayout({ children }) {
         return () => {
             isMounted = false;
             clearInterval(intervalId);
-        }
+        };
     }, [token]);
 
     const handleMarkAllRead = () => {
@@ -110,21 +114,15 @@ export function DashboardLayout({ children }) {
         logout();
         navigate("/login", { replace: true });
     };
-const handleStockSelect = (symbol) => {
+    const handleStockSelect = (symbol) => {
         setIsSearchExpanded(false);
         navigate(`/stocks/${symbol}`);
     };
 
-
     return (
         <div className={styles.layout}>
             {/* Mobile Backdrop */}
-            {isSidebarOpen && (
-                <div
-                    className={styles.backdrop}
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
+            {isSidebarOpen && <div className={styles.backdrop} onClick={() => setIsSidebarOpen(false)} />}
 
             {/* Sidebar */}
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ""}`}>
@@ -166,19 +164,19 @@ const handleStockSelect = (symbol) => {
                     >
                         <Menu size={24} />
                     </button>
-                    <h1 className={`${styles.pageTitle} ${isSearchExpanded ? styles.hideOnMobile : ''}`}>
+                    <h1 className={`${styles.pageTitle} ${isSearchExpanded ? styles.hideOnMobile : ""}`}>
                         FirstFund Trading Platform
                     </h1>
 
-                    <div className={`${styles.searchContainer} ${isSearchExpanded ? styles.expanded : ''}`}>
+                    <div className={`${styles.searchContainer} ${isSearchExpanded ? styles.expanded : ""}`}>
                         <button
-                            className={`${styles.iconBtn} ${styles.mobileSearchToggle} ${isSearchExpanded ? styles.hideOnMobile : ''}`}
+                            className={`${styles.iconBtn} ${styles.mobileSearchToggle} ${isSearchExpanded ? styles.hideOnMobile : ""}`}
                             onClick={() => setIsSearchExpanded(true)}
                         >
                             <Search size={20} />
                         </button>
 
-                        <div className={`${styles.searchWrapper} ${isSearchExpanded ? styles.showOnMobile : ''}`}>
+                        <div className={`${styles.searchWrapper} ${isSearchExpanded ? styles.showOnMobile : ""}`}>
                             <StockSearch
                                 placeholder="Search stocks..."
                                 onSelect={handleStockSelect}
@@ -192,22 +190,28 @@ const handleStockSelect = (symbol) => {
                         </div>
                     </div>
 
-                    <div className={`${styles.headerActions} ${isSearchExpanded ? styles.hideOnMobile : ''}`}>
+                    <div className={`${styles.headerActions} ${isSearchExpanded ? styles.hideOnMobile : ""}`}>
                         <div style={{ position: "relative" }}>
-                            <button className={styles.iconBtn} onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
+                            <button
+                                className={styles.iconBtn}
+                                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                            >
                                 <Bell size={20} />
                                 {unreadCount > 0 && (
-                                    <span className={styles.badge} style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        right: 0,
-                                        background: "red",
-                                        color: "white",
-                                        fontSize: "10px",
-                                        borderRadius: "50%",
-                                        padding: "2px 5px",
-                                        transform: "translate(25%, -25%)"
-                                    }}>
+                                    <span
+                                        className={styles.badge}
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            right: 0,
+                                            background: "red",
+                                            color: "white",
+                                            fontSize: "10px",
+                                            borderRadius: "50%",
+                                            padding: "2px 5px",
+                                            transform: "translate(25%, -25%)",
+                                        }}
+                                    >
                                         {unreadCount}
                                     </span>
                                 )}

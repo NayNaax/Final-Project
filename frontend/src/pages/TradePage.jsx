@@ -81,7 +81,7 @@ export function TradePage() {
     };
 
     // Calculate maximum tradeable based on side
-    const maxAffordable = portfolio && currentPrice ? (portfolio.cash / currentPrice) : 0;
+    const maxAffordable = portfolio && currentPrice ? portfolio.cash / currentPrice : 0;
     const ownedPos = portfolio?.positions.find((p) => p.symbol === selectedSymbol);
     const maxSellable = ownedPos ? ownedPos.shares : 0;
 
@@ -177,7 +177,7 @@ export function TradePage() {
                         <button
                             type="submit"
                             className={`${styles.submitBtn} ${side === "BUY" ? styles.btnBuy : styles.btnSell}`}
-                            disabled={!selectedSymbol || loading || !shares || safeShares < 1}
+                            disabled={!selectedSymbol || loading || !shares || safeShares < 0.0001}
                         >
                             {loading ? <LoadingSpinner /> : `Review Order`}
                         </button>

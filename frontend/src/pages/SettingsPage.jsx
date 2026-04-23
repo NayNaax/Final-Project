@@ -1,204 +1,199 @@
-import React, { useEffect, useState } from 'react';
-import { Settings, User, Moon, Trash2, LogOut, DollarSign } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { api } from '../lib/apiClient';
-import styles from './SettingsPage.module.css';
+import React, { useEffect, useState } from "react";
+import { Settings, User, Moon, Trash2, LogOut, DollarSign } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../lib/apiClient";
+import styles from "./SettingsPage.module.css";
 
 export function SettingsPage() {
-  const { user, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const { user, logout } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  const [settings, setSettings] = useState({
-    theme: 'light',
-    currency: 'USD'
-  });
+    const [settings, setSettings] = useState({
+        theme: "light",
+        currency: "USD",
+    });
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+    useEffect(() => {
+        fetchSettings();
+    }, []);
 
-  const fetchSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await api.get('/settings');
-      if (data) {
-        // Always start in dark mode — don't restore saved theme from DB on load
-        setSettings({
-          theme: 'dark',
-          currency: data.currency || 'USD'
-        });
-      }
-    } catch (err) {
-      console.error('Failed to load settings:', err);
-      // Fallback: don't show hard error here so they can still see UI, maybe just log it.
-    } finally {
-      setLoading(false);
+    const fetchSettings = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await api.get("/settings");
+            if (data) {
+                // Always start in dark mode — don't restore saved theme from DB on load
+                setSettings({
+                    theme: "dark",
+                    currency: data.currency || "USD",
+                });
+            }
+        } catch (err) {
+            console.error("Failed to load settings:", err);
+            // Fallback: don't show hard error here so they can still see UI, maybe just log it.
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateSetting = async (key, value) => {
+        // Optimistic update
+        const prevSettings = { ...settings };
+        setSettings((prev) => ({ ...prev, [key]: value }));
+
+        if (key === "theme") {
+            document.documentElement.setAttribute("data-theme", value);
+            // Animate Electron title bar buttons to match new theme
+            window.electronAPI?.onThemeChanged(value);
+        }
+
+        try {
+            await api.patch("/settings", { [key]: value });
+        } catch (err) {
+            console.error(`Failed to update ${key}:`, err);
+            setError(`Failed to update ${key}. Reverting change.`);
+
+            // Revert on failure
+            setSettings(prevSettings);
+
+            if (key === "theme") {
+                document.documentElement.setAttribute("data-theme", prevSettings.theme);
+            }
+
+            setTimeout(() => setError(null), 3000);
+        }
+    };
+
+    const handleThemeToggle = (e) => {
+        const isDark = e.target.checked;
+        handleUpdateSetting("theme", isDark ? "dark" : "light");
+    };
+
+    const handleCurrencyChange = (e) => {
+        handleUpdateSetting("currency", e.target.value);
+    };
+
+    if (loading) {
+        return <div className={styles.loading}>Loading settings...</div>;
     }
-  };
 
-  const handleUpdateSetting = async (key, value) => {
-    // Optimistic update
-    const prevSettings = { ...settings };
-    setSettings(prev => ({ ...prev, [key]: value }));
+    // Formatting date nicely
+    const joinDate = user?.createdAt
+        ? new Date(user.createdAt).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+          })
+        : "Recently";
 
-    if (key === 'theme') {
-      document.documentElement.setAttribute('data-theme', value);
-      // Animate Electron title bar buttons to match new theme
-      window.electronAPI?.onThemeChanged(value);
-    }
+    return (
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h1>Settings</h1>
+                <p>Manage your account preferences and application settings.</p>
+            </div>
 
-    try {
-      await api.patch('/settings', { [key]: value });
-    } catch (err) {
-      console.error(`Failed to update ${key}:`, err);
-      setError(`Failed to update ${key}. Reverting change.`);
+            {error && <div className={styles.error}>{error}</div>}
 
-      // Revert on failure
-      setSettings(prevSettings);
+            {/* Appearance Section */}
+            <section className={`glass ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>
+                    <Moon size={20} />
+                    Appearance
+                </h2>
 
-      if (key === 'theme') {
-        document.documentElement.setAttribute('data-theme', prevSettings.theme);
-      }
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Dark Mode</p>
+                        <p className={styles.settingDesc}>Use dark theme for the application interface.</p>
+                    </div>
+                    <label className={styles.switch}>
+                        <input type="checkbox" checked={settings.theme === "dark"} onChange={handleThemeToggle} />
+                        <span className={styles.slider}></span>
+                    </label>
+                </div>
+            </section>
 
-      setTimeout(() => setError(null), 3000);
-    }
-  };
+            {/* Preferences Section */}
+            <section className={`glass ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>
+                    <DollarSign size={20} />
+                    Preferences
+                </h2>
 
-  const handleThemeToggle = (e) => {
-    const isDark = e.target.checked;
-    handleUpdateSetting('theme', isDark ? 'dark' : 'light');
-  };
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Base Currency</p>
+                        <p className={styles.settingDesc}>Choose your default currency for portfolio values.</p>
+                    </div>
+                    <select className={styles.select} value={settings.currency} onChange={handleCurrencyChange}>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="CAD">CAD ($)</option>
+                    </select>
+                </div>
+            </section>
 
-  const handleCurrencyChange = (e) => {
-    handleUpdateSetting('currency', e.target.value);
-  };
+            {/* Account Section */}
+            <section className={`glass ${styles.section}`}>
+                <h2 className={styles.sectionTitle}>
+                    <User size={20} />
+                    Account Information
+                </h2>
 
-  if (loading) {
-    return <div className={styles.loading}>Loading settings...</div>;
-  }
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Email Address</p>
+                        <p className={styles.settingDesc}>{user?.email || "N/A"}</p>
+                    </div>
+                </div>
 
-  // Formatting date nicely
-  const joinDate = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString(undefined, {
-        year: 'numeric', month: 'long', day: 'numeric'
-      })
-    : 'Recently';
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Member Since</p>
+                        <p className={styles.settingDesc}>{joinDate}</p>
+                    </div>
+                </div>
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Settings</h1>
-        <p>Manage your account preferences and application settings.</p>
-      </div>
+                <div className={styles.settingRow} style={{ marginTop: "1rem" }}>
+                    <button type="button" className={`${styles.button} ${styles.logoutBtn}`} onClick={logout}>
+                        <LogOut size={16} />
+                        Log Out
+                    </button>
+                </div>
+            </section>
 
-      {error && <div className={styles.error}>{error}</div>}
+            {/* Danger Zone Section */}
+            <section className={`glass ${styles.section}`} style={{ border: "1px solid rgba(239, 68, 68, 0.3)" }}>
+                <h2
+                    className={styles.sectionTitle}
+                    style={{ color: "var(--danger-color)", borderBottomColor: "rgba(239, 68, 68, 0.2)" }}
+                >
+                    <Settings size={20} />
+                    Danger Zone
+                </h2>
 
-      {/* Appearance Section */}
-      <section className={`glass ${styles.section}`}>
-        <h2 className={styles.sectionTitle}>
-          <Moon size={20} />
-          Appearance
-        </h2>
-
-        <div className={styles.settingRow}>
-          <div className={styles.settingInfo}>
-            <p className={styles.settingName}>Dark Mode</p>
-            <p className={styles.settingDesc}>Use dark theme for the application interface.</p>
-          </div>
-          <label className={styles.switch}>
-            <input
-              type="checkbox"
-              checked={settings.theme === 'dark'}
-              onChange={handleThemeToggle}
-            />
-            <span className={styles.slider}></span>
-          </label>
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Delete Account</p>
+                        <p className={styles.settingDesc}>
+                            Permanently delete your account and all data. This action cannot be undone.
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        className={`${styles.button} ${styles.dangerBtn}`}
+                        disabled
+                        title="Feature coming soon"
+                    >
+                        <Trash2 size={16} />
+                        Delete Account
+                    </button>
+                </div>
+            </section>
         </div>
-      </section>
-
-      {/* Preferences Section */}
-      <section className={`glass ${styles.section}`}>
-        <h2 className={styles.sectionTitle}>
-          <DollarSign size={20} />
-          Preferences
-        </h2>
-
-        <div className={styles.settingRow}>
-          <div className={styles.settingInfo}>
-            <p className={styles.settingName}>Base Currency</p>
-            <p className={styles.settingDesc}>Choose your default currency for portfolio values.</p>
-          </div>
-          <select
-            className={styles.select}
-            value={settings.currency}
-            onChange={handleCurrencyChange}
-          >
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-            <option value="CAD">CAD ($)</option>
-          </select>
-        </div>
-      </section>
-
-      {/* Account Section */}
-      <section className={`glass ${styles.section}`}>
-        <h2 className={styles.sectionTitle}>
-          <User size={20} />
-          Account Information
-        </h2>
-
-        <div className={styles.settingRow}>
-          <div className={styles.settingInfo}>
-            <p className={styles.settingName}>Email Address</p>
-            <p className={styles.settingDesc}>{user?.email || 'N/A'}</p>
-          </div>
-        </div>
-
-        <div className={styles.settingRow}>
-          <div className={styles.settingInfo}>
-            <p className={styles.settingName}>Member Since</p>
-            <p className={styles.settingDesc}>{joinDate}</p>
-          </div>
-        </div>
-
-        <div className={styles.settingRow} style={{ marginTop: '1rem' }}>
-          <button
-            type="button"
-            className={`${styles.button} ${styles.logoutBtn}`}
-            onClick={logout}
-          >
-            <LogOut size={16} />
-            Log Out
-          </button>
-        </div>
-      </section>
-
-      {/* Danger Zone Section */}
-      <section className={`glass ${styles.section}`} style={{ border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-        <h2 className={styles.sectionTitle} style={{ color: 'var(--danger-color)', borderBottomColor: 'rgba(239, 68, 68, 0.2)' }}>
-          <Settings size={20} />
-          Danger Zone
-        </h2>
-
-        <div className={styles.settingRow}>
-          <div className={styles.settingInfo}>
-            <p className={styles.settingName}>Delete Account</p>
-            <p className={styles.settingDesc}>Permanently delete your account and all data. This action cannot be undone.</p>
-          </div>
-          <button
-            type="button"
-            className={`${styles.button} ${styles.dangerBtn}`}
-            disabled
-            title="Feature coming soon"
-          >
-            <Trash2 size={16} />
-            Delete Account
-          </button>
-        </div>
-      </section>
-    </div>
-  );
+    );
 }

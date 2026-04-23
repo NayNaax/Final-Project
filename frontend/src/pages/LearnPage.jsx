@@ -24,7 +24,7 @@ export function LearnPage() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const res = await api.get('/learn/progress');
+                const res = await api.get("/learn/progress");
                 setProgressData(res.lessons || []);
             } catch (err) {
                 setError("Failed to load progress.");
@@ -35,24 +35,34 @@ export function LearnPage() {
         loadData();
     }, []);
 
-    if (loading) return <div className={styles.centered}><LoadingSpinner /></div>;
-    if (error) return <div className={styles.container}><ErrorBanner message={error} /></div>;
+    if (loading)
+        return (
+            <div className={styles.centered}>
+                <LoadingSpinner />
+            </div>
+        );
+    if (error)
+        return (
+            <div className={styles.container}>
+                <ErrorBanner message={error} />
+            </div>
+        );
 
     const getModuleProgress = (mod) => {
-        const lessonIds = mod.lessons.map(l => l.id);
-        const completedCount = lessonIds.filter(id => 
-            progressData.find(p => p.lessonId === id && p.completed)
+        const lessonIds = mod.lessons.map((l) => l.id);
+        const completedCount = lessonIds.filter((id) =>
+            progressData.find((p) => p.lessonId === id && p.completed),
         ).length;
-        
+
         return {
             count: completedCount,
             total: lessonIds.length,
-            percent: (completedCount / lessonIds.length) * 100
+            percent: (completedCount / lessonIds.length) * 100,
         };
     };
 
     const isLessonCompleted = (id) => {
-        return !!progressData.find(p => p.lessonId === id && p.completed);
+        return !!progressData.find((p) => p.lessonId === id && p.completed);
     };
 
     return (
@@ -61,9 +71,10 @@ export function LearnPage() {
                 <BookOpen size={28} color="#3b82f6" />
                 <h1>Learning Hub</h1>
             </div>
-            
+
             <p className={styles.subtitle}>
-                Master the markets step by step. Complete lessons to unlock new modules and earn virtual cash for your sandbox portfolio!
+                Master the markets step by step. Complete lessons to unlock new modules and earn virtual cash for your
+                sandbox portfolio!
             </p>
 
             <div className={styles.layout}>
@@ -74,7 +85,7 @@ export function LearnPage() {
                                 <ArrowLeft size={18} /> Back to Modules
                             </button>
                             <h2>{selectedModule.title}</h2>
-                            
+
                             <div className={styles.lessonList}>
                                 {selectedModule.lessons.map((lesson, idx) => {
                                     const completed = isLessonCompleted(lesson.id);
@@ -85,9 +96,9 @@ export function LearnPage() {
                                     }
 
                                     return (
-                                        <div 
-                                            key={lesson.id} 
-                                            className={`${styles.lessonRow} ${locked ? styles.lockedRow : ''}`}
+                                        <div
+                                            key={lesson.id}
+                                            className={`${styles.lessonRow} ${locked ? styles.lockedRow : ""}`}
                                             onClick={() => {
                                                 if (!locked) navigate(`/learn/${lesson.id}`);
                                             }}
@@ -97,7 +108,13 @@ export function LearnPage() {
                                                 <span className={styles.lessonTitle}>{lesson.title}</span>
                                             </div>
                                             <div className={styles.lessonStatus}>
-                                                {completed ? <CheckCircle color="#10b981" /> : (locked ? <span className={styles.lockText}>LOCKED</span> : <PlayCircle color="#3b82f6" />)}
+                                                {completed ? (
+                                                    <CheckCircle color="#10b981" />
+                                                ) : locked ? (
+                                                    <span className={styles.lockText}>LOCKED</span>
+                                                ) : (
+                                                    <PlayCircle color="#3b82f6" />
+                                                )}
                                             </div>
                                         </div>
                                     );
@@ -116,9 +133,9 @@ export function LearnPage() {
                                 }
 
                                 return (
-                                    <ModuleCard 
-                                        key={mod.id} 
-                                        module={mod} 
+                                    <ModuleCard
+                                        key={mod.id}
+                                        module={mod}
                                         isLocked={isLocked}
                                         progressPercent={modProgress.percent}
                                         onClick={() => setSelectedModule(mod)}
@@ -128,7 +145,7 @@ export function LearnPage() {
                         </div>
                     )}
                 </div>
-                
+
                 <div className={styles.sidebarContent}>
                     <MissionTracker />
                 </div>
