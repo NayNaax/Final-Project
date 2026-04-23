@@ -19,8 +19,7 @@ dist-ssr
 .env.test.local
 .env.production.local
 **/backend/.env
-ARCH_PLAN.md
-frontend_plan.md
+plans
 
 # Logs
 npm-debug.log*
