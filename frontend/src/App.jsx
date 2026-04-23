@@ -15,6 +15,10 @@ import { AlertsPage } from "./pages/AlertsPage";
 import { BudgetPage } from "./pages/BudgetPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { LearnPage } from "./pages/LearnPage";
+import { LessonPage } from "./pages/LessonPage";
+import { JournalPage } from "./pages/JournalPage";
+import { NewsPage } from "./pages/NewsPage";
 import "./index.css";
 
 // Dashboard layout placeholder - will be implemented in phases 3-8
@@ -135,6 +139,46 @@ function App() {
                             <ProtectedRoute>
                                 <DashboardShell>
                                     <SettingsPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learn"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <LearnPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learn/:lessonId"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <LessonPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/learn/journal"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <JournalPage />
+                                </DashboardShell>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/news"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardShell>
+                                    <NewsPage />
                                 </DashboardShell>
                             </ProtectedRoute>
                         }

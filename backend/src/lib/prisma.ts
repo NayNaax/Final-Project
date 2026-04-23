@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 // Add prisma to the NodeJS global type

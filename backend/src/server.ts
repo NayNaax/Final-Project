@@ -41,6 +41,7 @@ import portfolioRouter from "./routes/portfolio";
 import alertsRouter from "./routes/alerts";
 import settingsRouter from "./routes/settings";
 import budgetRouter from "./routes/budget";
+import learnRouter from "./routes/learn";
 
 // Mount routes here as they are implemented
 app.use("/api/auth", authRouter);
@@ -50,6 +51,7 @@ app.use("/api/portfolio", portfolioRouter);
 app.use("/api/alerts", alertsRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/budget", budgetRouter);
+app.use("/api/learn", learnRouter);
 // ...
 
 // Global Error Handler (must be the last middleware)

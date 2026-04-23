@@ -1,0 +1,153 @@
+.container {
+    padding: 32px;
+    width: 100%;
+    margin: 0;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.backLink:hover {
+    color: var(--text-primary);
+}
+
+.moduleBadge {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.contentWrapper {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 40px;
+}
+
+.lessonHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.lessonHeader h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    color: var(--text-primary);
+}
+
+.lessonBody {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.lessonBody h2 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #3b82f6;
+}
+
+.lessonBody h3 {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+}
+
+.lessonBody p {
+    margin-bottom: 24px;
+    color: var(--text-muted);
+}
+
+.lessonBody strong {
+    color: var(--text-primary);
+}
+
+.list {
+    margin: 0 0 24px 0;
+    padding-left: 24px;
+    color: var(--text-muted);
+}
+
+.list li {
+    margin-bottom: 12px;
+}
+
+.quizFallback {
+    margin-top: 28px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.quizFallback h3 {
+    margin: 0 0 10px 0;
+    color: #f59e0b;
+}
+
+.quizFallback p {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.fallbackButton {
+    margin-top: 14px;
+    background: #f59e0b;
+    color: #111827;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.fallbackButton:hover {
+    filter: brightness(0.96);
+}
+
+.lessonFallback {
+    margin-top: 8px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.lessonFallback h3 {
+    margin: 0 0 10px 0;
+    color: #ef4444;
+}
+
+.lessonFallback p {
+    margin: 0;
+    color: var(--text-primary);
+}

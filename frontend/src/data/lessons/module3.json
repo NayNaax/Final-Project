@@ -1,0 +1,154 @@
+{
+  "id": "module3",
+  "title": "Reading the Charts — Technical Analysis",
+  "lessons": [
+    {
+      "id": "3.1",
+      "title": "Candlestick Charts",
+      "content": "Charts are the language of the stock market. Learning to read them gives you a visual understanding of how a stock has been moving — which is far more intuitive than staring at raw numbers.\n\nThe most popular chart type among traders is the **candlestick chart**. Each \"candle\" represents a single time period (one day, one hour, etc.) and shows four key pieces of information:\n\n**Anatomy of a candlestick:**\n\n- **Open:** The price when the period started.\n- **Close:** The price when the period ended.\n- **High:** The highest price reached during the period.\n- **Low:** The lowest price reached during the period.\n\n**Colours:**\n\n- 🟩 **Green (bullish):** The price went UP. The close is higher than the open.\n- 🟥 **Red (bearish):** The price went DOWN. The close is lower than the open.\n\n**The body** (thick part) shows the range between open and close. **The wicks** (thin lines above and below) show the high and low.\n\n**Reading the candles:**\n\n- **Long green body:** Strong buying pressure — buyers dominated.\n- **Long red body:** Strong selling pressure — sellers dominated.\n- **Short body with long wicks:** Indecision — the price moved a lot but ended up close to where it started.\n- **No body (just a line):** Called a **doji** — perfect indecision. Open and close are the same.\n\n**Pro tip:** You can switch between line charts and candlestick charts right here in this sandbox! Go to Settings and change your chart style to see the difference.\n\n**Key takeaway:** Each candlestick shows how a stock's price moved during a time period. Green means the price went up, red means it went down. The size of the body and wicks tells you how strong the move was.",
+      "quiz": [
+        {
+          "question": "A green candlestick means:",
+          "options": [
+            "The stock paid a dividend",
+            "The closing price was higher than the opening price",
+            "The stock hit its all-time high",
+            "Trading volume was above average"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What do the thin lines (wicks) above and below a candlestick represent?",
+          "options": [
+            "The opening and closing prices",
+            "The trading volume",
+            "The highest and lowest prices during that period",
+            "The previous day's prices"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "A candle with a very small body and long wicks on both sides suggests:",
+          "options": [
+            "Strong buying pressure",
+            "Strong selling pressure",
+            "Market indecision — the price moved a lot but ended near where it started",
+            "The stock is about to be delisted"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "3.2",
+      "title": "Trends, Support & Resistance",
+      "content": "Stocks don't move randomly. Over time, they tend to move in **trends** — and recognising these trends is one of the most valuable skills in trading.\n\n**Types of trends:**\n\n- **Uptrend:** The price is making higher highs and higher lows. Like climbing stairs — each step up is higher than the last.\n- **Downtrend:** The price is making lower highs and lower lows. Like walking downstairs.\n- **Sideways (ranging):** The price bounces between two levels without a clear direction.\n\n**Support — the floor:**\n\n**Support** is a price level where a stock tends to stop falling and bounce back up. It's like a floor. Why? Because at that price, enough buyers step in to buy, creating demand that stops the price from falling further.\n\nIf you notice a stock bouncing off $140 three times, that $140 level is a support level. Traders watch these levels to plan their buys.\n\n**Resistance — the ceiling:**\n\n**Resistance** is a price level where a stock tends to stop rising and pull back down. It's like a ceiling. At that price, enough sellers step in to take profits, creating supply that stops the price from rising further.\n\nIf a stock keeps failing to break above $180, that $180 level is a resistance level.\n\n**What happens at a breakout?**\n\nWhen a stock breaks through resistance, it often signals the beginning of a new uptrend. When it breaks below support, it could signal further declines. These moments are called **breakouts** (upward) and **breakdowns** (downward).\n\n**Practical tip:** Draw imaginary horizontal lines at the levels where a stock repeatedly bounces off. These are your support and resistance levels. They're not exact — think of them as zones rather than precise prices.\n\n**Key takeaway:** Uptrends make higher highs, downtrends make lower lows. Support is where the price tends to bounce up, resistance is where it gets pushed back down. Watch for breakouts through these levels.",
+      "quiz": [
+        {
+          "question": "An uptrend is characterised by:",
+          "options": [
+            "Lower highs and lower lows",
+            "Higher highs and higher lows",
+            "The price staying flat",
+            "Alternating big gains and big losses"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "A support level is best described as:",
+          "options": [
+            "The highest price a stock has ever reached",
+            "A price level where the stock tends to stop falling and bounce up",
+            "The average price over the last year",
+            "The price at which the company's CEO sells their shares"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "A stock has been unable to rise above $200 three times. This $200 level is called:",
+          "options": [
+            "A support level",
+            "A market cap",
+            "A resistance level",
+            "A dividend yield"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "3.3",
+      "title": "Moving Averages (SMA & EMA)",
+      "content": "Looking at raw price data can be noisy — stocks bounce up and down daily, making it hard to see the bigger picture. **Moving averages** smooth out this noise by calculating the average price over a set number of days.\n\n**Simple Moving Average (SMA):**\n\nThe SMA takes the average closing price over a specific period.\n\n- **50-day SMA:** Average closing price of the last 50 trading days.\n- **200-day SMA:** Average closing price of the last 200 trading days.\n\nThis creates a smooth line on the chart that shows the general direction of the trend.\n\n**Exponential Moving Average (EMA):**\n\nThe EMA works similarly but gives **more weight to recent prices**, making it react faster to price changes. This is useful for short-term traders who want quicker signals.\n\n**How do traders use moving averages?**\n\n1. **Trend direction:** If the price is above the 200-day SMA, the stock is generally in an uptrend. Below it = downtrend.\n\n2. **Golden Cross 🟡:** When the 50-day SMA crosses *above* the 200-day SMA, it's seen as a bullish signal — suggesting the start of an uptrend.\n\n3. **Death Cross 💀:** When the 50-day SMA crosses *below* the 200-day SMA, it's seen as a bearish signal — suggesting the start of a downtrend.\n\nThese signals aren't foolproof — no indicator is. But they're widely watched by traders, which makes them somewhat self-fulfilling.\n\n**A practical example:**\n\nImagine Apple's stock price is at $175. The 50-day SMA is at $170 (below the price) and the 200-day SMA is at $165 (even lower). This tells you:\n- The stock is trading above both averages → **bullish position**.\n- The short-term trend (50-day) is above the long-term trend (200-day) → **no death cross warning**.\n\n**Key takeaway:** Moving averages smooth out daily noise so you can see the real trend. The 200-day SMA is the most watched — prices above it suggest an uptrend, below it suggest a downtrend.",
+      "quiz": [
+        {
+          "question": "What does a Simple Moving Average (SMA) do?",
+          "options": [
+            "Predicts the exact future stock price",
+            "Calculates the average closing price over a set period to smooth out noise",
+            "Shows the total trading volume",
+            "Measures the company's revenue growth"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What is a 'Golden Cross'?",
+          "options": [
+            "When a stock hits its all-time high",
+            "When the 50-day SMA crosses above the 200-day SMA",
+            "When a stock's price doubles",
+            "When the market opens on a holiday"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "If a stock is trading BELOW its 200-day SMA, what does this generally suggest?",
+          "options": [
+            "The stock is a great buy opportunity",
+            "The stock is overvalued",
+            "The stock is in a general downtrend",
+            "Trading volume is too low"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "3.4",
+      "title": "RSI (Relative Strength Index)",
+      "content": "The **RSI** is a momentum indicator that tells you whether a stock has been bought too aggressively (overbought) or sold too aggressively (oversold). It's a number from 0 to 100.\n\n**The key levels:**\n\n- **RSI above 70:** The stock is considered **overbought**. It's been going up a lot and might be due for a pullback.\n- **RSI below 30:** The stock is considered **oversold**. It's been going down a lot and might be due for a bounce back.\n- **RSI between 30 and 70:** Neutral territory — no extreme signal.\n\n**How is RSI calculated?**\n\nDon't worry about the formula — your trading platform calculates it for you. What matters is understanding what the number means:\n\n- An RSI of 80 doesn't mean \"sell immediately.\" It means \"be cautious — the stock may have risen too fast.\"\n- An RSI of 20 doesn't mean \"buy immediately.\" It means \"the stock might be undervalued — worth investigating.\"\n\n**Common mistakes with RSI:**\n\n1. **Treating it as a crystal ball:** RSI tells you about *momentum*, not the future. A stock can stay overbought (RSI > 70) for weeks during a strong rally.\n2. **Using it alone:** RSI works best when combined with other tools (like support/resistance levels from Lesson 3.2 and moving averages from Lesson 3.3).\n\n**A practical example:**\n\nA stock drops from $100 to $60 in two weeks. Its RSI falls to 22 (oversold). This doesn't mean it will immediately bounce back — but it tells you the selling has been extreme. If the stock is also sitting at a strong support level, that's two signals lining up → a stronger case for a potential bounce.\n\n**Key takeaway:** RSI measures momentum. Above 70 = overbought (caution with buying), below 30 = oversold (potential opportunity). Never use RSI alone — always combine it with other indicators and context.",
+      "quiz": [
+        {
+          "question": "An RSI of 75 suggests the stock is:",
+          "options": [
+            "Oversold — it might bounce up",
+            "Overbought — it might pull back",
+            "At its fair value",
+            "About to pay a dividend"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What is the RSI range?",
+          "options": [
+            "-100 to +100",
+            "0 to 100",
+            "0 to 1000",
+            "There is no range limit"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Why is it dangerous to use RSI as a sole indicator?",
+          "options": [
+            "RSI is always wrong",
+            "RSI only works for tech stocks",
+            "A stock can stay overbought or oversold for extended periods during strong trends",
+            "RSI is too complicated to calculate"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    }
+  ]
+}
