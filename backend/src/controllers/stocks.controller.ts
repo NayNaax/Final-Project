@@ -34,3 +34,21 @@ export const getStockData = async (req: Request, res: Response, next: NextFuncti
         }
     }
 };
+
+export const getCompanyNews = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { FinnhubService } = await import("../services/finnhub.service");
+        const symbol = req.query.symbol as string;
+        const from = req.query.from as string;
+        const to = req.query.to as string;
+
+        if (!symbol || !from || !to) {
+            return res.status(400).json({ error: "symbol, from, and to are required filters" });
+        }
+
+        const items = await FinnhubService.getCompanyNews({ symbol, from, to });
+        res.json({ items });
+    } catch (err) {
+        next(err);
+    }
+};

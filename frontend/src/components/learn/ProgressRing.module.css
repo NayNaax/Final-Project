@@ -1,0 +1,7 @@
+.svg {
+    transform: rotate(-90deg);
+}
+
+.circle {
+    transition: stroke-dashoffset 0.5s ease-in-out;
+}

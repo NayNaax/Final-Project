@@ -1,0 +1,154 @@
+{
+  "id": "module2",
+  "title": "Evaluating a Company — Fundamental Analysis",
+  "lessons": [
+    {
+      "id": "2.1",
+      "title": "Market Capitalization",
+      "content": "**Market capitalisation** (market cap) tells you the total value of a company on the stock market. It's calculated by multiplying the current share price by the total number of outstanding shares.\n\n**Formula:** `Market Cap = Share Price × Total Shares Outstanding`\n\nExample: If a company has 1 billion shares and each share costs $150, its market cap is $150 billion.\n\n**Size categories:**\n\n| Category | Market Cap | Examples | Risk Level |\n|----------|-----------|----------|------------|\n| **Large-cap** | Over $10 billion | Apple, Microsoft, Amazon | Lower risk, slower growth |\n| **Mid-cap** | $2–10 billion | Etsy, Zillow | Moderate risk, moderate growth |\n| **Small-cap** | Under $2 billion | Newer or niche companies | Higher risk, potentially higher growth |\n\n**Why does this matter to you?**\n\n- **Large-cap stocks** are like ocean liners — big, stable, and unlikely to sink overnight. They're good for building a solid foundation in your portfolio.\n- **Small-cap stocks** are like speedboats — they can move fast in either direction. Higher potential reward, but also higher risk of significant losses.\n- **Mid-cap stocks** sit in between, offering a balance of growth potential and stability.\n\n**A common beginner mistake** is looking at the *share price* to judge if a company is \"big\" or \"small.\" A $10 stock isn't necessarily a small company — it might just have billions of shares outstanding. Always look at market cap, not just the price per share.\n\n**Key takeaway:** Market cap tells you the size of a company. Bigger companies are generally safer but grow slower. Smaller companies are riskier but can grow faster.",
+      "quiz": [
+        {
+          "question": "How is market capitalisation calculated?",
+          "options": [
+            "Revenue minus expenses",
+            "Share price multiplied by total shares outstanding",
+            "Total assets minus total liabilities",
+            "Annual profit divided by number of employees"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "A large-cap company typically has a market cap of:",
+          "options": [
+            "Under $500 million",
+            "$500 million to $2 billion",
+            "$2 billion to $10 billion",
+            "Over $10 billion"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "question": "Which statement about small-cap stocks is most accurate?",
+          "options": [
+            "They are always bad investments",
+            "They have lower risk than large-cap stocks",
+            "They can potentially grow faster but carry higher risk",
+            "They always pay higher dividends"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "2.2",
+      "title": "Key Ratios Made Simple",
+      "content": "Numbers on their own don't mean much. Is a stock priced at $200 expensive? Is one at $15 cheap? You can't tell just from the price. **Financial ratios** help you compare apples to apples (no pun intended).\n\n**1. P/E Ratio (Price-to-Earnings)**\n\nThe most commonly used ratio. It tells you how much investors are willing to pay for each dollar of a company's earnings.\n\n`P/E Ratio = Share Price ÷ Earnings Per Share (EPS)`\n\n- A P/E of 20 means investors pay $20 for every $1 the company earns annually.\n- **High P/E (30+):** Investors expect fast future growth (e.g., tech companies). But it could also mean the stock is overvalued.\n- **Low P/E (under 15):** Could be a bargain, or the company might be struggling. Always dig deeper.\n\n**2. EPS (Earnings Per Share)**\n\nHow much profit a company makes per share.\n\n`EPS = Net Profit ÷ Total Shares Outstanding`\n\n- A rising EPS over several quarters is a healthy sign — the company is becoming more profitable.\n- A declining EPS could signal trouble.\n\n**3. Dividend Yield**\n\nIf a company pays dividends, this tells you the annual return you get from dividends alone.\n\n`Dividend Yield = Annual Dividend Per Share ÷ Share Price × 100`\n\n- Example: A stock costs $100 and pays $3 per year in dividends. Dividend yield = 3%.\n- **High yield (4%+)** can be attractive for income, but be cautious — sometimes a high yield means the stock price has dropped significantly.\n\n**Key takeaway:** P/E tells you how \"expensive\" a stock is relative to its earnings. EPS tells you profitability per share. Dividend yield tells you what income you'll receive. No single ratio tells the whole story — use them together.",
+      "quiz": [
+        {
+          "question": "A stock has a P/E ratio of 25. What does this mean?",
+          "options": [
+            "The stock price is $25",
+            "Investors pay $25 for every $1 of the company's annual earnings",
+            "The company has 25 employees",
+            "The stock has gone up 25% this year"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "If a company's EPS has been rising for 4 consecutive quarters, this generally indicates:",
+          "options": [
+            "The company is losing money",
+            "The stock price is too high",
+            "The company is becoming more profitable",
+            "The company is about to go bankrupt"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "A stock priced at $80 pays $2.40 in annual dividends. What is the dividend yield?",
+          "options": [
+            "2.4%",
+            "3%",
+            "0.3%",
+            "30%"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "2.3",
+      "title": "Earnings Reports",
+      "content": "Four times a year, every public company must report its financial results. These are called **quarterly earnings reports**, and they are one of the most important events for any stock.\n\n**What's in an earnings report?**\n\n- **Revenue:** Total money the company brought in (sales).\n- **Net income:** Profit after all expenses, taxes, and costs.\n- **EPS:** Earnings per share (we covered this in Lesson 2.2).\n- **Guidance:** The company's outlook for the next quarter or year — this often moves the stock price more than the actual numbers.\n\n**Why do stock prices go crazy around earnings?**\n\nBefore earnings day, Wall Street analysts publish their **estimates** — predictions of what they think the company's revenue and EPS will be. When the actual numbers come out:\n\n- **Beat expectations:** Stock often jumps up — the company did better than predicted.\n- **Miss expectations:** Stock often drops — even if the company was profitable, it wasn't as profitable as people expected.\n- **Meet expectations:** Stock might barely move — no surprise.\n\n**Earnings surprises can be dramatic.** A stock might drop 10% even after reporting a profit, simply because analysts expected *more* profit. This is why the market often feels irrational around earnings — it's not about absolute numbers, it's about expectations vs. reality.\n\n**A practical tip for this sandbox:**\n\nBe cautious about buying a stock right before its earnings report. The uncertainty means big price swings in either direction. Many experienced traders wait until *after* earnings to make their move.\n\n**Key takeaway:** Earnings reports happen quarterly and reveal a company's financial health. Stock prices react based on whether results beat, meet, or miss analyst expectations — not just whether the company made money.",
+      "quiz": [
+        {
+          "question": "How often do public companies release earnings reports?",
+          "options": [
+            "Once a year",
+            "Twice a year",
+            "Four times a year (quarterly)",
+            "Every month"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "A company reports $2.50 EPS, but analysts expected $3.00 EPS. What likely happens to the stock?",
+          "options": [
+            "The price goes up because the company made money",
+            "The price likely drops because it missed expectations",
+            "Nothing happens",
+            "The stock gets delisted"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What is 'guidance' in an earnings report?",
+          "options": [
+            "The company's stock price target",
+            "The company's outlook and predictions for the next quarter",
+            "A list of the company's products",
+            "Instructions for how to buy the company's stock"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "2.4",
+      "title": "ETFs vs. Individual Stocks",
+      "content": "So far we've been talking about buying individual company stocks. But there's another option that many experts recommend, especially for beginners: **ETFs**.\n\n**What is an ETF?**\n\nAn **Exchange-Traded Fund** is a basket of multiple stocks bundled into a single investment that trades on the stock exchange just like a regular stock. When you buy one share of an ETF, you're effectively buying a tiny piece of every company inside that basket.\n\n**Popular examples:**\n\n| ETF | What it tracks | What you're buying |\n|-----|---------------|-------------------|\n| **SPY** | S&P 500 | The 500 largest US companies |\n| **QQQ** | NASDAQ-100 | Top 100 tech-heavy companies |\n| **VTI** | Total US Market | Nearly every US public company |\n| **DIA** | Dow Jones | 30 major US industrial companies |\n\n**ETFs vs Individual stocks:**\n\n| | Individual Stocks | ETFs |\n|---|---|---|\n| **Diversification** | You own one company | You own dozens or hundreds |\n| **Risk** | Higher — one bad earnings report can tank it | Lower — bad news for one company is offset by others |\n| **Potential reward** | Higher — if you pick the right stock | Moderate — you get the market average |\n| **Research needed** | A lot — you must analyse each company | Less — you're betting on the overall market |\n| **Best for** | Experienced investors with strong convictions | Beginners building a solid foundation |\n\n**The \"boring but effective\" strategy:**\n\nMany billionaire investors (including Warren Buffett) recommend that most people simply buy a low-cost S&P 500 ETF and hold it for decades. Historically, the S&P 500 has returned about **10% per year** on average over the long term.\n\n**Key takeaway:** ETFs let you invest in many companies at once, reducing risk through diversification. They're an excellent starting point for beginners while you learn to evaluate individual stocks.",
+      "quiz": [
+        {
+          "question": "What is an ETF?",
+          "options": [
+            "A single company's stock that trades after hours",
+            "A basket of multiple stocks bundled into one tradable investment",
+            "A type of government bond",
+            "A savings account offered by stock exchanges"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "If you buy one share of SPY, what are you investing in?",
+          "options": [
+            "Only technology companies",
+            "A single large company",
+            "The 500 largest US companies",
+            "International markets only"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "What is the main advantage of ETFs over individual stocks for beginners?",
+          "options": [
+            "ETFs always go up in value",
+            "ETFs are free to trade",
+            "ETFs provide instant diversification, reducing risk",
+            "ETFs pay higher dividends than any individual stock"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    }
+  ]
+}

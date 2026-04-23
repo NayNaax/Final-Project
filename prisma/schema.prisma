@@ -22,6 +22,8 @@ model User {
   trades          Trade[]
   portfolioSnapshots PortfolioSnapshot[]
   budget          Budget?
+  lessonProgress  UserLessonProgress[]
+  missions        UserMission[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @default(now()) @updatedAt
 }
@@ -32,6 +34,7 @@ model UserSettings {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   theme           String            @default("dark")    // "dark", "light", "system"
   currency        String            @default("USD")
+  chartStyle      String            @default("line")    // "line", "candle"
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @default(now()) @updatedAt
 }
@@ -52,7 +55,7 @@ model Position {
   portfolioId     Int
   portfolio       Portfolio         @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   symbol          String            // Stock symbol (e.g. "AAPL")
-  shares          Int
+  shares          Float             // Changed from Int to Float for fractional shares
   avgCost         Float             // Average cost per share
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @default(now()) @updatedAt
@@ -66,13 +69,46 @@ model Trade {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   symbol          String
   side            String            // "BUY" or "SELL"
-  shares          Int
+  shares          Float             // Changed from Int to Float for fractional shares
   price           Float             // Price per share
   total           Float             // Total cost (shares * price)
   realizedPL      Float?            // Realized profit/loss (for SELL trades)
+  sellReason      String?           // For trade journaling
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @default(now()) @updatedAt
 
+  @@index([userId])
+}
+
+// ─────────────────── Learning Hub ───────────────────
+model UserLessonProgress {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String    // e.g. "1.1", "2.3", "4.4"
+  completed   Boolean   @default(false)
+  passed      Boolean   @default(false)  // quiz passed
+  quizScore   Int?      // e.g. 2 out of 3
+  rewardGiven Boolean   @default(false)  // prevent double-reward
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model UserMission {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missionId   String    // e.g. "mission_watchlist_3", "mission_alert_aapl"
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  @@unique([userId, missionId])
   @@index([userId])
 }
 

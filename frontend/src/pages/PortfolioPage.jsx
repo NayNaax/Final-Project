@@ -54,7 +54,7 @@ export function PortfolioPage() {
 
     // Calculate total Unrealized P&L
     const totalUnrealizedPL = positions.reduce((sum, pos) => {
-        return sum + (pos.currentPrice - pos.averageCost) * pos.shares;
+        return sum + (pos.currentPrice - (pos.avgCost || 0)) * pos.shares;
     }, 0);
 
     const isPLPositive = totalUnrealizedPL >= 0;
@@ -148,10 +148,10 @@ export function PortfolioPage() {
                                     <tbody>
                                         {positions.map((pos) => {
                                             const mktValue = pos.currentPrice * pos.shares;
-                                            const unrlPL = mktValue - pos.averageCost * pos.shares;
+                                            const unrlPL = mktValue - (pos.avgCost || 0) * pos.shares;
                                             const unrlPLPct =
-                                                pos.averageCost > 0
-                                                    ? (unrlPL / (pos.averageCost * pos.shares)) * 100
+                                                (pos.avgCost || 0) > 0
+                                                    ? (unrlPL / (pos.avgCost * pos.shares)) * 100
                                                     : 0;
                                             const isPosPL = unrlPL >= 0;
 
@@ -170,7 +170,7 @@ export function PortfolioPage() {
                                                         </div>
                                                     </td>
                                                     <td>{pos.shares}</td>
-                                                    <td>${pos.averageCost.toFixed(2)}</td>
+                                                    <td>${(pos.avgCost || 0).toFixed(2)}</td>
                                                     <td>${pos.currentPrice.toFixed(2)}</td>
                                                     <td>
                                                         $

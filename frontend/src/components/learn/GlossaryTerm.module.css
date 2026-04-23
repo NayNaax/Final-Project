@@ -1,0 +1,43 @@
+.termWrapper {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.term {
+    border-bottom: 1px dotted var(--text-muted);
+    color: #3b82f6;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--bg-secondary, #1e293b);
+    color: var(--text-primary, #f8fafc);
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    width: max-content;
+    max-width: 250px;
+    z-index: 50;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--glass-border, #334155);
+    margin-bottom: 8px;
+    pointer-events: none;
+    line-height: 1.5;
+    white-space: normal;
+    text-align: left;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--bg-secondary, #1e293b) transparent transparent transparent;
+}
