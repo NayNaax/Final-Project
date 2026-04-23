@@ -56,7 +56,8 @@ export function TradePage() {
 
     const handlePreSubmit = (e) => {
         e.preventDefault();
-        if (!selectedSymbol || !currentPrice || !shares || parseInt(shares, 10) < 1) return;
+        const parsedShares = parseFloat(shares);
+        if (!selectedSymbol || !currentPrice || isNaN(parsedShares) || parsedShares <= 0) return;
         setIsConfirming(true);
     };
 
@@ -67,7 +68,7 @@ export function TradePage() {
             const endpoint = side === "BUY" ? "/portfolio/buy" : "/portfolio/sell";
             await api.post(endpoint, {
                 symbol: selectedSymbol,
-                shares: parseInt(shares, 10),
+                shares: parseFloat(shares),
             });
             setIsConfirming(false);
             navigate("/portfolio");
@@ -80,11 +81,11 @@ export function TradePage() {
     };
 
     // Calculate maximum tradeable based on side
-    const maxAffordable = portfolio && currentPrice ? Math.floor(portfolio.cash / currentPrice) : 0;
+    const maxAffordable = portfolio && currentPrice ? (portfolio.cash / currentPrice) : 0;
     const ownedPos = portfolio?.positions.find((p) => p.symbol === selectedSymbol);
     const maxSellable = ownedPos ? ownedPos.shares : 0;
 
-    const parsedShares = parseInt(shares, 10);
+    const parsedShares = parseFloat(shares);
     const safeShares = isNaN(parsedShares) ? 0 : parsedShares;
     const estimatedTotal = currentPrice ? currentPrice * safeShares : 0;
 
@@ -136,8 +137,8 @@ export function TradePage() {
                             <label>Shares</label>
                             <input
                                 type="number"
-                                min="1"
-                                step="1"
+                                min="0.0001"
+                                step="any"
                                 value={shares}
                                 onChange={(e) => setShares(e.target.value)}
                                 className={styles.input}

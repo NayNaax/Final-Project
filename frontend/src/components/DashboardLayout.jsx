@@ -15,7 +15,9 @@ import {
     Bell,
     Search,
     X,
-    Menu
+    Menu,
+    BookOpen,
+    Newspaper
 } from "lucide-react";
 import { StockSearch } from "./StockSearch";
 import styles from "./DashboardLayout.module.css";
@@ -40,7 +42,7 @@ export function DashboardLayout({ children }) {
         let isMounted = true;
         const fetchAlerts = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/alerts?triggered=true", {
+                const res = await fetch("/api/alerts?triggered=true", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -93,6 +95,8 @@ export function DashboardLayout({ children }) {
         { label: "Alerts", icon: AlertCircle, path: "/alerts" },
         { label: "Budget", icon: DollarSign, path: "/budget" },
         { label: "Leaderboard", icon: Users, path: "/leaderboard" },
+        { label: "Learn", icon: BookOpen, path: "/learn" },
+        { label: "News", icon: Newspaper, path: "/news" },
         { label: "Settings", icon: Settings, path: "/settings" },
     ];
 

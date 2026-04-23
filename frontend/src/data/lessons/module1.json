@@ -1,0 +1,154 @@
+{
+  "id": "module1",
+  "title": "Stock Market 101 — The Absolute Basics",
+  "lessons": [
+    {
+      "id": "1.1",
+      "title": "What Is a Stock?",
+      "content": "When you buy a **stock**, you're buying a tiny piece of ownership in a real company. Each piece is called a **share**. If a company has 1,000,000 shares and you own 100 of them, you own 0.01% of that company.\n\n**Why do companies sell shares?**\n\nCompanies need money to grow — to build new products, hire employees, or expand into new markets. Instead of borrowing from a bank, they can **go public** through an **IPO (Initial Public Offering)**, which means they sell shares to everyday investors like you for the first time.\n\n**What do you get as a shareholder?**\n\n- **Potential profit:** If the company does well, the value of your shares goes up. You can sell them later for more than you paid — that's called a **capital gain**.\n- **Dividends:** Some companies share their profits directly with shareholders through regular cash payments called **dividends**.\n- **Voting rights:** On major company decisions (like electing board members), each share usually gives you one vote.\n\n**Key takeaway:** A stock is not a lottery ticket. It represents real ownership in a real business. When you buy shares of Apple, you literally own a fraction of Apple Inc.",
+      "quiz": [
+        {
+          "question": "What does owning a stock represent?",
+          "options": [
+            "A loan you gave to a company",
+            "A small piece of ownership in a company",
+            "A promise that the company will pay you back",
+            "A contract to work for the company"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What is an IPO?",
+          "options": [
+            "A type of stock order",
+            "When a company buys back its own shares",
+            "When a company sells shares to the public for the first time",
+            "A government regulation on stocks"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "What is a 'capital gain'?",
+          "options": [
+            "The initial price you pay for a stock",
+            "A regular payment from a company to shareholders",
+            "The profit you make when you sell a stock for more than you paid",
+            "A fee charged by the stock exchange"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "title": "The Stock Market Explained",
+      "content": "The **stock market** is where buyers and sellers come together to trade shares of public companies. Think of it like a massive, digital marketplace — except instead of buying vegetables, you're buying pieces of businesses.\n\n**The major exchanges:**\n\n- **NYSE (New York Stock Exchange):** The largest stock exchange in the world. Companies like Coca-Cola, Disney, and Goldman Sachs trade here.\n- **NASDAQ:** Known for technology companies. Apple, Microsoft, Google (Alphabet), Amazon, and Tesla all trade on NASDAQ.\n\n**How does a trade happen?**\n\nWhen you want to buy a stock, your order gets matched with someone who wants to sell that same stock at a price you both agree on. This matching happens electronically in milliseconds.\n\n**Market hours:**\n\nThe US stock market is open **Monday through Friday, 9:30 AM to 4:00 PM Eastern Time**. It's closed on weekends and major holidays. Some brokers offer **pre-market** (before 9:30 AM) and **after-hours** (after 4:00 PM) trading, but with less activity and wider price spreads.\n\n**Why do prices change?**\n\nStock prices move based on **supply and demand**. If more people want to buy a stock than sell it, the price goes up. If more people want to sell than buy, the price goes down. News, earnings reports, economic data, and even social media can all influence how many people want to buy or sell.\n\n**Key takeaway:** The stock market is simply a meeting place for buyers and sellers. Prices change every second based on how many people want to buy versus sell.",
+      "quiz": [
+        {
+          "question": "What is NASDAQ best known for?",
+          "options": [
+            "Government bonds",
+            "Technology companies",
+            "Real estate stocks only",
+            "International currencies"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What are the regular US stock market trading hours (Eastern Time)?",
+          "options": [
+            "8:00 AM to 5:00 PM",
+            "9:30 AM to 4:00 PM",
+            "10:00 AM to 3:00 PM",
+            "24 hours a day, 7 days a week"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What primarily causes stock prices to go up?",
+          "options": [
+            "The CEO decides to raise prices",
+            "The government increases the stock's value",
+            "More people want to buy the stock than sell it",
+            "The stock has been listed for a long time"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "1.3",
+      "title": "Understanding the Quote",
+      "content": "When you look at a stock on any trading platform (including this sandbox!), you'll see several important numbers. Let's break them down.\n\n**Ticker symbol:** Every publicly traded company has a short code called a **ticker symbol**. For example:\n- **AAPL** = Apple\n- **MSFT** = Microsoft\n- **TSLA** = Tesla\n- **GOOGL** = Alphabet (Google)\n\n**The current price** is the price of the last trade that happened. It changes constantly during market hours.\n\n**Bid vs. Ask:**\n\n- **Bid price:** The highest price a buyer is currently willing to pay.\n- **Ask price:** The lowest price a seller is currently willing to accept.\n- **Spread:** The difference between the bid and ask. A smaller spread usually means the stock is more frequently traded (more **liquid**).\n\nExample: If Apple's bid is $175.50 and ask is $175.55, the spread is $0.05. That's a very tight spread — lots of buyers and sellers.\n\n**Volume:** The total number of shares traded during the current day. **High volume** means lots of activity — many people are trading this stock. **Low volume** can mean wider spreads and harder-to-execute orders.\n\n**Day's Range:** Shows the lowest and highest price the stock has traded at during the current day. This tells you how volatile the stock has been today.\n\n**Key takeaway:** The bid is what buyers will pay, the ask is what sellers want, and volume tells you how active the stock is. Always check these before placing a trade.",
+      "quiz": [
+        {
+          "question": "What is a ticker symbol?",
+          "options": [
+            "A stock's daily trading volume",
+            "A short code that identifies a publicly traded company",
+            "The price at which a stock was first listed",
+            "A type of stock order"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "If a stock's bid is $50.00 and ask is $50.20, what is the spread?",
+          "options": [
+            "$50.10",
+            "$100.20",
+            "$0.20",
+            "$0.10"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "What does high trading volume typically indicate?",
+          "options": [
+            "The stock price is going up",
+            "The stock is very expensive",
+            "Many people are actively trading the stock",
+            "The stock is about to be delisted"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    },
+    {
+      "id": "1.4",
+      "title": "Order Types",
+      "content": "Before you can buy or sell a stock in this sandbox, you need to understand the different types of orders. This is one of the most practical lessons — you'll use this knowledge every time you trade.\n\n**1. Market Order** — \"Buy/sell right now at whatever the current price is.\"\n\n- **Pros:** Executes immediately. Guaranteed to fill (if the market is open).\n- **Cons:** You might pay slightly more (or sell for slightly less) than expected, especially with volatile stocks.\n- **Best for:** When you want to get into or out of a position quickly and price precision doesn't matter much.\n\n**2. Limit Order** — \"Buy/sell only at this specific price or better.\"\n\n- **Buy limit:** \"I'll only buy if the price drops to $150 or lower.\"\n- **Sell limit:** \"I'll only sell if the price rises to $200 or higher.\"\n- **Pros:** You control the exact price. No surprises.\n- **Cons:** Your order might never fill if the price doesn't reach your limit.\n- **Best for:** When you have a target price in mind and you're willing to wait.\n\n**3. Stop-Loss Order** — \"Automatically sell if the price drops to this level.\"\n\n- Example: You bought a stock at $100. You set a stop-loss at $90. If the price falls to $90, your shares are automatically sold to prevent further losses.\n- **Pros:** Protects you from big losses without you needing to watch the screen all day.\n- **Cons:** The stock might dip to $90, trigger your stop-loss, then bounce back up to $120 — and you'd have missed that recovery.\n- **Best for:** Risk management. Setting a \"maximum loss\" you're willing to accept on a trade.\n\n**Key takeaway:** Market orders are fast, limit orders are precise, and stop-losses protect you. Most experienced traders use a combination of all three.",
+      "quiz": [
+        {
+          "question": "Which order type guarantees your trade executes immediately?",
+          "options": [
+            "Limit Order",
+            "Stop-Loss Order",
+            "Market Order",
+            "All of the above"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "You set a buy limit order at $50. The stock is currently at $55. When will your order fill?",
+          "options": [
+            "Immediately at $55",
+            "Only if the price drops to $50 or below",
+            "At the end of the trading day",
+            "It will never fill"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What is the main purpose of a stop-loss order?",
+          "options": [
+            "To buy more shares automatically",
+            "To guarantee a profit on your trade",
+            "To limit your losses by automatically selling if the price drops",
+            "To place an order after market hours"
+          ],
+          "correctIndex": 2
+        }
+      ]
+    }
+  ]
+}

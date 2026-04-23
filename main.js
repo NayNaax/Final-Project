@@ -1,4 +1,4 @@
-const { app, BrowserWindow, nativeTheme, ipcMain } = require("electron");
+const { app, BrowserWindow, nativeTheme, ipcMain, shell } = require("electron");
 const path = require("path");
 const http = require("http");
 
@@ -111,6 +111,12 @@ function createWindow() {
     });
 
     win.setMenu(null);
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if (url) {
+            shell.openExternal(url);
+        }
+        return { action: "deny" };
+    });
     win.once("ready-to-show", () => {
         win.maximize();
         win.show();
