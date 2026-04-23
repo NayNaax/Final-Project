@@ -1,154 +1,139 @@
 {
-  "id": "module4",
-  "title": "Risk Management & Psychology — The Most Important Module",
-  "lessons": [
-    {
-      "id": "4.1",
-      "title": "Diversification",
-      "content": "**\"Don't put all your eggs in one basket.\"** This is possibly the single most important rule in investing.\n\n**Diversification** means spreading your money across multiple different investments so that if one goes bad, it doesn't wipe out your entire portfolio.\n\n**Why diversification matters:**\n\nImagine you put 100% of your $10,000 sandbox cash into a single stock. If that stock drops 50%, you've lost $5,000. But if you spread your money across 10 different stocks and one drops 50%, you've only lost about $500 — the other 9 stocks cushion the blow.\n\n**Types of diversification:**\n\n1. **Across sectors:** Don't put all your money in tech stocks. Spread across technology, healthcare, energy, consumer goods, and finance.\n2. **Across company sizes:** Mix large-cap blue chips (stable) with some mid-cap or small-cap stocks (growth potential).\n3. **Across asset types:** In a real portfolio, you'd also include bonds, real estate, and international stocks. In this sandbox, focus on mixing individual stocks with ETFs.\n\n**The \"right\" number of stocks:**\n\nResearch suggests that holding **15–20 different stocks** across different sectors gives you most of the benefits of diversification. Beyond that, you get diminishing returns and it becomes harder to track.\n\n**Common diversification mistakes:**\n\n- **Fake diversification:** Owning Apple, Microsoft, Google, Amazon, and Meta — that's 5 stocks but they're ALL big tech. If the tech sector crashes, they'll all drop together.\n- **Over-diversification:** Owning 50+ stocks means each one barely impacts your returns. At that point, just buy an ETF.\n\n**Check your portfolio:** Look at your portfolio page in this sandbox. What percentage of your money is in a single stock or sector? If any single position is more than 20% of your total portfolio, you might be too concentrated.\n\n**Key takeaway:** Spread your investments across different stocks, sectors, and asset types. If any single position is more than 10–20% of your portfolio, consider rebalancing.",
-      "quiz": [
+    "id": "module4",
+    "title": "Risk Management & Psychology — The Most Important Module",
+    "lessons": [
         {
-          "question": "What is diversification?",
-          "options": [
-            "Buying the most expensive stocks you can find",
-            "Spreading your investments across different assets to reduce risk",
-            "Focusing all your money on one stock for maximum returns",
-            "Only investing in ETFs"
-          ],
-          "correctIndex": 1
+            "id": "4.1",
+            "title": "Diversification",
+            "content": "**\"Don't put all your eggs in one basket.\"** This is possibly the single most important rule in investing.\n\n**Diversification** means spreading your money across multiple different investments so that if one goes bad, it doesn't wipe out your entire portfolio.\n\n**Why diversification matters:**\n\nImagine you put 100% of your $10,000 sandbox cash into a single stock. If that stock drops 50%, you've lost $5,000. But if you spread your money across 10 different stocks and one drops 50%, you've only lost about $500 — the other 9 stocks cushion the blow.\n\n**Types of diversification:**\n\n1. **Across sectors:** Don't put all your money in tech stocks. Spread across technology, healthcare, energy, consumer goods, and finance.\n2. **Across company sizes:** Mix large-cap blue chips (stable) with some mid-cap or small-cap stocks (growth potential).\n3. **Across asset types:** In a real portfolio, you'd also include bonds, real estate, and international stocks. In this sandbox, focus on mixing individual stocks with ETFs.\n\n**The \"right\" number of stocks:**\n\nResearch suggests that holding **15–20 different stocks** across different sectors gives you most of the benefits of diversification. Beyond that, you get diminishing returns and it becomes harder to track.\n\n**Common diversification mistakes:**\n\n- **Fake diversification:** Owning Apple, Microsoft, Google, Amazon, and Meta — that's 5 stocks but they're ALL big tech. If the tech sector crashes, they'll all drop together.\n- **Over-diversification:** Owning 50+ stocks means each one barely impacts your returns. At that point, just buy an ETF.\n\n**Check your portfolio:** Look at your portfolio page in this sandbox. What percentage of your money is in a single stock or sector? If any single position is more than 20% of your total portfolio, you might be too concentrated.\n\n**Key takeaway:** Spread your investments across different stocks, sectors, and asset types. If any single position is more than 10–20% of your portfolio, consider rebalancing.",
+            "quiz": [
+                {
+                    "question": "What is diversification?",
+                    "options": [
+                        "Buying the most expensive stocks you can find",
+                        "Spreading your investments across different assets to reduce risk",
+                        "Focusing all your money on one stock for maximum returns",
+                        "Only investing in ETFs"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "Why is owning 5 different tech stocks NOT true diversification?",
+                    "options": [
+                        "5 stocks is too few",
+                        "They are all in the same sector and would likely all drop together during a tech downturn",
+                        "Tech stocks never go down",
+                        "You should only own 3 stocks maximum"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "Research suggests that holding how many stocks provides most diversification benefits?",
+                    "options": ["2-3 stocks", "5-10 stocks", "15-20 stocks across different sectors", "100+ stocks"],
+                    "correctIndex": 2
+                }
+            ]
         },
         {
-          "question": "Why is owning 5 different tech stocks NOT true diversification?",
-          "options": [
-            "5 stocks is too few",
-            "They are all in the same sector and would likely all drop together during a tech downturn",
-            "Tech stocks never go down",
-            "You should only own 3 stocks maximum"
-          ],
-          "correctIndex": 1
+            "id": "4.2",
+            "title": "Position Sizing",
+            "content": "Even with a diversified portfolio, you can still blow up your account if you put too much money into any single trade. **Position sizing** is the discipline of deciding *how much* of your total capital to risk on each trade.\n\n**The 1-2% rule:**\n\nThe most widely recommended guideline is: **never risk more than 1-2% of your total account on any single trade.**\n\nHere's what that looks like with a $10,000 sandbox account:\n\n| Risk Per Trade | Max Loss Allowed | What it means |\n|---|---|---|\n| 1% | $100 | If the trade goes wrong, you lose at most $100 |\n| 2% | $200 | If the trade goes wrong, you lose at most $200 |\n\n**Wait — that doesn't mean you can only buy $100 worth of stock.**\n\nThe 1-2% rule is about how much you're *willing to lose*, not how much you invest. Here's the difference:\n\n**Example:** You have $10,000. You want to buy a stock at $50.\n- You set a stop-loss at $45 (you'll sell if it drops $5 per share).\n- Max risk = 1% of $10,000 = $100\n- $100 ÷ $5 risk per share = **20 shares** ($1,000 invested)\n\nSo you'd buy $1,000 worth, knowing that if your stop-loss hits, you only lose $100 (1% of your account).\n\n**Why is this important?**\n\nWithout position sizing, a few bad trades can destroy your account. With it, you can survive a long streak of losses and still have capital to trade with.\n\n**The math of losses:**\n\n| Loss | Gain needed to recover |\n|------|----------------------|\n| 10% | 11% gain to break even |\n| 25% | 33% gain to break even |\n| 50% | 100% gain to break even |\n| 90% | 900% gain to break even |\n\nThe bigger the hole, the harder it is to climb out. Position sizing keeps the holes small.\n\n**Key takeaway:** Never risk more than 1-2% of your total account on a single trade. Calculate your position size based on where you'll set your stop-loss, not just how much cash you have.",
+            "quiz": [
+                {
+                    "question": "The 1-2% rule in position sizing means:",
+                    "options": [
+                        "Only invest 1-2% of your money in stocks",
+                        "Never risk more than 1-2% of your total account on a single trade",
+                        "Only buy stocks that cost $1-$2 per share",
+                        "Sell any stock that drops by 1-2%"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "If you lose 50% of your portfolio, how much gain do you need to break even?",
+                    "options": ["50% gain", "75% gain", "100% gain", "200% gain"],
+                    "correctIndex": 2
+                },
+                {
+                    "question": "With a $10,000 account and 2% risk, what is the maximum you should lose on any single trade?",
+                    "options": ["$20", "$100", "$200", "$2,000"],
+                    "correctIndex": 2
+                }
+            ]
         },
         {
-          "question": "Research suggests that holding how many stocks provides most diversification benefits?",
-          "options": [
-            "2-3 stocks",
-            "5-10 stocks",
-            "15-20 stocks across different sectors",
-            "100+ stocks"
-          ],
-          "correctIndex": 2
+            "id": "4.3",
+            "title": "Managing Emotions",
+            "content": "Ask any experienced trader what the hardest part of trading is, and they'll almost never say \"picking stocks.\" They'll say **\"managing my emotions.\"**\n\nYour brain isn't wired for trading. It evolved to survive in the wild, not to make rational financial decisions. Here are the biggest emotional traps:\n\n**1. FOMO (Fear Of Missing Out)**\n\nYou see a stock up 30% this week, everyone's talking about it, and you think: *\"I need to get in NOW before it goes higher!\"*\n\nThis is FOMO. It makes you buy at the worst possible time — after the move has already happened. The reality? By the time everyone is excited, the easy gains are usually gone.\n\n**Antidote:** Ask yourself, \"Would I buy this stock if it were not in the news right now?\" If no, walk away.\n\n**2. Panic Selling**\n\nYour stock drops 10% in a day and you immediately sell to \"save what's left.\" Then next week, it recovers and goes higher.\n\nPanic selling locks in losses that were only temporary. Stocks move up and down — that's normal volatility, not a reason to sell.\n\n**Antidote:** Before you buy, decide your exit strategy. If you planned to hold unless it drops 20%, stick to that plan when it drops 10%. Don't react in the moment.\n\n**3. Confirmation Bias**\n\nYou love a stock, so you only read positive news about it and ignore warning signs. You convince yourself it's going to the moon, ignoring the falling revenue, rising debt, and insider selling.\n\n**Antidote:** For every bullish argument, actively search for one bearish argument. Try to prove yourself wrong.\n\n**4. Revenge Trading**\n\nYou lose money on a trade, and immediately you make another aggressive trade to \"win it back.\" This almost always leads to bigger losses.\n\n**Antidote:** After a losing trade, take a break. Walk away from the screen. Come back with a clear head.\n\n**The Trading Journal advantage:**\n\nThis is why we built the post-trade journal in this sandbox. When you sell a stock, you record *why*. Later, you can review: \"Was my 'Panic' sell actually justified, or did I leave money on the table?\" Learning from your own emotions is the fastest way to improve.\n\n**Key takeaway:** Emotions are the #1 enemy of traders. Set your plan *before* you trade. Don't buy because of FOMO, don't sell because of panic, and always be willing to prove yourself wrong.",
+            "quiz": [
+                {
+                    "question": "What is FOMO in trading?",
+                    "options": [
+                        "A type of stock order",
+                        "Fear Of Missing Out — buying impulsively because a stock is rising",
+                        "A technical indicator like RSI",
+                        "A government regulation"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "What is the best antidote to panic selling?",
+                    "options": [
+                        "Never invest in stocks",
+                        "Set your exit strategy BEFORE you buy, and stick to it",
+                        "Check your portfolio every 5 minutes",
+                        "Only buy stocks that never go down"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "What is 'confirmation bias' in investing?",
+                    "options": [
+                        "Confirming your order before it executes",
+                        "Only paying attention to information that supports your existing belief about a stock",
+                        "Having a broker confirm your trades",
+                        "Waiting for a stock to confirm a trend before buying"
+                    ],
+                    "correctIndex": 1
+                }
+            ]
+        },
+        {
+            "id": "4.4",
+            "title": "Creating a Trading Plan",
+            "content": "A **trading plan** is a written set of rules you follow for every trade. It removes emotion from the process and turns trading into a disciplined, repeatable system.\n\n**Why do you need a plan?**\n\nWithout a plan, you're guessing. And guessing in the stock market is just gambling. A plan forces you to:\n- Think before you act\n- Define your risk before you enter a trade\n- Stick to a strategy when emotions kick in\n\n**The 5 questions to answer before every trade:**\n\n1. **Why am I buying this?**\n   - \"Because it's going up\" is NOT a valid answer.\n   - Valid: \"The company has beaten earnings 3 quarters in a row, trades below its historical P/E, and the RSI is at 35 (oversold).\"\n\n2. **How much am I investing?**\n   - Use position sizing (Lesson 4.2). No more than 1-2% risk.\n\n3. **What is my entry point?**\n   - The specific price at which you'll buy. Use a limit order if you want precision.\n\n4. **What is my stop-loss?**\n   - The price at which you'll cut your losses. Set this BEFORE you buy. Don't change it later because of emotion.\n\n5. **What is my profit target?**\n   - The price at which you'll sell to lock in gains. Be realistic.\n\n**Calculate your Risk/Reward ratio:**\n\nBefore entering a trade, calculate: how much can you lose (risk) vs. how much can you gain (reward)?\n\n- **Entry:** $100\n- **Stop-loss:** $95 (risk = $5)\n- **Target:** $115 (reward = $15)\n- **Risk/Reward = 1:3** (risking $5 to potentially make $15)\n\nMost traders look for at least a **1:2 risk/reward ratio**. If your potential reward isn't at least twice your potential risk, the trade might not be worth taking.\n\n**Write it down:**\n\nSeriously — write your plan in a notebook, a note on your phone, or use the trade journal in this sandbox. The act of writing forces clarity and commitment.\n\n**Key takeaway:** A trading plan is your edge. Answer the 5 questions before every trade. Set your stop-loss and target BEFORE you buy. Aim for at least a 1:2 risk/reward ratio. Write it down and stick to it.",
+            "quiz": [
+                {
+                    "question": "Which of these is a valid reason to buy a stock?",
+                    "options": [
+                        "It went up 20% yesterday",
+                        "Everyone on social media is talking about it",
+                        "The company beat earnings, trades below historical P/E, and RSI is oversold",
+                        "The stock has a cool ticker symbol"
+                    ],
+                    "correctIndex": 2
+                },
+                {
+                    "question": "What is a Risk/Reward ratio of 1:3?",
+                    "options": [
+                        "You risk $3 to potentially make $1",
+                        "You risk $1 to potentially make $3",
+                        "You buy 1 stock and sell 3",
+                        "You invest for 1 year and review after 3 years"
+                    ],
+                    "correctIndex": 1
+                },
+                {
+                    "question": "When should you set your stop-loss?",
+                    "options": [
+                        "After the stock starts dropping",
+                        "Only when you're losing more than 50%",
+                        "Before you buy — as part of your trading plan",
+                        "Stop-losses are for beginners only"
+                    ],
+                    "correctIndex": 2
+                }
+            ]
         }
-      ]
-    },
-    {
-      "id": "4.2",
-      "title": "Position Sizing",
-      "content": "Even with a diversified portfolio, you can still blow up your account if you put too much money into any single trade. **Position sizing** is the discipline of deciding *how much* of your total capital to risk on each trade.\n\n**The 1-2% rule:**\n\nThe most widely recommended guideline is: **never risk more than 1-2% of your total account on any single trade.**\n\nHere's what that looks like with a $10,000 sandbox account:\n\n| Risk Per Trade | Max Loss Allowed | What it means |\n|---|---|---|\n| 1% | $100 | If the trade goes wrong, you lose at most $100 |\n| 2% | $200 | If the trade goes wrong, you lose at most $200 |\n\n**Wait — that doesn't mean you can only buy $100 worth of stock.**\n\nThe 1-2% rule is about how much you're *willing to lose*, not how much you invest. Here's the difference:\n\n**Example:** You have $10,000. You want to buy a stock at $50.\n- You set a stop-loss at $45 (you'll sell if it drops $5 per share).\n- Max risk = 1% of $10,000 = $100\n- $100 ÷ $5 risk per share = **20 shares** ($1,000 invested)\n\nSo you'd buy $1,000 worth, knowing that if your stop-loss hits, you only lose $100 (1% of your account).\n\n**Why is this important?**\n\nWithout position sizing, a few bad trades can destroy your account. With it, you can survive a long streak of losses and still have capital to trade with.\n\n**The math of losses:**\n\n| Loss | Gain needed to recover |\n|------|----------------------|\n| 10% | 11% gain to break even |\n| 25% | 33% gain to break even |\n| 50% | 100% gain to break even |\n| 90% | 900% gain to break even |\n\nThe bigger the hole, the harder it is to climb out. Position sizing keeps the holes small.\n\n**Key takeaway:** Never risk more than 1-2% of your total account on a single trade. Calculate your position size based on where you'll set your stop-loss, not just how much cash you have.",
-      "quiz": [
-        {
-          "question": "The 1-2% rule in position sizing means:",
-          "options": [
-            "Only invest 1-2% of your money in stocks",
-            "Never risk more than 1-2% of your total account on a single trade",
-            "Only buy stocks that cost $1-$2 per share",
-            "Sell any stock that drops by 1-2%"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "question": "If you lose 50% of your portfolio, how much gain do you need to break even?",
-          "options": [
-            "50% gain",
-            "75% gain",
-            "100% gain",
-            "200% gain"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "question": "With a $10,000 account and 2% risk, what is the maximum you should lose on any single trade?",
-          "options": [
-            "$20",
-            "$100",
-            "$200",
-            "$2,000"
-          ],
-          "correctIndex": 2
-        }
-      ]
-    },
-    {
-      "id": "4.3",
-      "title": "Managing Emotions",
-      "content": "Ask any experienced trader what the hardest part of trading is, and they'll almost never say \"picking stocks.\" They'll say **\"managing my emotions.\"**\n\nYour brain isn't wired for trading. It evolved to survive in the wild, not to make rational financial decisions. Here are the biggest emotional traps:\n\n**1. FOMO (Fear Of Missing Out)**\n\nYou see a stock up 30% this week, everyone's talking about it, and you think: *\"I need to get in NOW before it goes higher!\"*\n\nThis is FOMO. It makes you buy at the worst possible time — after the move has already happened. The reality? By the time everyone is excited, the easy gains are usually gone.\n\n**Antidote:** Ask yourself, \"Would I buy this stock if it were not in the news right now?\" If no, walk away.\n\n**2. Panic Selling**\n\nYour stock drops 10% in a day and you immediately sell to \"save what's left.\" Then next week, it recovers and goes higher.\n\nPanic selling locks in losses that were only temporary. Stocks move up and down — that's normal volatility, not a reason to sell.\n\n**Antidote:** Before you buy, decide your exit strategy. If you planned to hold unless it drops 20%, stick to that plan when it drops 10%. Don't react in the moment.\n\n**3. Confirmation Bias**\n\nYou love a stock, so you only read positive news about it and ignore warning signs. You convince yourself it's going to the moon, ignoring the falling revenue, rising debt, and insider selling.\n\n**Antidote:** For every bullish argument, actively search for one bearish argument. Try to prove yourself wrong.\n\n**4. Revenge Trading**\n\nYou lose money on a trade, and immediately you make another aggressive trade to \"win it back.\" This almost always leads to bigger losses.\n\n**Antidote:** After a losing trade, take a break. Walk away from the screen. Come back with a clear head.\n\n**The Trading Journal advantage:**\n\nThis is why we built the post-trade journal in this sandbox. When you sell a stock, you record *why*. Later, you can review: \"Was my 'Panic' sell actually justified, or did I leave money on the table?\" Learning from your own emotions is the fastest way to improve.\n\n**Key takeaway:** Emotions are the #1 enemy of traders. Set your plan *before* you trade. Don't buy because of FOMO, don't sell because of panic, and always be willing to prove yourself wrong.",
-      "quiz": [
-        {
-          "question": "What is FOMO in trading?",
-          "options": [
-            "A type of stock order",
-            "Fear Of Missing Out — buying impulsively because a stock is rising",
-            "A technical indicator like RSI",
-            "A government regulation"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "question": "What is the best antidote to panic selling?",
-          "options": [
-            "Never invest in stocks",
-            "Set your exit strategy BEFORE you buy, and stick to it",
-            "Check your portfolio every 5 minutes",
-            "Only buy stocks that never go down"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "question": "What is 'confirmation bias' in investing?",
-          "options": [
-            "Confirming your order before it executes",
-            "Only paying attention to information that supports your existing belief about a stock",
-            "Having a broker confirm your trades",
-            "Waiting for a stock to confirm a trend before buying"
-          ],
-          "correctIndex": 1
-        }
-      ]
-    },
-    {
-      "id": "4.4",
-      "title": "Creating a Trading Plan",
-      "content": "A **trading plan** is a written set of rules you follow for every trade. It removes emotion from the process and turns trading into a disciplined, repeatable system.\n\n**Why do you need a plan?**\n\nWithout a plan, you're guessing. And guessing in the stock market is just gambling. A plan forces you to:\n- Think before you act\n- Define your risk before you enter a trade\n- Stick to a strategy when emotions kick in\n\n**The 5 questions to answer before every trade:**\n\n1. **Why am I buying this?**\n   - \"Because it's going up\" is NOT a valid answer.\n   - Valid: \"The company has beaten earnings 3 quarters in a row, trades below its historical P/E, and the RSI is at 35 (oversold).\"\n\n2. **How much am I investing?**\n   - Use position sizing (Lesson 4.2). No more than 1-2% risk.\n\n3. **What is my entry point?**\n   - The specific price at which you'll buy. Use a limit order if you want precision.\n\n4. **What is my stop-loss?**\n   - The price at which you'll cut your losses. Set this BEFORE you buy. Don't change it later because of emotion.\n\n5. **What is my profit target?**\n   - The price at which you'll sell to lock in gains. Be realistic.\n\n**Calculate your Risk/Reward ratio:**\n\nBefore entering a trade, calculate: how much can you lose (risk) vs. how much can you gain (reward)?\n\n- **Entry:** $100\n- **Stop-loss:** $95 (risk = $5)\n- **Target:** $115 (reward = $15)\n- **Risk/Reward = 1:3** (risking $5 to potentially make $15)\n\nMost traders look for at least a **1:2 risk/reward ratio**. If your potential reward isn't at least twice your potential risk, the trade might not be worth taking.\n\n**Write it down:**\n\nSeriously — write your plan in a notebook, a note on your phone, or use the trade journal in this sandbox. The act of writing forces clarity and commitment.\n\n**Key takeaway:** A trading plan is your edge. Answer the 5 questions before every trade. Set your stop-loss and target BEFORE you buy. Aim for at least a 1:2 risk/reward ratio. Write it down and stick to it.",
-      "quiz": [
-        {
-          "question": "Which of these is a valid reason to buy a stock?",
-          "options": [
-            "It went up 20% yesterday",
-            "Everyone on social media is talking about it",
-            "The company beat earnings, trades below historical P/E, and RSI is oversold",
-            "The stock has a cool ticker symbol"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "question": "What is a Risk/Reward ratio of 1:3?",
-          "options": [
-            "You risk $3 to potentially make $1",
-            "You risk $1 to potentially make $3",
-            "You buy 1 stock and sell 3",
-            "You invest for 1 year and review after 3 years"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "question": "When should you set your stop-loss?",
-          "options": [
-            "After the stock starts dropping",
-            "Only when you're losing more than 50%",
-            "Before you buy — as part of your trading plan",
-            "Stop-losses are for beginners only"
-          ],
-          "correctIndex": 2
-        }
-      ]
-    }
-  ]
+    ]
 }

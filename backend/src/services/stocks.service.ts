@@ -39,23 +39,29 @@ export class StocksService {
             throw new Error(`Symbol ${symbol} is not currently supported.`);
         }
 
-        // NOTE: Legacy Stock table doesn't have symbol. Avoiding DB call for now.
-        // In a real app we would have HistoricalPrice model.
-        const historicalData: any[] = [];
+        // Fetch historical data for the chart
+        let historicalData: any[] = [];
+        try {
+            historicalData = await StockCacheService.getHistoricalDataWithCache(symbol.toUpperCase(), 365);
+        } catch (err: any) {
+            console.error(`Failed to fetch historical data for ${symbol}:`, err.message);
+            // Continue without historical data - the current price will still load
+        }
 
         // Fetch the live price from our cache / upstream wrapper
-        let liveQuote = null;
-        let liveError = null;
+        let liveQuote;
         try {
             liveQuote = await StockCacheService.getQuoteWithCache(symbol.toUpperCase());
         } catch (err: any) {
-            liveError = err.message || "Could not fetch current price";
+            console.error(`Stock fetch error for ${symbol}:`, err.message);
+            // Re-throw the error so the API can return a proper error response
+            throw new Error(err.message || "Failed to fetch stock data");
         }
 
         return {
             symbol: symbol.toUpperCase(),
-            liveQuote: liveQuote ? liveQuote.data : null,
-            liveError,
+            current: liveQuote.data,
+            history: historicalData || [],
             historicalParams:
                 historicalData.length > 0
                     ? {
@@ -64,7 +70,6 @@ export class StocksService {
                           oldestDate: historicalData[0].date,
                       }
                     : { dataPoints: 0 },
-            historicalData,
         };
     }
 }

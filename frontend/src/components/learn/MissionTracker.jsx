@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Target, CheckCircle } from 'lucide-react';
-import { api } from '../../lib/apiClient';
-import missionsData from '../../data/missions.json';
-import styles from './MissionTracker.module.css';
+import React, { useState, useEffect } from "react";
+import { Target, CheckCircle } from "lucide-react";
+import { api } from "../../lib/apiClient";
+import missionsData from "../../data/missions.json";
+import styles from "./MissionTracker.module.css";
 
 export function MissionTracker() {
     const [userMissions, setUserMissions] = useState(null);
@@ -10,7 +10,7 @@ export function MissionTracker() {
     useEffect(() => {
         const fetchMissions = async () => {
             try {
-                const res = await api.get('/learn/progress/missions');
+                const res = await api.get("/learn/progress/missions");
                 setUserMissions(res);
             } catch (err) {
                 console.error("Failed to load missions:", err);
@@ -22,15 +22,15 @@ export function MissionTracker() {
     if (!userMissions) return null; // Loading gracefully
 
     // Map JSON missions with DB progress
-    const activeMissions = missionsData.map(mission => {
-        const dbContext = userMissions.find(m => m.missionId === mission.id);
+    const activeMissions = missionsData.map((mission) => {
+        const dbContext = userMissions.find((m) => m.missionId === mission.id);
         return {
             ...mission,
-            completed: dbContext ? dbContext.completed : false
+            completed: dbContext ? dbContext.completed : false,
         };
     });
 
-    const completionCount = activeMissions.filter(m => m.completed).length;
+    const completionCount = activeMissions.filter((m) => m.completed).length;
 
     return (
         <div className={styles.trackerCard}>
@@ -39,19 +39,24 @@ export function MissionTracker() {
                     <Target size={20} color="#3b82f6" />
                     <h3>Sandbox Missions</h3>
                 </div>
-                <span className={styles.progressText}>{completionCount}/{activeMissions.length}</span>
+                <span className={styles.progressText}>
+                    {completionCount}/{activeMissions.length}
+                </span>
             </div>
-            
+
             <div className={styles.progressBar}>
-                <div 
-                    className={styles.progressFill} 
+                <div
+                    className={styles.progressFill}
                     style={{ width: `${(completionCount / activeMissions.length) * 100}%` }}
                 ></div>
             </div>
 
             <div className={styles.missionList}>
                 {activeMissions.map((mission) => (
-                    <div key={mission.id} className={`${styles.missionItem} ${mission.completed ? styles.completed : ''}`}>
+                    <div
+                        key={mission.id}
+                        className={`${styles.missionItem} ${mission.completed ? styles.completed : ""}`}
+                    >
                         {mission.completed ? (
                             <CheckCircle size={18} color="#10b981" className={styles.icon} />
                         ) : (

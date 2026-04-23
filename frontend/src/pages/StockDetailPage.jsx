@@ -29,9 +29,14 @@ export function StockDetailPage() {
                 setLoading(true);
                 setError("");
                 const data = await api.get(`/stocks/${symbol}`);
-                setStockData(data.current);
 
-                const sortedHistory = [...data.history].sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (!data.current) {
+                    throw new Error(data.currentError || "Failed to fetch current stock price");
+                }
+
+                setStockData(data.current);
+                const historyData = Array.isArray(data.history) ? data.history : [];
+                const sortedHistory = [...historyData].sort((a, b) => new Date(a.date) - new Date(b.date));
                 setHistory(sortedHistory);
             } catch (err) {
                 setError(err.message || "Failed to load stock data");
@@ -263,8 +268,8 @@ export function StockDetailPage() {
                                 <label>Shares</label>
                                 <input
                                     type="number"
-                                    min="1"
-                                    step="1"
+                                    min="0.0001"
+                                    step="any"
                                     value={tradeShares}
                                     onChange={(e) => setTradeShares(e.target.value)}
                                     className={styles.input}
@@ -292,7 +297,7 @@ export function StockDetailPage() {
                             <button
                                 type="submit"
                                 className={`${styles.submitBtn} ${tradeSide === "BUY" ? styles.btnBuy : styles.btnSell}`}
-                                disabled={isTrading || !tradeShares || safeShares < 1}
+                                disabled={isTrading || !tradeShares || safeShares < 0.0001}
                             >
                                 {isTrading ? <LoadingSpinner /> : `${tradeSide === "BUY" ? "Buy" : "Sell"} ${symbol}`}
                             </button>

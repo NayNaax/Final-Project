@@ -27,10 +27,10 @@ async function main() {
     for (let i = 30; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
-        
+
         // Randomish walk around 100k
         const randomValue = 100000 + (Math.random() - 0.5) * 5000 + (30 - i) * 500;
-        
+
         snapshots.push({
             userId: user.id,
             totalValue: randomValue,

@@ -46,7 +46,7 @@ export function PieInvestModal({ portfolio, onClose, onSuccess }) {
 
     const handleSubmit = async () => {
         setError("");
-        
+
         if (!numAmount || isNaN(numAmount) || numAmount <= 0) {
             setError("Please enter a valid investment amount.");
             return;
@@ -97,7 +97,11 @@ export function PieInvestModal({ portfolio, onClose, onSuccess }) {
                         <div className={styles.label}>
                             <span>Total Investment Amount</span>
                             <span className={styles.cashBalance}>
-                                Available: ${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                Available: $
+                                {availableCash.toLocaleString("en-US", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                })}
                             </span>
                         </div>
                         <div className={styles.inputWrapper}>
@@ -127,14 +131,18 @@ export function PieInvestModal({ portfolio, onClose, onSuccess }) {
 
                         {portfolio.positions.map((pos) => {
                             const pct = allocations[pos.symbol] || 0;
-                            const projected = (numAmount > 0 && !isNaN(numAmount)) ? (numAmount * (pct / 100)) : 0;
-                            
+                            const projected = numAmount > 0 && !isNaN(numAmount) ? numAmount * (pct / 100) : 0;
+
                             return (
                                 <div key={pos.symbol} className={styles.stockRow}>
                                     <div className={styles.stockInfo}>
                                         <span className={styles.stockSymbol}>{pos.symbol}</span>
                                         <span className={styles.projectedAmount}>
-                                            ${projected.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            $
+                                            {projected.toLocaleString("en-US", {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
                                         </span>
                                     </div>
                                     <div className={styles.sliderContainer}>
@@ -166,17 +174,9 @@ export function PieInvestModal({ portfolio, onClose, onSuccess }) {
 
                 <div className={styles.footer}>
                     {error && <div className={styles.errorBanner}>{error}</div>}
-                    
-                    <button
-                        className={styles.submitBtn}
-                        disabled={!isReady}
-                        onClick={handleSubmit}
-                    >
-                        {isSubmitting ? (
-                            <Loader size={20} className="animate-spin" />
-                        ) : (
-                            "Invest in Pie"
-                        )}
+
+                    <button className={styles.submitBtn} disabled={!isReady} onClick={handleSubmit}>
+                        {isSubmitting ? <Loader size={20} className="animate-spin" /> : "Invest in Pie"}
                     </button>
                 </div>
             </div>

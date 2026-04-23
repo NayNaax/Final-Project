@@ -1,34 +1,34 @@
 [
-  {
-    "id": "mission_watchlist_tech",
-    "title": "Build Your First Watchlist",
-    "description": "Add 3 technology stocks (like AAPL, MSFT, GOOGL) to a watchlist. This helps you track stocks you're interested in without committing money yet.",
-    "module": 1,
-    "verifyAction": "Check if the user has a watchlist with at least 3 symbols",
-    "reward": "Unlocks Mission 2"
-  },
-  {
-    "id": "mission_alert_aapl",
-    "title": "Set Your First Price Alert",
-    "description": "Set a price alert for any stock. For example, set an alert for Apple (AAPL) when it drops below a certain price. This teaches you to watch the market without constantly checking.",
-    "module": 2,
-    "verifyAction": "Check if the user has at least 1 price alert set",
-    "reward": "Unlocks Mission 3"
-  },
-  {
-    "id": "mission_buy_etf",
-    "title": "Make Your First Trade",
-    "description": "Buy $100 worth of any stock or ETF using a Market Order. This is your first real trade in the sandbox — remember, it's virtual money so don't be afraid!",
-    "module": 3,
-    "verifyAction": "Check if the user has at least 1 completed BUY trade",
-    "reward": "Unlocks Mission 4"
-  },
-  {
-    "id": "mission_stop_loss",
-    "title": "Protect Your Investment",
-    "description": "Set a Stop-Loss alert for one of your current positions. Choose a price below your purchase price — if the stock drops to that level, you'll know to sell and protect your capital.",
-    "module": 4,
-    "verifyAction": "Check if the user has at least 1 price alert with direction BELOW",
-    "reward": "All missions complete! You've mastered the basics."
-  }
+    {
+        "id": "mission_watchlist_tech",
+        "title": "Build Your First Watchlist",
+        "description": "Add 3 technology stocks (like AAPL, MSFT, GOOGL) to a watchlist. This helps you track stocks you're interested in without committing money yet.",
+        "module": 1,
+        "verifyAction": "Check if the user has a watchlist with at least 3 symbols",
+        "reward": "Unlocks Mission 2"
+    },
+    {
+        "id": "mission_alert_aapl",
+        "title": "Set Your First Price Alert",
+        "description": "Set a price alert for any stock. For example, set an alert for Apple (AAPL) when it drops below a certain price. This teaches you to watch the market without constantly checking.",
+        "module": 2,
+        "verifyAction": "Check if the user has at least 1 price alert set",
+        "reward": "Unlocks Mission 3"
+    },
+    {
+        "id": "mission_buy_etf",
+        "title": "Make Your First Trade",
+        "description": "Buy $100 worth of any stock or ETF using a Market Order. This is your first real trade in the sandbox — remember, it's virtual money so don't be afraid!",
+        "module": 3,
+        "verifyAction": "Check if the user has at least 1 completed BUY trade",
+        "reward": "Unlocks Mission 4"
+    },
+    {
+        "id": "mission_stop_loss",
+        "title": "Protect Your Investment",
+        "description": "Set a Stop-Loss alert for one of your current positions. Choose a price below your purchase price — if the stock drops to that level, you'll know to sell and protect your capital.",
+        "module": 4,
+        "verifyAction": "Check if the user has at least 1 price alert with direction BELOW",
+        "reward": "All missions complete! You've mastered the basics."
+    }
 ]

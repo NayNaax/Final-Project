@@ -15,7 +15,7 @@ export function JournalPage() {
     useEffect(() => {
         const fetchJournal = async () => {
             try {
-                const res = await api.get('/learn/journal');
+                const res = await api.get("/learn/journal");
                 setTrades(res);
             } catch (err) {
                 setError("Failed to load journal");
@@ -26,12 +26,21 @@ export function JournalPage() {
         fetchJournal();
     }, []);
 
-    if (loading) return <div className={styles.centered}><LoadingSpinner /></div>;
-    if (error) return <div className={styles.container}><ErrorBanner message={error} /></div>;
+    if (loading)
+        return (
+            <div className={styles.centered}>
+                <LoadingSpinner />
+            </div>
+        );
+    if (error)
+        return (
+            <div className={styles.container}>
+                <ErrorBanner message={error} />
+            </div>
+        );
 
-    const filteredTrades = filter === "ALL" 
-        ? trades 
-        : trades.filter(t => t.sellReason && t.sellReason.includes(filter));
+    const filteredTrades =
+        filter === "ALL" ? trades : trades.filter((t) => t.sellReason && t.sellReason.includes(filter));
 
     return (
         <div className={styles.container}>
@@ -40,7 +49,7 @@ export function JournalPage() {
                     <ArrowLeft size={18} /> Back to Portfolio
                 </Link>
             </div>
-            
+
             <div className={styles.header}>
                 <BookMarked size={28} color="#3b82f6" />
                 <h1>Trade Journal</h1>
@@ -50,10 +59,10 @@ export function JournalPage() {
             </p>
 
             <div className={styles.filters}>
-                {["ALL", "Take Profit", "Stop Loss Hit", "Found Better Opportunity", "Panic", "Other"].map(f => (
-                    <button 
+                {["ALL", "Take Profit", "Stop Loss Hit", "Found Better Opportunity", "Panic", "Other"].map((f) => (
+                    <button
                         key={f}
-                        className={`${styles.filterBtn} ${filter === f ? styles.activeFilter : ''}`}
+                        className={`${styles.filterBtn} ${filter === f ? styles.activeFilter : ""}`}
                         onClick={() => setFilter(f)}
                     >
                         {f}
@@ -65,7 +74,7 @@ export function JournalPage() {
                 {filteredTrades.length === 0 ? (
                     <div className={styles.emptyState}>No trades found for this filter.</div>
                 ) : (
-                    filteredTrades.map(trade => (
+                    filteredTrades.map((trade) => (
                         <div key={trade.id} className={styles.tradeCard}>
                             <div className={styles.tradeHeader}>
                                 <h3>{trade.symbol}</h3>
@@ -74,9 +83,15 @@ export function JournalPage() {
                                 </span>
                             </div>
                             <div className={styles.tradeDetails}>
-                                <p><strong>Date:</strong> {new Date(trade.createdAt).toLocaleDateString()}</p>
-                                <p><strong>Shares:</strong> {trade.shares}</p>
-                                <p><strong>Price:</strong> ${trade.price.toFixed(2)}</p>
+                                <p>
+                                    <strong>Date:</strong> {new Date(trade.createdAt).toLocaleDateString()}
+                                </p>
+                                <p>
+                                    <strong>Shares:</strong> {trade.shares}
+                                </p>
+                                <p>
+                                    <strong>Price:</strong> ${trade.price.toFixed(2)}
+                                </p>
                             </div>
                             <div className={styles.reasonBox}>
                                 <strong>Reason for Selling:</strong>

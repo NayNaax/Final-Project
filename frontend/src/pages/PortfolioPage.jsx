@@ -169,7 +169,14 @@ export function PortfolioPage() {
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <td>{pos.shares}</td>
+                                                    <td>
+                                                        {typeof pos.shares === "number"
+                                                            ? pos.shares.toLocaleString("en-US", {
+                                                                  minimumFractionDigits: 0,
+                                                                  maximumFractionDigits: 4,
+                                                              })
+                                                            : pos.shares}
+                                                    </td>
                                                     <td>${(pos.avgCost || 0).toFixed(2)}</td>
                                                     <td>${pos.currentPrice.toFixed(2)}</td>
                                                     <td>
