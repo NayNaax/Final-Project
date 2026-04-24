@@ -1,6 +1,12 @@
 import { prisma } from "../lib/prisma";
 
 export class SettingsService {
+    private static readonly validCurrencies = ["USD", "EUR", "GBP", "CAD"];
+
+    private static getDisplayName(email: string, username?: string | null) {
+        return username || email.split("@")[0] || "Anonymous Trader";
+    }
+
     static async getSettings(userId: number) {
         let settings = await prisma.userSettings.findUnique({
             where: { userId },
@@ -16,10 +22,17 @@ export class SettingsService {
         return settings;
     }
 
-    static async updateSettings(userId: number, data: { theme?: string; currency?: string; leaderboardOptIn?: boolean }) {
+    static async updateSettings(
+        userId: number,
+        data: { theme?: string; currency?: string; leaderboardOptIn?: boolean },
+    ) {
         const validThemes = ["dark", "light", "system"];
         if (data.theme && !validThemes.includes(data.theme)) {
             throw new Error("Invalid theme choice");
+        }
+
+        if (data.currency && !SettingsService.validCurrencies.includes(data.currency.toUpperCase())) {
+            throw new Error("Invalid currency choice");
         }
 
         return prisma.userSettings.upsert({
@@ -52,35 +65,37 @@ export class SettingsService {
             return [];
         }
 
-        const userIds = latestSnapshots.map(s => s.userId);
+        const userIds = latestSnapshots.map((s) => s.userId);
 
         const settings = await prisma.userSettings.findMany({
             where: { userId: { in: userIds } },
-            select: { userId: true, leaderboardOptIn: true }
+            select: { userId: true, leaderboardOptIn: true },
         });
-        const optInMap = new Map(settings.map(s => [s.userId, s.leaderboardOptIn]));
+        const optInMap = new Map(settings.map((s) => [s.userId, s.leaderboardOptIn]));
 
         const users = await prisma.user.findMany({
             where: { id: { in: userIds } },
-            select: { id: true, email: true },
+            select: { id: true, email: true, username: true },
         });
-        const userMap = new Map(users.map((u) => [u.id, u.email]));
+        const userMap = new Map(users.map((u) => [u.id, this.getDisplayName(u.email, u.username)]));
 
         const STARTING_BALANCE = 100000;
-        
-        const rankings = latestSnapshots.map(snapshot => {
-            const returnPercent = ((snapshot.totalValue - STARTING_BALANCE) / STARTING_BALANCE) * 100;
-            return {
-                ...snapshot,
-                returnPercent,
-                isOptedIn: optInMap.get(snapshot.userId) || false
-            };
-        }).sort((a, b) => b.returnPercent - a.returnPercent);
+
+        const rankings = latestSnapshots
+            .map((snapshot) => {
+                const returnPercent = ((snapshot.totalValue - STARTING_BALANCE) / STARTING_BALANCE) * 100;
+                return {
+                    ...snapshot,
+                    returnPercent,
+                    isOptedIn: optInMap.get(snapshot.userId) || false,
+                };
+            })
+            .sort((a, b) => b.returnPercent - a.returnPercent);
 
         return rankings.map((r, index) => ({
             rank: index + 1,
             userId: r.userId,
-            email: r.isOptedIn ? userMap.get(r.userId) : "Anonymous Trader",
+            displayName: r.isOptedIn ? userMap.get(r.userId) : "Anonymous Trader",
             totalValue: r.totalValue,
             returnPercent: r.returnPercent,
             snapshotDate: r.snapshotDate,

@@ -9,24 +9,45 @@ export const authSchema = z.object({
     password: z.string().min(8),
 });
 
+export const registerSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    username: z
+        .string()
+        .min(3, "Username must be at least 3 characters")
+        .max(20, "Username must be at most 20 characters")
+        .regex(/^[a-z0-9_-]+$/, "Username can only contain lowercase letters, numbers, underscores, and hyphens"),
+});
+
 export type AuthInput = z.infer<typeof authSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
 
 export class AuthService {
-    static async register(data: AuthInput) {
-        const existingUser = await prisma.user.findUnique({
+    static async register(data: RegisterInput) {
+        const existingEmail = await prisma.user.findUnique({
             where: { email: data.email },
         });
 
-        if (existingUser) {
+        if (existingEmail) {
             throw new Error("Email already in use");
+        }
+
+        const existingUsername = await prisma.user.findUnique({
+            where: { username: data.username },
+        });
+
+        if (existingUsername) {
+            throw new Error("Username already taken");
         }
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(data.password, salt);
+
         // Create user and portfolio together
         const user = await prisma.user.create({
             data: {
                 email: data.email,
+                username: data.username,
                 passwordHash,
                 portfolio: {
                     create: {
@@ -36,7 +57,7 @@ export class AuthService {
             },
         });
 
-        return this.generateToken(user.id, user.email);
+        return this.generateToken(user.id, user.email, user.username);
     }
 
     static async login(data: AuthInput) {
@@ -53,7 +74,7 @@ export class AuthService {
             throw new Error("Invalid credentials");
         }
 
-        return this.generateToken(user.id, user.email);
+        return this.generateToken(user.id, user.email, user.username);
     }
 
     static async getMe(userId: number) {
@@ -62,6 +83,7 @@ export class AuthService {
             select: {
                 id: true,
                 email: true,
+                username: true,
                 createdAt: true,
                 portfolio: true,
                 settings: true,
@@ -75,8 +97,15 @@ export class AuthService {
         return user;
     }
 
-    private static generateToken(userId: number, email: string) {
-        const payload = { userId, email };
+    static async checkUsernameAvailable(username: string) {
+        const existing = await prisma.user.findUnique({
+            where: { username },
+        });
+        return !existing;
+    }
+
+    private static generateToken(userId: number, email: string, username?: string | null) {
+        const payload = { userId, email, username };
         const secret = getJwtSecret();
         if (!secret) {
             throw new Error("JWT_SECRET environment variable is not defined");

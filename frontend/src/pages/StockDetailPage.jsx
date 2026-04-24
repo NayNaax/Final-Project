@@ -6,11 +6,13 @@ import { api } from "../lib/apiClient";
 import { STOCK_INFO } from "../lib/stockInfo";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
+import { useCurrency } from "../hooks/useCurrency";
 import styles from "./StockDetailPage.module.css";
 
 export function StockDetailPage() {
     const { symbol } = useParams();
     const navigate = useNavigate();
+    const { formatCurrency, convertCurrency } = useCurrency();
     const [stockData, setStockData] = useState(null);
     const [history, setHistory] = useState([]);
     const [alerts, setAlerts] = useState([]);
@@ -42,9 +44,9 @@ export function StockDetailPage() {
 
                 try {
                     const alertsData = await api.get("/alerts");
-                    const activeForSymbol = alertsData.filter(a => a.symbol === symbol && !a.triggered);
+                    const activeForSymbol = alertsData.filter((a) => a.symbol === symbol && !a.triggered);
                     setAlerts(activeForSymbol);
-                } catch(err) {
+                } catch (err) {
                     console.error("Failed to fetch alerts for overlay", err);
                 }
             } catch (err) {
@@ -128,6 +130,14 @@ export function StockDetailPage() {
     const allPrices = history.map((h) => h.close);
     const high52 = allPrices.length ? Math.max(...allPrices) : currentPrice;
     const low52 = allPrices.length ? Math.min(...allPrices) : currentPrice;
+    const displayChartData = chartData.map((item) => ({
+        ...item,
+        price: convertCurrency(item.price),
+    }));
+    const displayAlerts = alerts.map((alert) => ({
+        ...alert,
+        targetPrice: convertCurrency(alert.targetPrice),
+    }));
 
     const parsedShares = parseInt(tradeShares, 10);
     const safeShares = isNaN(parsedShares) ? 0 : parsedShares;
@@ -144,10 +154,10 @@ export function StockDetailPage() {
                         {symbol} <span className={styles.companyName}>{info.name}</span>
                     </h1>
                     <div className={styles.priceContainer}>
-                        <span className={styles.price}>${currentPrice.toFixed(2)}</span>
+                        <span className={styles.price}>{formatCurrency(currentPrice)}</span>
                         <span className={`${styles.change} ${isPositive ? styles.positive : styles.negative}`}>
-                            {isPositive ? <TrendingUp size={20} /> : <TrendingDown size={20} />}$
-                            {Math.abs(change).toFixed(2)} ({Math.abs(changePercent).toFixed(2)}%)
+                            {isPositive ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                            {formatCurrency(Math.abs(change))} ({Math.abs(changePercent).toFixed(2)}%)
                         </span>
                     </div>
                 </div>
@@ -174,7 +184,7 @@ export function StockDetailPage() {
 
                         <div className={styles.chartContainer}>
                             <ResponsiveContainer width="100%" height={400}>
-                                <AreaChart data={chartData}>
+                                <AreaChart data={displayChartData}>
                                     <defs>
                                         <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                                             <stop
@@ -205,7 +215,9 @@ export function StockDetailPage() {
                                         stroke="var(--text-muted)"
                                         tick={{ fill: "var(--text-muted)" }}
                                         domain={["auto", "auto"]}
-                                        tickFormatter={(val) => `$${val}`}
+                                        tickFormatter={(val) =>
+                                            formatCurrency(val, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                                        }
                                     />
                                     <Tooltip
                                         contentStyle={{
@@ -213,7 +225,7 @@ export function StockDetailPage() {
                                             border: "1px solid var(--glass-border)",
                                             borderRadius: "8px",
                                         }}
-                                        formatter={(val) => [`$${val.toFixed(2)}`, "Price"]}
+                                        formatter={(val) => [formatCurrency(val), "Price"]}
                                     />
                                     <Area
                                         type="monotone"
@@ -223,13 +235,18 @@ export function StockDetailPage() {
                                         fillOpacity={1}
                                         fill="url(#colorPrice)"
                                     />
-                                    {alerts.map(a => (
-                                        <ReferenceLine 
-                                            key={a.id} 
-                                            y={a.targetPrice} 
-                                            stroke="var(--accent-blue, #3b82f6)" 
-                                            strokeDasharray="3 3" 
-                                            label={{ position: 'insideTopLeft', value: `Alert ($${a.targetPrice})`, fill: "var(--accent-blue, #3b82f6)", fontSize: 12 }} 
+                                    {displayAlerts.map((a) => (
+                                        <ReferenceLine
+                                            key={a.id}
+                                            y={a.targetPrice}
+                                            stroke="var(--accent-blue, #3b82f6)"
+                                            strokeDasharray="3 3"
+                                            label={{
+                                                position: "insideTopLeft",
+                                                value: `Alert (${formatCurrency(a.targetPrice)})`,
+                                                fill: "var(--accent-blue, #3b82f6)",
+                                                fontSize: 12,
+                                            }}
                                         />
                                     ))}
                                 </AreaChart>
@@ -248,11 +265,11 @@ export function StockDetailPage() {
                         </div>
                         <div className={`${styles.statCard} glass`}>
                             <span className={styles.statLabel}>52W High</span>
-                            <span className={styles.statValue}>${high52.toFixed(2)}</span>
+                            <span className={styles.statValue}>{formatCurrency(high52)}</span>
                         </div>
                         <div className={`${styles.statCard} glass`}>
                             <span className={styles.statLabel}>52W Low</span>
-                            <span className={styles.statValue}>${low52.toFixed(2)}</span>
+                            <span className={styles.statValue}>{formatCurrency(low52)}</span>
                         </div>
                     </div>
                 </div>
@@ -298,16 +315,12 @@ export function StockDetailPage() {
                             <div className={styles.orderSummary}>
                                 <div className={styles.summaryRow}>
                                     <span>Current Price</span>
-                                    <span>${currentPrice.toFixed(2)}</span>
+                                    <span>{formatCurrency(currentPrice)}</span>
                                 </div>
                                 <div className={styles.summaryRow}>
                                     <span>Estimated Total</span>
                                     <span className={styles.estimatedTotal}>
-                                        $
-                                        {(currentPrice * safeShares).toLocaleString("en-US", {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        })}
+                                        {formatCurrency(currentPrice * safeShares)}
                                     </span>
                                 </div>
                             </div>

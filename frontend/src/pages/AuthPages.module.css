@@ -126,3 +126,16 @@
     color: #60a5fa;
     text-decoration: underline;
 }
+
+.error {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.checking {
+    color: #f59e0b;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+}

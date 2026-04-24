@@ -36,12 +36,16 @@ export function DashboardLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    
+
     const [readAlertIds, setReadAlertIds] = useState(() => {
         const saved = localStorage.getItem("readAlertIds");
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
-    const unreadCount = notifications.filter(n => !readAlertIds.has(n.id)).length;
+    const unreadCount = notifications.filter((n) => !readAlertIds.has(n.id)).length;
+
+    const getDisplayName = (email, username) => {
+        return username || email?.split("@")[0] || "Anonymous";
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -91,7 +95,7 @@ export function DashboardLayout({ children }) {
 
     const handleMarkAllRead = () => {
         const newReadIds = new Set(readAlertIds);
-        notifications.forEach(n => newReadIds.add(n.id));
+        notifications.forEach((n) => newReadIds.add(n.id));
         setReadAlertIds(newReadIds);
         localStorage.setItem("readAlertIds", JSON.stringify([...newReadIds]));
     };
@@ -230,7 +234,7 @@ export function DashboardLayout({ children }) {
                             )}
                         </div>
                         <div className={styles.userInfo}>
-                            <p>{user?.email}</p>
+                            <p>{getDisplayName(user?.email, user?.username)}</p>
                         </div>
                     </div>
                 </header>

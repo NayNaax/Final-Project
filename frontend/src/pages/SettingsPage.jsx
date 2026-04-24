@@ -1,80 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Settings, User, Moon, Trash2, LogOut, DollarSign } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { api } from "../lib/apiClient";
+import { useSettings } from "../context/SettingsContext";
 import styles from "./SettingsPage.module.css";
 
 export function SettingsPage() {
     const { user, logout } = useAuth();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { settings, loading, error, updateSetting } = useSettings();
 
-    const [settings, setSettings] = useState({
-        theme: "light",
-        currency: "USD",
-        leaderboardOptIn: false,
-    });
-
-    useEffect(() => {
-        fetchSettings();
-    }, []);
-
-    const fetchSettings = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await api.get("/settings");
-            if (data) {
-                // Always start in dark mode — don't restore saved theme from DB on load
-                setSettings({
-                    theme: "dark",
-                    currency: data.currency || "USD",
-                    leaderboardOptIn: !!data.leaderboardOptIn,
-                });
-            }
-        } catch (err) {
-            console.error("Failed to load settings:", err);
-            // Fallback: don't show hard error here so they can still see UI, maybe just log it.
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleUpdateSetting = async (key, value) => {
-        // Optimistic update
-        const prevSettings = { ...settings };
-        setSettings((prev) => ({ ...prev, [key]: value }));
-
-        if (key === "theme") {
-            document.documentElement.setAttribute("data-theme", value);
-            // Animate Electron title bar buttons to match new theme
-            window.electronAPI?.onThemeChanged(value);
-        }
-
-        try {
-            await api.patch("/settings", { [key]: value });
-        } catch (err) {
-            console.error(`Failed to update ${key}:`, err);
-            setError(`Failed to update ${key}. Reverting change.`);
-
-            // Revert on failure
-            setSettings(prevSettings);
-
-            if (key === "theme") {
-                document.documentElement.setAttribute("data-theme", prevSettings.theme);
-            }
-
-            setTimeout(() => setError(null), 3000);
-        }
+    const getDisplayName = (email, username) => {
+        return username || email?.split("@")[0] || "N/A";
     };
 
     const handleThemeToggle = (e) => {
         const isDark = e.target.checked;
-        handleUpdateSetting("theme", isDark ? "dark" : "light");
+        updateSetting("theme", isDark ? "dark" : "light");
     };
 
     const handleCurrencyChange = (e) => {
-        handleUpdateSetting("currency", e.target.value);
+        updateSetting("currency", e.target.value);
     };
 
     if (loading) {
@@ -141,10 +85,17 @@ export function SettingsPage() {
                 <div className={styles.settingRow}>
                     <div className={styles.settingInfo}>
                         <p className={styles.settingName}>Leaderboard Participation</p>
-                        <p className={styles.settingDesc}>Allow your username to be visible on the public leaderboard. If disabled, you will appear anonymously.</p>
+                        <p className={styles.settingDesc}>
+                            Allow your username to be visible on the public leaderboard. If disabled, you will appear
+                            anonymously.
+                        </p>
                     </div>
                     <label className={styles.switch}>
-                        <input type="checkbox" checked={settings.leaderboardOptIn} onChange={(e) => handleUpdateSetting("leaderboardOptIn", e.target.checked)} />
+                        <input
+                            type="checkbox"
+                            checked={settings.leaderboardOptIn}
+                            onChange={(e) => updateSetting("leaderboardOptIn", e.target.checked)}
+                        />
                         <span className={styles.slider}></span>
                     </label>
                 </div>
@@ -159,8 +110,8 @@ export function SettingsPage() {
 
                 <div className={styles.settingRow}>
                     <div className={styles.settingInfo}>
-                        <p className={styles.settingName}>Email Address</p>
-                        <p className={styles.settingDesc}>{user?.email || "N/A"}</p>
+                        <p className={styles.settingName}>Username</p>
+                        <p className={styles.settingDesc}>{getDisplayName(user?.email, user?.username)}</p>
                     </div>
                 </div>
 

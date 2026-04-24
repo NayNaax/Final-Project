@@ -8,7 +8,8 @@
         "frontend:dev": "npm run dev --prefix frontend",
         "start": "electron .",
         "dev": "concurrently -k \"npm run backend:dev\" \"npm run frontend:dev\" \"wait-on tcp:3001 && npm start\"",
-        "db:seed": "tsx seed.ts"
+        "db:seed": "tsx seed.ts",
+        "seed:leaderboard": "tsx seed_leaderboard.ts"
     },
     "keywords": [],
     "author": "",

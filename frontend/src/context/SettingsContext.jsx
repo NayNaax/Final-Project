@@ -8,6 +8,7 @@ export function SettingsProvider({ children }) {
         theme: "dark",
         currency: "USD",
         chartStyle: "line",
+        leaderboardOptIn: false,
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,9 +24,10 @@ export function SettingsProvider({ children }) {
             const data = await api.get("/settings");
             if (data) {
                 setSettings({
-                    theme: "dark",
+                    theme: data.theme || "dark",
                     currency: data.currency || "USD",
                     chartStyle: data.chartStyle || "line",
+                    leaderboardOptIn: !!data.leaderboardOptIn,
                 });
             }
         } catch (err) {

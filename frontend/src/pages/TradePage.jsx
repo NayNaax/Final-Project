@@ -5,10 +5,12 @@ import { StockSearch } from "../components/StockSearch";
 import { Modal } from "../components/Modal";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
+import { useCurrency } from "../hooks/useCurrency";
 import styles from "./TradePage.module.css";
 
 export function TradePage() {
     const navigate = useNavigate();
+    const { formatCurrency } = useCurrency();
     const [selectedSymbol, setSelectedSymbol] = useState("");
     const [currentPrice, setCurrentPrice] = useState(null);
     const [portfolio, setPortfolio] = useState(null);
@@ -112,7 +114,7 @@ export function TradePage() {
                         {selectedSymbol && currentPrice && (
                             <div className={styles.priceDisplay}>
                                 <span className={styles.symbolBadge}>{selectedSymbol}</span>
-                                <span className={styles.currentPrice}>${currentPrice.toFixed(2)}</span>
+                                <span className={styles.currentPrice}>{formatCurrency(currentPrice)}</span>
                             </div>
                         )}
 
@@ -146,7 +148,7 @@ export function TradePage() {
                             />
                             <div className={styles.helperText}>
                                 {side === "BUY"
-                                    ? `Buying Power: $${portfolio?.cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}`
+                                    ? `Buying Power: ${formatCurrency(portfolio?.cash || 0)}`
                                     : `Available to sell: ${maxSellable} shares`}
                                 {side === "BUY" && maxAffordable > 0 && (
                                     <span className={styles.maxBtn} onClick={() => setShares(maxAffordable.toString())}>
@@ -164,13 +166,7 @@ export function TradePage() {
                         <div className={styles.orderSummary}>
                             <div className={styles.summaryRow}>
                                 <span>Estimated Total</span>
-                                <span className={styles.estimatedTotal}>
-                                    $
-                                    {estimatedTotal.toLocaleString("en-US", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                    })}
-                                </span>
+                                <span className={styles.estimatedTotal}>{formatCurrency(estimatedTotal)}</span>
                             </div>
                         </div>
 
@@ -219,18 +215,12 @@ export function TradePage() {
                         </div>
                         <div className={styles.confirmItem}>
                             <span>Current Price</span>
-                            <span>${currentPrice?.toFixed(2)}</span>
+                            <span>{formatCurrency(currentPrice || 0)}</span>
                         </div>
                     </div>
                     <div className={styles.confirmTotal}>
                         <span>Estimated Total</span>
-                        <span>
-                            $
-                            {estimatedTotal.toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            })}
-                        </span>
+                        <span>{formatCurrency(estimatedTotal)}</span>
                     </div>
                 </div>
             </Modal>

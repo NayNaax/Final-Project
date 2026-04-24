@@ -6,12 +6,14 @@ import { api } from "../lib/apiClient";
 import { STOCK_INFO } from "../lib/stockInfo";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
+import { useCurrency } from "../hooks/useCurrency";
 import styles from "./PortfolioPage.module.css";
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ef4444", "#06b6d4", "#f97316", "#6366f1"];
 
 export function PortfolioPage() {
     const navigate = useNavigate();
+    const { formatCurrency, formatSignedCurrency, convertCurrency } = useCurrency();
     const [portfolio, setPortfolio] = useState(null);
     const [trades, setTrades] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -51,6 +53,7 @@ export function PortfolioPage() {
         );
 
     const { cash, totalEquity, positions } = portfolio;
+    const displayTotalEquity = convertCurrency(totalEquity);
 
     // Calculate total Unrealized P&L
     const totalUnrealizedPL = positions.reduce((sum, pos) => {
@@ -71,6 +74,10 @@ export function PortfolioPage() {
         .filter(([key, value]) => value > 0)
         .map(([name, value]) => ({ name, value }))
         .sort((a, b) => b.value - a.value);
+    const displayPieData = pieData.map((entry) => ({
+        ...entry,
+        value: convertCurrency(entry.value),
+    }));
 
     return (
         <div className={styles.container}>
@@ -87,13 +94,7 @@ export function PortfolioPage() {
                     </div>
                     <div className={styles.cardInfo}>
                         <span className={styles.cardLabel}>Total Equity</span>
-                        <span className={styles.cardValue}>
-                            $
-                            {totalEquity.toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            })}
-                        </span>
+                        <span className={styles.cardValue}>{formatCurrency(totalEquity)}</span>
                     </div>
                 </div>
                 <div className={`${styles.summaryCard} glass`}>
@@ -102,9 +103,7 @@ export function PortfolioPage() {
                     </div>
                     <div className={styles.cardInfo}>
                         <span className={styles.cardLabel}>Cash Balance</span>
-                        <span className={styles.cardValue}>
-                            ${cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
+                        <span className={styles.cardValue}>{formatCurrency(cash)}</span>
                     </div>
                 </div>
                 <div className={`${styles.summaryCard} glass`}>
@@ -116,11 +115,7 @@ export function PortfolioPage() {
                         <span
                             className={`${styles.cardValue} ${isPLPositive ? styles.textPositive : styles.textNegative}`}
                         >
-                            {isPLPositive ? "+" : "-"}$
-                            {Math.abs(totalUnrealizedPL).toLocaleString("en-US", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            })}
+                            {formatSignedCurrency(totalUnrealizedPL)}
                         </span>
                     </div>
                 </div>
@@ -177,26 +172,14 @@ export function PortfolioPage() {
                                                               })
                                                             : pos.shares}
                                                     </td>
-                                                    <td>${(pos.avgCost || 0).toFixed(2)}</td>
-                                                    <td>${pos.currentPrice.toFixed(2)}</td>
-                                                    <td>
-                                                        $
-                                                        {mktValue.toLocaleString("en-US", {
-                                                            minimumFractionDigits: 2,
-                                                            maximumFractionDigits: 2,
-                                                        })}
-                                                    </td>
+                                                    <td>{formatCurrency(pos.avgCost || 0)}</td>
+                                                    <td>{formatCurrency(pos.currentPrice)}</td>
+                                                    <td>{formatCurrency(mktValue)}</td>
                                                     <td className={styles.rightAlign}>
                                                         <div
                                                             className={`${styles.plCell} ${isPosPL ? styles.textPositive : styles.textNegative}`}
                                                         >
-                                                            <span>
-                                                                {isPosPL ? "+" : "-"}$
-                                                                {Math.abs(unrlPL).toLocaleString("en-US", {
-                                                                    minimumFractionDigits: 2,
-                                                                    maximumFractionDigits: 2,
-                                                                })}
-                                                            </span>
+                                                            <span>{formatSignedCurrency(unrlPL)}</span>
                                                             <span className={styles.plPercent}>
                                                                 ({Math.abs(unrlPLPct).toFixed(2)}%)
                                                             </span>
@@ -256,15 +239,12 @@ export function PortfolioPage() {
                                                             </span>
                                                         </td>
                                                         <td>{trade.shares}</td>
-                                                        <td>${trade.price.toFixed(2)}</td>
+                                                        <td>{formatCurrency(trade.price)}</td>
                                                         <td
                                                             className={`${styles.rightAlign} ${trade.side === "BUY" ? styles.textNegative : styles.textPositive}`}
                                                         >
-                                                            {trade.side === "BUY" ? "-" : "+"}$
-                                                            {trade.total.toLocaleString("en-US", {
-                                                                minimumFractionDigits: 2,
-                                                                maximumFractionDigits: 2,
-                                                            })}
+                                                            {trade.side === "BUY" ? "-" : "+"}
+                                                            {formatCurrency(trade.total)}
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -289,7 +269,7 @@ export function PortfolioPage() {
                             <ResponsiveContainer width="100%" height={300}>
                                 <PieChart>
                                     <Pie
-                                        data={pieData}
+                                        data={displayPieData}
                                         cx="50%"
                                         cy="50%"
                                         innerRadius={80}
@@ -310,9 +290,7 @@ export function PortfolioPage() {
                                         ))}
                                     </Pie>
                                     <PieTooltip
-                                        formatter={(val) =>
-                                            `$${val.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                        }
+                                        formatter={(val) => formatCurrency(val)}
                                         contentStyle={{
                                             backgroundColor: "var(--bg-secondary)",
                                             border: "1px solid var(--glass-border)",
@@ -323,8 +301,11 @@ export function PortfolioPage() {
                             </ResponsiveContainer>
                         </div>
                         <div className={styles.legend}>
-                            {pieData.map((entry, index) => {
-                                const percent = ((entry.value / totalEquity) * 100).toFixed(1);
+                            {displayPieData.map((entry, index) => {
+                                const percent =
+                                    displayTotalEquity > 0
+                                        ? ((entry.value / displayTotalEquity) * 100).toFixed(1)
+                                        : "0.0";
                                 return (
                                     <div key={entry.name} className={styles.legendItem}>
                                         <div className={styles.legendLabel}>

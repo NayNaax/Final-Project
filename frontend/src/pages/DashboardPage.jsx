@@ -5,10 +5,12 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { api } from "../lib/apiClient";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
+import { useCurrency } from "../hooks/useCurrency";
 import styles from "./DashboardPage.module.css";
 
 export function DashboardPage() {
     const navigate = useNavigate();
+    const { formatCurrency, formatSignedCurrency, convertCurrency } = useCurrency();
     const [portfolio, setPortfolio] = useState(null);
     const [history, setHistory] = useState([]);
     const [rawHistory, setRawHistory] = useState([]);
@@ -33,12 +35,27 @@ export function DashboardPage() {
 
                 setPortfolio(portfolioData);
 
-                // Format history data for chart
-                const chartData = historyData.map((snapshot) => ({
-                    date: new Date(snapshot.snapshotDate).toLocaleDateString(),
-                    timestamp: new Date(snapshot.snapshotDate).getTime(),
-                    value: snapshot.totalValue,
-                }));
+                // Format history data for chart and anchor series to current equity.
+                // This keeps the trend shape but prevents stale seeded history scales
+                // (e.g. ~100k) from displaying against a ~10k real account.
+                const sortedHistory = [...historyData].sort(
+                    (a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime(),
+                );
+
+                const latestSnapshotValue = Number(sortedHistory[sortedHistory.length - 1]?.totalValue ?? 0);
+                const currentEquity = Number(portfolioData?.totalEquity ?? 0);
+                const canRebase = latestSnapshotValue > 0 && currentEquity > 0;
+
+                const chartData = sortedHistory.map((snapshot) => {
+                    const rawValue = Number(snapshot.totalValue ?? 0);
+                    const rebasedValue = canRebase ? (rawValue / latestSnapshotValue) * currentEquity : rawValue;
+
+                    return {
+                        date: new Date(snapshot.snapshotDate).toLocaleDateString(),
+                        timestamp: new Date(snapshot.snapshotDate).getTime(),
+                        value: rebasedValue,
+                    };
+                });
                 setRawHistory(chartData);
 
                 // Get last 5 trades
@@ -116,6 +133,10 @@ export function DashboardPage() {
     const totalEquity = portfolio.totalEquity || 0;
     const cash = portfolio.cash || 0;
     const activePositions = portfolio.positions?.length || 0;
+    const displayHistory = history.map((item) => ({
+        ...item,
+        value: convertCurrency(item.value),
+    }));
 
     const topHoldings = portfolio.positions
         ? [...portfolio.positions].sort((a, b) => (b.marketValue || 0) - (a.marketValue || 0)).slice(0, 5)
@@ -132,13 +153,8 @@ export function DashboardPage() {
                         <h3>Portfolio Value</h3>
                         <Wallet size={20} />
                     </div>
-                    <p className={styles.metricValue}>
-                        ${totalEquity.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className={styles.subtitle}>
-                        Total including $
-                        {cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} cash
-                    </p>
+                    <p className={styles.metricValue}>{formatCurrency(totalEquity)}</p>
+                    <p className={styles.subtitle}>Total including {formatCurrency(cash)} cash</p>
                 </div>
 
                 <div className={`${styles.card} ${styles.cardMetric}`}>
@@ -160,7 +176,7 @@ export function DashboardPage() {
                         )}
                     </div>
                     <p className={styles.metricValue} style={{ color: monthlyReturn >= 0 ? "#22c55e" : "#ef4444" }}>
-                        {monthlyReturn >= 0 ? "+" : "-"}${Math.abs(monthlyReturn).toFixed(2)}
+                        {formatSignedCurrency(monthlyReturn)}
                     </p>
                     <p className={styles.subtitle}>Realized P&L this month</p>
                 </div>
@@ -170,9 +186,7 @@ export function DashboardPage() {
                         <h3>Available Cash</h3>
                         <Activity size={20} />
                     </div>
-                    <p className={styles.metricValue}>
-                        ${cash.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
+                    <p className={styles.metricValue}>{formatCurrency(cash)}</p>
                     <p className={styles.subtitle}>Ready to invest</p>
                 </div>
             </div>
@@ -208,7 +222,7 @@ export function DashboardPage() {
                     {history.length > 0 ? (
                         <div className={styles.chartContainer}>
                             <ResponsiveContainer width="100%" height={300}>
-                                <AreaChart data={history}>
+                                <AreaChart data={displayHistory}>
                                     <defs>
                                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
@@ -227,7 +241,9 @@ export function DashboardPage() {
                                     />
                                     <YAxis
                                         stroke="var(--text-muted)"
-                                        tickFormatter={(value) => `$${value / 1000}k`}
+                                        tickFormatter={(value) =>
+                                            `${formatCurrency(value / 1000, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}k`
+                                        }
                                         tick={{ fill: "var(--text-muted)" }}
                                         domain={["auto", "auto"]}
                                     />
@@ -237,9 +253,7 @@ export function DashboardPage() {
                                             border: "1px solid var(--glass-border)",
                                             borderRadius: "8px",
                                         }}
-                                        formatter={(value) =>
-                                            `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                        }
+                                        formatter={(value) => formatCurrency(value)}
                                     />
                                     <Area
                                         type="monotone"

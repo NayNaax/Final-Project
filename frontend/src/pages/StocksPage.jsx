@@ -4,6 +4,7 @@ import { Search, TrendingUp, TrendingDown } from "lucide-react";
 import { api } from "../lib/apiClient";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
+import { useCurrency } from "../hooks/useCurrency";
 import styles from "./StocksPage.module.css";
 
 // Company names for display
@@ -27,6 +28,7 @@ const COMPANY_NAMES = {
 
 export function StocksPage() {
     const navigate = useNavigate();
+    const { formatCurrency } = useCurrency();
     const [stocks, setStocks] = useState([]);
     const [filteredStocks, setFilteredStocks] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -123,13 +125,13 @@ export function StocksPage() {
                                     <td className={styles.symbol}>{stock.symbol}</td>
                                     <td className={styles.company}>{companyName}</td>
                                     <td className={styles.price}>
-                                        ${typeof price === "number" ? price.toFixed(2) : price}
+                                        {typeof price === "number" ? formatCurrency(price) : price}
                                     </td>
                                     <td className={styles.change}>
                                         <span className={isPositive ? styles.positive : styles.negative}>
                                             {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                                            {isPositive ? "+" : ""}
-                                            {change.toFixed(2)}
+                                            {change >= 0 ? "+" : ""}
+                                            {formatCurrency(change)}
                                         </span>
                                     </td>
                                     <td className={styles.changePercent}>

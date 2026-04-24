@@ -2,15 +2,37 @@ import { useState } from "react";
 import { Mail, Lock, User, LineChart, ArrowRight } from "lucide-react";
 
 const Register = ({ onRegister, onToggleView }) => {
-    const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [usernameError, setUsernameError] = useState("");
+
+    const validateUsername = (value) => {
+        if (!value) {
+            setUsernameError("Username is required");
+            return false;
+        }
+        if (value.length < 3) {
+            setUsernameError("Username must be at least 3 characters");
+            return false;
+        }
+        if (value.length > 20) {
+            setUsernameError("Username must be at most 20 characters");
+            return false;
+        }
+        if (!/^[a-z0-9_-]+$/.test(value)) {
+            setUsernameError("Username can only contain lowercase letters, numbers, underscores, and hyphens");
+            return false;
+        }
+        setUsernameError("");
+        return true;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         // Mock authentication - just check passwords match
-        if (name && email && password && password === confirmPassword) {
+        if (username && email && password && password === confirmPassword && validateUsername(username)) {
             onRegister();
         } else if (password !== confirmPassword) {
             alert("Passwords do not match");
@@ -29,17 +51,26 @@ const Register = ({ onRegister, onToggleView }) => {
 
             <form onSubmit={handleSubmit} className="auth-form">
                 <div className="input-group">
-                    <label>Full Name</label>
+                    <label>Username</label>
                     <div className="input-with-icon">
                         <User size={18} className="input-icon" />
                         <input
                             type="text"
-                            placeholder="John Doe"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            placeholder="yourname"
+                            value={username}
+                            onChange={(e) => {
+                                const lower = e.target.value.toLowerCase();
+                                setUsername(lower);
+                                validateUsername(lower);
+                            }}
                             required
                         />
                     </div>
+                    {usernameError && (
+                        <span style={{ color: "var(--danger-color)", fontSize: "0.85rem", marginTop: "0.25rem" }}>
+                            {usernameError}
+                        </span>
+                    )}
                 </div>
 
                 <div className="input-group">

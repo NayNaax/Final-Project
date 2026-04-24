@@ -14,15 +14,68 @@ import styles from "./AuthPages.module.css";
 export function RegisterPage() {
     const navigate = useNavigate();
     const { register } = useAuth();
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState("");
+    const [checkingUsername, setCheckingUsername] = useState(false);
 
-    const validateForm = () => {
-        if (!email || !password || !confirmPassword) {
+    const validateUsername = async (value) => {
+        setUsernameError("");
+
+        if (!value) {
+            setUsernameError("Username is required");
+            return false;
+        }
+
+        if (value.length < 3) {
+            setUsernameError("Username must be at least 3 characters");
+            return false;
+        }
+
+        if (value.length > 20) {
+            setUsernameError("Username must be at most 20 characters");
+            return false;
+        }
+
+        if (!/^[a-z0-9_-]+$/.test(value)) {
+            setUsernameError("Username can only contain lowercase letters, numbers, underscores, and hyphens");
+            return false;
+        }
+
+        // Check availability
+        setCheckingUsername(true);
+        try {
+            const response = await fetch(`/api/auth/check-username?username=${encodeURIComponent(value)}`);
+            const data = await response.json();
+            if (!data.available) {
+                setUsernameError("Username is already taken");
+                setCheckingUsername(false);
+                return false;
+            }
+        } catch (err) {
+            console.error("Error checking username:", err);
+        }
+        setCheckingUsername(false);
+        return true;
+    };
+
+    const handleUsernameChange = (e) => {
+        const value = e.target.value.toLowerCase();
+        setUsername(value);
+    };
+
+    const validateForm = async () => {
+        if (!username || !email || !password || !confirmPassword) {
             setError("All fields are required");
+            return false;
+        }
+
+        const usernameValid = await validateUsername(username);
+        if (!usernameValid) {
             return false;
         }
 
@@ -49,11 +102,11 @@ export function RegisterPage() {
         e.preventDefault();
         setError("");
 
-        if (!validateForm()) return;
+        if (!(await validateForm())) return;
 
         setLoading(true);
         try {
-            await register(email, password);
+            await register(email, password, username);
             navigate("/", { replace: true });
         } catch (err) {
             setError(err.message || "Registration failed. Please try again.");
@@ -71,6 +124,23 @@ export function RegisterPage() {
                 {error && <ErrorBanner message={error} onDismiss={() => setError("")} />}
 
                 <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="username" className={styles.label}>
+                            Username
+                        </label>
+                        <input
+                            id="username"
+                            type="text"
+                            className={styles.input}
+                            placeholder="yourname"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            disabled={loading}
+                        />
+                        {usernameError && <span className={styles.error}>{usernameError}</span>}
+                        {checkingUsername && <span className={styles.checking}>Checking availability...</span>}
+                    </div>
+
                     <div className={styles.formGroup}>
                         <label htmlFor="email" className={styles.label}>
                             Email
