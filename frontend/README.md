@@ -1,16 +1,54 @@
-# React + Vite
+# First Fund - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend component of the First Fund application, built with **React**, **Vite**, and **Electron**.
 
-Currently, two official plugins are available:
+## Architecture & Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework**: React 19
+- **Bundler**: Vite
+- **Styling**: Vanilla CSS with **CSS Modules** for component-scoping.
+- **Icons**: Lucide React
+- **State Management**: React Context & Hooks
+- **Desktop Runtime**: Electron
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Responsive Navigation**: Sidebar-based navigation with dynamic active states.
+- **Dynamic Theming**: Integrated support for "Premium Dark" and "Very Light Blue" themes using CSS variables.
+- **Interactive Charts**: Visualizations for portfolio performance and stock trends.
+- **Modular Components**: Reusable UI components including Modals, Tabs, Cards, and Tables.
 
-## Expanding the ESLint configuration
+## Key Pages
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `DashboardPage`: High-level overview of account status.
+- `PortfolioPage`: Detailed asset breakdown and analytics.
+- `LearnPage` & `LessonPage`: The educational core of the app.
+- `TradePage`: Real-time stock search and simulation.
+- `BudgetPage`: Personal finance management.
+- `WatchlistsPage`: Personalized stock tracking.
+
+## Getting Started
+
+### Development
+
+The frontend is typically started from the root directory during main development:
+
+```bash
+# From root
+npm run dev
+```
+
+To run only the Vite development server (browser-only):
+
+```bash
+# From /frontend
+npm run dev
+```
+
+### Build
+
+To package the frontend for production:
+
+```bash
+npm run build
+```

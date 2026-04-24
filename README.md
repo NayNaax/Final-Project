@@ -1,25 +1,37 @@
 # First Fund
 
-A modern, cross-platform financial portfolio tracker built with **Electron**, **React**, and **Node.js**.
+A modern, cross-platform financial portfolio tracker and educational platform built with **Electron**, **React**, and **Node.js**.
 
 ## Overview
 
-First Fund is a desktop application designed to help users track their investments, test strategies in a sandbox environment, and learn financial concepts. It features a modern, responsive UI with light/dark mode support.
+First Fund is a desktop application designed to empower users with financial literacy and investment tracking tools. It combines a professional portfolio management suite with a "Learn & Earn" education system, featuring a sleek, responsive UI with advanced theming.
 
 ### Key Features
 
-- **Dashboard**: Overview of portfolio value, active trades, and watchlist.
-- **Tracker**: Comprehensive asset tracking (Coming Soon).
-- **Sandbox**: Risk-free strategy testing (Coming Soon).
-- **Learning Hub**: Educational resources (Coming Soon).
-- **Customizable Theme**: Includes "Premium Dark" and "Very Light Blue" themes with a toggle.
+- **Advanced Dashboard**: Real-time overview of portfolio performance, market indices, and personalized watchlists.
+- **Portfolio Tracker**: Comprehensive tracking of assets with detailed performance metrics and visual analytics.
+- **Stock Explorer & Trade Sandbox**: Search stocks, view detailed charts, and simulate trades in a risk-free environment.
+- **Learning Hub**: Interactive educational modules covering financial fundamentals with quiz-based progression.
+- **Financial Journal & News**: Stay updated with integrated market news and document your investment rationale in a built-in journal.
+- **Budgeting & Alerts**: Manage personal finances with budget tracking and set custom price alerts.
+- **Gamified Experience**: Earn rewards through the Learning Hub and compete on the global leaderboard.
+- **Premium Theming**: Supports multiple themes including "Premium Dark" and "Very Light Blue" for personalized aesthetics.
+
+## Project Structure
+
+- `frontend/`: React application with Vite, Electron, and CSS Modules.
+- `backend/`: Node.js & Express server with Prisma ORM and TypeScript.
+- `prisma/`: Database schema and migration files.
+- `Documentation/`: Detailed technical documentation and issue logs.
 
 ## Tech Stack
 
 - **Runtime**: Electron (v40+)
 - **Frontend**: React (v19) + Vite
-- **Language**: JavaScript (ES6+)
-- **Styles**: Vanilla CSS with CSS Variables (Theming)
+- **Backend**: Node.js + Express
+- **Database**: PostgreSQL with Prisma ORM
+- **Styles**: Vanilla CSS + CSS Modules
+- **Icons**: Lucide React
 
 ## Getting Started
 
@@ -27,6 +39,7 @@ First Fund is a desktop application designed to help users track their investmen
 
 - Node.js (LTS version recommended)
 - npm (v10+)
+- PostgreSQL database
 
 ### Installation
 
@@ -38,33 +51,21 @@ First Fund is a desktop application designed to help users track their investmen
 2.  Install dependencies:
     ```bash
     npm install
-    # Wait for both root and frontend dependencies to install
     ```
+
+### Configuration
+
+Ensure you have a `.env` file in the root and in the `backend/` directory with the necessary environment variables (see `.env.example`).
 
 ### Running the App
 
-Start the development server (runs React + Electron concurrently):
+Start the development environment:
 
 ```bash
 npm run dev
 ```
 
-### Database Setup
-
-The project uses **Prisma** for database management and a custom script for seeding historical stock data.
-
-1.  **Configure Environment**: Ensure your `.env` file has a valid `DATABASE_URL`.
-2.  **Generate Prisma Client**:
-    ```bash
-    npx prisma generate
-    ```
-3.  **Seed Data**:
-    Historical CSV data from the `Data/` folder can be imported using:
-    ```bash
-    npm run db:seed
-    ```
-
 ## Documentation
 
-- [Functions](./Documentation/Functions.md) - Technical implementation details and functions.
-- [Issue Log](./Documentation/IssueLog.md) - Record of bugs and fixes.
+- [Functions](./Documentation/Functions.md) - Technical implementation details.
+- [Issue Log](./Documentation/IssueLog.md) - Record of addressed bugs and fixes.

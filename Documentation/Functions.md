@@ -1,96 +1,87 @@
 # Developer Documentation
 
-This document tracks key functions, scripts, and configurations created during the development of First Fund.
+This document tracks key functions, scripts, and configurations that define the **First Fund** architecture.
 
-## Important Functions
+## Architecture Overview
 
-### Electron Main Process (`main.js`)
+First Fund follows a **Dual-Service Monorepo** architecture:
 
-#### `createWindow()`
+- **Frontend**: Electron-wrapped React client with centralized page routing.
+- **Backend**: Express.js REST API with Prisma ORM and JWT security.
 
-- **Purpose**: Creates the main application window for the Electron app.
-- **Details**:
-    - Initializes a `BrowserWindow` with dimensions 800x600.
-    - Configures `webPreferences` to enable node integration (temporarily for dev).
-    - **Environment Handling**: Checks `process.env.ELECTRON_START_URL`.
-        - If present (Dev mode), loads the URL (e.g., `http://localhost:5173`).
-        - If absent (Prod mode), loads the local `index.html` file.
+---
 
-## Data Layer & Database
+## Backend Services (`/backend`)
 
-### Prisma (`prisma/schema.prisma`)
+### Server Entry (`src/server.ts`)
 
-- **Purpose**: Defines the data model and database schema.
-- **Model**: `Stock`
-    - Fields: `id`, `Date`, `CloseLast`, `Volume`, `Open`, `High`, `Low`.
-- **Output**: Generates the client in the `generated/prisma` directory (ignored by Git).
+- **Middlewares**: `cors`, `morgan` (logging), `express.json`, and `generalLimiter` (rate limiting).
+- **Graceful Shutdown**: Handles `SIGINT`/`SIGTERM` to disconnect Prisma and close the server cleanly.
+- **Cron Jobs**: Automated background services (e.g., portfolio snapshots, alert checking) initialized at startup.
 
-### Data Seeding (`seed.ts`)
+### Core Routers
 
-- **Purpose**: Batch imports historical stock data from CSV files into the PostgreSQL database.
-- **Workflow**:
-    1.  Reads filenames from `["stock1.csv", "stock2.csv", "stock3.csv"]` in the `Data/` directory.
-    2.  Parses CSV headers and validates them against `REQUIRED_HEADERS`.
-    3.  Connects to the database using `DATABASE_URL`.
-    4.  **Transaction**:
-        - Creates the `Stock` table if it doesn't exist.
-        - Truncates existing data.
-        - Batch inserts rows from all CSV files.
-    5.  Provides a summary of the total imported rows and date ranges.
-- **Running**: Use `npm run db:seed`.
+- **Auth (`/api/auth`)**: Handles `User` registration and login using **JWT** for session management.
+- **Portfolio (`/api/portfolio`)**: Manages `Position` CRUD, cash balances, and trade history.
+- **Learn (`/api/learn`)**: Tracks `UserLessonProgress` and handles "Learn & Earn" reward logic.
+- **Stocks (`/api/stocks`)**: Fetches stock data, historical prices, and search results.
+- **Watchlists (`/api/watchlists`)**: User-specific symbol collections.
+- **Budget (`/api/budget`)**: Goal-based `Allocation` management and visualization data.
+- **Alerts (`/api/alerts`)**: Price-trigger logic for stock notifications.
 
-## Scripts & Configuration
+### Data Layer (`/prisma/schema.prisma`)
 
-### `npm run dev`
+The PostgreSQL schema is the single source of truth for the data model:
 
-- **Purpose**: Launches the full development environment.
-- **Tools**: Uses `concurrently` to run the frontend and backend processes in parallel.
-- **Workflow**:
-    1.  Starts the React Frontend (Vite) on port `5173`.
-    2.  Uses `wait-on` to pause the Electron launch until `tcp:5173` is active.
-    3.  Starts Electron once the port is ready.
+- **`User` / `UserSettings`**: Core identity and aesthetic preferences (theme, chart style).
+- **`Portfolio` / `Position` / `Trade`**: Trading engine models supporting fractional shares.
+- **`UserLessonProgress` / `UserMission`**: Gamification and educational tracking.
+- **`PortfolioSnapshot`**: Daily value tracking for historical performance charts.
+- **`Budget` / `Allocation`**: Categorized financial planning data.
 
-## Frontend Architecture
+---
 
-### Structure
+## Frontend Architecture (`/frontend`)
 
-- **Frontend**: React (v19) + Vite
-- **Dependencies**: `lucide-react` (icons), `recharts` (financial charting)
-- **Entry Point**: `frontend/src/main.jsx`
-- **Main Component**: `App.jsx` handling routing (tab switching), layout, and the main dashboard cards/charts.
-- **Styling**: `frontend/src/index.css` using CSS Variables for theming and Glassmorphism effects.
+### Structured Pages (`src/pages/`)
 
-### Component Logic (`App.jsx`)
+Instead of a single-file monster, First Fund uses a modular page system:
 
-- **State Management**:
-    - `activeTab` (String): Controls which view component is currently rendered (Overview, Tracker, Sandbox, Learning). Using conditional rendering via a `switch` statement.
-    - `theme` (String): Tracks specifically 'light' or 'dark'. Defaults to 'dark' for a premium feel.
-- **Key Modules Rendered**:
-    - **Overview Tab**: Includes a Dashboard Grid for key metrics (Portfolio Value, Return), a `ResponsiveContainer` wrapping a `recharts` `AreaChart` for 7-day performance, and a Recent Activity transaction list.
-    - **Sidebar Navigation**: Utilizes `lucide-react` icons mapped to tabs.
-- **Effects**:
-    - `useEffect` monitors the `theme` state and updates the `data-theme` attribute on `document.documentElement`, triggering the CSS variable switch.
+- `DashboardPage`: Unified view of total portfolio, active watchlists, and market news.
+- `PortfolioPage`: Deep dive into `Positions` with performance analytics.
+- `LearnPage` & `LessonPage`: The educational engine with interactive quizzes.
+- `TradePage`: Real-time search and paper trading interface.
+- `BudgetPage`: Category-based allocation tracking with donut charts.
 
 ### Theming System
 
-- **Implementation**: Premium Glassmorphism UI with CSS Variables defined in `:root` (Light) and `[data-theme='dark']` (Dark).
-- **Styling Features**:
-    - **Glassmorphism**: `.glass` utility class applying `backdrop-filter: blur(12px)` and semi-transparent backgrounds to sidebar and cards.
-    - **Animations**: Keyframes for `fadeIn` and `slideUp` for smooth page loading, and hover transition scales (`transform: translateY`).
-- **Variables**:
-    - `--bg-primary`, `--bg-secondary`, `--bg-tertiary` for background depths.
-    - `--text-primary`, `--text-secondary` for typography (Using `Outfit` for headings, `Inter` for body).
-    - `--accent-primary` and glowing shadows for brand color highlighting.
-- **Toggle Logic**: `App.jsx` manages `theme` state and updates `document.documentElement` attribute.
+- **Implementation**: Premium Glassmorphism UI powered by Vanilla CSS and CSS Variables.
+- **Variables**: Defined in `:root` (Light) and `[data-theme='dark']` (Dark/Premium).
+- **Glassmorphism**: `.glass` utility class applying `backdrop-filter: blur(12px)` and semi-transparent backgrounds.
+- **Visuals**: Uses `Outfit` (Headings) and `Inter` (Body) via Google Fonts.
 
-### Vite Configuration (`frontend/vite.config.js`)
+### State & Context (`src/context/`)
 
-- **Strict Port**: Configured with `server.strictPort: true` and `port: 5173`. This prevents Vite from silently switching ports if 5173 is occupied, which would break the Electron connection.
+- Handles global state such as the current active user, theme selection, and real-time alerts.
+
+---
+
+## Development Scripts
+
+### `npm run dev` (Root)
+
+- uses `concurrently` to start the **Vite** dev server and the **Electron** main process.
+- uses `wait-on` to ensure Electron only launches after the Vite server is ready on `tcp:5173`.
+
+### `npm run db:seed`
+
+- Refactored to import historical stock data from `/Data` CSVs into the `Stock` table for reference.
+
+---
 
 ## Environment Variables
 
-### `ELECTRON_START_URL`
-
-- **Usage**: Used in `main.js` to determine the URL to load in the main window.
-- **Default**: `http://localhost:5173` if not specified.
-- **Production**: In production builds, this variable usually won't be set, causing the app to fall back to loading the local `index.html`.
+- `DATABASE_URL`: Connection string for the PostgreSQL instance.
+- `JWT_SECRET`: Used for signing and verifying authentication tokens.
+- `ELECTRON_START_URL`: (Dev) `http://localhost:5173`.
+- `PORT`: Backend server port (defaults to `3001`).
