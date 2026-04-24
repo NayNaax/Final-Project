@@ -12,6 +12,7 @@ export function SettingsPage() {
     const [settings, setSettings] = useState({
         theme: "light",
         currency: "USD",
+        leaderboardOptIn: false,
     });
 
     useEffect(() => {
@@ -28,6 +29,7 @@ export function SettingsPage() {
                 setSettings({
                     theme: "dark",
                     currency: data.currency || "USD",
+                    leaderboardOptIn: !!data.leaderboardOptIn,
                 });
             }
         } catch (err) {
@@ -134,6 +136,17 @@ export function SettingsPage() {
                         <option value="GBP">GBP (£)</option>
                         <option value="CAD">CAD ($)</option>
                     </select>
+                </div>
+
+                <div className={styles.settingRow}>
+                    <div className={styles.settingInfo}>
+                        <p className={styles.settingName}>Leaderboard Participation</p>
+                        <p className={styles.settingDesc}>Allow your username to be visible on the public leaderboard. If disabled, you will appear anonymously.</p>
+                    </div>
+                    <label className={styles.switch}>
+                        <input type="checkbox" checked={settings.leaderboardOptIn} onChange={(e) => handleUpdateSetting("leaderboardOptIn", e.target.checked)} />
+                        <span className={styles.slider}></span>
+                    </label>
                 </div>
             </section>
 

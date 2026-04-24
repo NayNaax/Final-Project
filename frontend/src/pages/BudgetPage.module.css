@@ -179,8 +179,7 @@
 
 .editFooter {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     margin-top: 1rem;
     padding: 0.5rem;
 }
@@ -247,4 +246,33 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.templateBtn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.templateBtn:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+}
+
+.tradeLink {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.tradeLink:hover {
+    text-decoration: underline;
 }

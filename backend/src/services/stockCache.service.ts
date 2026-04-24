@@ -1,7 +1,26 @@
 import { stockCache } from "../lib/cache";
+import { massiveRateLimiter } from "../lib/massiveRateLimiter";
 import { MassiveService } from "./massive.service";
-import { PolygonService, type HistoricalBar as PolygonHistoricalBar } from "./polygon.service";
+import { PolygonService } from "./polygon.service";
 import { FinnhubService, type HistoricalBar } from "./finnhub.service";
+
+type QuoteData = {
+    symbol: string;
+    price: number;
+    c: number;
+    previousClose: number;
+    change: number;
+    changePercent: number;
+    volume: number;
+    dayHigh: number;
+    dayLow: number;
+    dayOpen: number;
+    timestamp: number | null;
+    d?: number;
+    dp?: number;
+    v?: number;
+    source?: string;
+};
 
 /*
  * This service sits in front of the actual API service to handle the heavy
@@ -12,28 +31,46 @@ export class StockCacheService {
     private static TTL_SECONDS = parseInt(process.env.CACHE_TTL_SECONDS || "60", 10);
     private static HISTORICAL_DATA_TTL_SECONDS = 24 * 60 * 60; // Cache historical data for 24 hours
 
-    static async getQuoteWithCache(symbol: string) {
-        const cacheKey = `quote_${symbol.toUpperCase()}`;
+    static async getQuoteWithCache(symbol: string): Promise<{ data: QuoteData; source: string }> {
+        const normalizedSymbol = symbol.toUpperCase().trim();
+        const cacheKey = `quote_${normalizedSymbol}`;
 
         // 1. Try Cache First
-        const cachedData = stockCache.get(cacheKey);
+        const cachedData = stockCache.get<QuoteData>(cacheKey);
         if (cachedData) {
             return { data: cachedData, source: "cache" };
         }
 
-        // 2. Cache Miss - Need to hit Upstream API
-        let freshData;
+        // 2. Fall back to stale cache before spending API quota
+        const staleData = stockCache.getStale<QuoteData>(cacheKey);
+        if (staleData) {
+            return { data: staleData, source: "stale-cache" };
+        }
+
+        // 3. Cache Miss - Need to hit Upstream API
+        let freshData: QuoteData;
         try {
             // Try Finnhub first (you have this configured and it has generous rate limits)
-            freshData = await FinnhubService.getQuote(symbol);
+            freshData = await FinnhubService.getQuote(normalizedSymbol);
         } catch (finnhubErr: any) {
             try {
                 // Fall back to Polygon
-                freshData = await PolygonService.fetchQuote(symbol);
+                freshData = await PolygonService.fetchQuote(normalizedSymbol);
             } catch (polygonErr: any) {
+                if (MassiveService.isRateLimited() || MassiveService.isCircuitOpen()) {
+                    throw new Error("All quote providers are currently unavailable. Please retry shortly.");
+                }
+
+                if (!massiveRateLimiter.canCall()) {
+                    throw new Error(
+                        `Massive request budget exhausted. Next available in ${Math.ceil(massiveRateLimiter.nextAvailableIn / 1000)}s.`,
+                    );
+                }
+
                 try {
                     // Fall back to Massive
-                    freshData = await MassiveService.fetchQuote(symbol);
+                    massiveRateLimiter.record();
+                    freshData = await MassiveService.fetchQuote(normalizedSymbol);
                 } catch (massiveErr: any) {
                     // If all fail, throw a helpful error
                     throw new Error(
@@ -45,12 +82,14 @@ export class StockCacheService {
 
         // Default caching behaviour for successful quote fetches
         stockCache.set(cacheKey, freshData, this.TTL_SECONDS);
+        stockCache.setStale(cacheKey, freshData);
 
         return { data: freshData, source: "api" };
     }
 
     static async getHistoricalDataWithCache(symbol: string, daysBack: number = 365): Promise<HistoricalBar[]> {
-        const cacheKey = `historical_${symbol.toUpperCase()}_${daysBack}d`;
+        const normalizedSymbol = symbol.toUpperCase().trim();
+        const cacheKey = `historical_${normalizedSymbol}_${daysBack}d`;
 
         // 1. Try Cache First
         const cachedData = stockCache.get<HistoricalBar[]>(cacheKey);
@@ -60,20 +99,49 @@ export class StockCacheService {
 
         // 2. Cache Miss - Fetch from API
         let historicalData: HistoricalBar[] = [];
-        try {
-            // Try Finnhub first (has generous rate limits and already configured)
-            historicalData = await FinnhubService.getHistoricalCandles(symbol, daysBack);
-        } catch (finnhubErr: any) {
-            console.error(`Finnhub historical fetch failed for ${symbol}:`, finnhubErr.message);
+        const fallbackReasons: string[] = [];
+        const hasFinnhubKey = Boolean(process.env.FINNHUB_API_KEY?.trim());
+        const hasPolygonKey = Boolean(process.env.POLYGON_API_KEY?.trim());
+
+        if (hasFinnhubKey) {
             try {
-                // Fall back to Polygon
-                historicalData = await PolygonService.fetchHistoricalData(symbol, daysBack);
-            } catch (polygonErr: any) {
-                console.error(`Polygon historical fetch failed for ${symbol}:`, polygonErr.message);
-                // Fall back to sample data for development
-                console.log(`Using sample data for ${symbol}`);
-                historicalData = this.generateSampleHistoricalData(symbol);
+                historicalData = await FinnhubService.getHistoricalCandles(normalizedSymbol, daysBack);
+            } catch (finnhubErr: any) {
+                fallbackReasons.push(`Finnhub unavailable (${finnhubErr.message})`);
             }
+        } else {
+            fallbackReasons.push("Finnhub skipped (FINNHUB_API_KEY missing)");
+        }
+
+        if (historicalData.length === 0) {
+            if (hasPolygonKey) {
+                try {
+                    historicalData = await PolygonService.fetchHistoricalData(normalizedSymbol, daysBack);
+                } catch (polygonErr: any) {
+                    fallbackReasons.push(`Polygon unavailable (${polygonErr.message})`);
+                }
+            } else {
+                fallbackReasons.push("Polygon skipped (POLYGON_API_KEY missing)");
+            }
+        }
+
+        if (historicalData.length === 0) {
+            const hasMassiveKey = Boolean(process.env.MASSIVE_API_KEY?.trim());
+            if (hasMassiveKey) {
+                try {
+                    historicalData = await MassiveService.fetchHistoricalData(normalizedSymbol, daysBack);
+                } catch (massiveErr: any) {
+                    fallbackReasons.push(`Massive unavailable (${massiveErr.message})`);
+                }
+            } else {
+                fallbackReasons.push("Massive skipped (MASSIVE_API_KEY missing)");
+            }
+        }
+
+        if (historicalData.length === 0) {
+            console.warn(
+                `Historical providers unavailable for ${normalizedSymbol}. Returning empty history. ${fallbackReasons.join(" | ")}`,
+            );
         }
 
         // Cache the result
@@ -82,38 +150,5 @@ export class StockCacheService {
         }
 
         return historicalData;
-    }
-
-    private static generateSampleHistoricalData(symbol: string): HistoricalBar[] {
-        // Generate 365 days of sample data with realistic price movement
-        const data: HistoricalBar[] = [];
-        const basePrice = Math.random() * 200 + 50; // Random base price between 50-250
-        let currentPrice = basePrice;
-        const today = new Date();
-
-        for (let i = 364; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(date.getDate() - i);
-
-            // Simulate price movement
-            const change = (Math.random() - 0.5) * 4; // Random change between -2 and +2
-            const open = currentPrice;
-            const close = currentPrice + change;
-            const high = Math.max(open, close) * (1 + Math.random() * 0.01);
-            const low = Math.min(open, close) * (1 - Math.random() * 0.01);
-
-            currentPrice = close;
-
-            data.push({
-                date: date.toISOString().split("T")[0],
-                open: parseFloat(open.toFixed(2)),
-                high: parseFloat(high.toFixed(2)),
-                low: parseFloat(low.toFixed(2)),
-                close: parseFloat(close.toFixed(2)),
-                volume: Math.floor(Math.random() * 100000000) + 10000000, // 10M-110M shares
-            });
-        }
-
-        return data;
     }
 }

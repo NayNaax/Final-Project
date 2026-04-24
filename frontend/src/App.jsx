@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { DashboardLayout } from "./components/DashboardLayout";
+import { TitleBar } from "./components/TitleBar";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -28,6 +29,7 @@ function App() {
     return (
         <Router>
             <AuthProvider>
+                <TitleBar />
                 <Routes>
                     {/* Public routes */}
                     <Route path="/login" element={<LoginPage />} />

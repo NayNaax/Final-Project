@@ -40,6 +40,13 @@ export function StocksPage() {
                 const data = await api.get("/stocks");
                 setStocks(data);
                 setFilteredStocks(data);
+
+                const failed = data.filter((stock) => stock?.error);
+                if (failed.length === data.length && failed.length > 0) {
+                    setError(failed[0].error || "Live quote providers are currently unavailable.");
+                } else if (failed.length > 0) {
+                    setError(`Live data is unavailable for ${failed.length} of ${data.length} symbols.`);
+                }
             } catch (err) {
                 setError(err.message || "Failed to load stocks");
             } finally {
@@ -96,20 +103,23 @@ export function StocksPage() {
                             <th>Change</th>
                             <th>Change %</th>
                             <th>Volume</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredStocks.map((stock) => {
-                            const price = stock.c || stock.price || "N/A";
-                            const change = stock.d || 0;
-                            const changePercent = stock.dp || 0;
-                            const volume = stock.v || 0;
+                            const price = stock.c ?? stock.price ?? "N/A";
+                            const change = stock.d ?? stock.change ?? 0;
+                            const changePercent = stock.dp ?? stock.changePercent ?? 0;
+                            const volume = stock.v ?? stock.volume ?? 0;
                             const companyName = COMPANY_NAMES[stock.symbol] || stock.symbol;
                             const isPositive = change >= 0;
 
                             return (
-                                <tr key={stock.symbol} className={styles.tableRow}>
+                                <tr
+                                    key={stock.symbol}
+                                    className={styles.tableRow}
+                                    onClick={() => navigate(`/stocks/${stock.symbol}`)}
+                                >
                                     <td className={styles.symbol}>{stock.symbol}</td>
                                     <td className={styles.company}>{companyName}</td>
                                     <td className={styles.price}>
@@ -129,15 +139,7 @@ export function StocksPage() {
                                         </span>
                                     </td>
                                     <td className={styles.volume}>
-                                        {volume > 0 ? (volume / 1000000).toFixed(2) + "M" : "N/A"}
-                                    </td>
-                                    <td className={styles.action}>
-                                        <button
-                                            className={styles.actionBtn}
-                                            onClick={() => navigate(`/stocks/${stock.symbol}`)}
-                                        >
-                                            View
-                                        </button>
+                                        {volume > 0 ? (volume / 1000000).toFixed(2) + "M" : "0.00M"}
                                     </td>
                                 </tr>
                             );

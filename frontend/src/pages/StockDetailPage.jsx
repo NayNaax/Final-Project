@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, TrendingUp, TrendingDown, Activity } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { api } from "../lib/apiClient";
 import { STOCK_INFO } from "../lib/stockInfo";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -13,6 +13,7 @@ export function StockDetailPage() {
     const navigate = useNavigate();
     const [stockData, setStockData] = useState(null);
     const [history, setHistory] = useState([]);
+    const [alerts, setAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [dateRange, setDateRange] = useState("1M");
@@ -38,6 +39,14 @@ export function StockDetailPage() {
                 const historyData = Array.isArray(data.history) ? data.history : [];
                 const sortedHistory = [...historyData].sort((a, b) => new Date(a.date) - new Date(b.date));
                 setHistory(sortedHistory);
+
+                try {
+                    const alertsData = await api.get("/alerts");
+                    const activeForSymbol = alertsData.filter(a => a.symbol === symbol && !a.triggered);
+                    setAlerts(activeForSymbol);
+                } catch(err) {
+                    console.error("Failed to fetch alerts for overlay", err);
+                }
             } catch (err) {
                 setError(err.message || "Failed to load stock data");
             } finally {
@@ -214,6 +223,15 @@ export function StockDetailPage() {
                                         fillOpacity={1}
                                         fill="url(#colorPrice)"
                                     />
+                                    {alerts.map(a => (
+                                        <ReferenceLine 
+                                            key={a.id} 
+                                            y={a.targetPrice} 
+                                            stroke="var(--accent-blue, #3b82f6)" 
+                                            strokeDasharray="3 3" 
+                                            label={{ position: 'insideTopLeft', value: `Alert ($${a.targetPrice})`, fill: "var(--accent-blue, #3b82f6)", fontSize: 12 }} 
+                                        />
+                                    ))}
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>

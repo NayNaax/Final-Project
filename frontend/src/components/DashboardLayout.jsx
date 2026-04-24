@@ -36,7 +36,12 @@ export function DashboardLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
+    
+    const [readAlertIds, setReadAlertIds] = useState(() => {
+        const saved = localStorage.getItem("readAlertIds");
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
+    const unreadCount = notifications.filter(n => !readAlertIds.has(n.id)).length;
 
     useEffect(() => {
         let isMounted = true;
@@ -60,7 +65,6 @@ export function DashboardLayout({ children }) {
                             .sort((a, b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
                         if (isMounted) {
                             setNotifications(triggered);
-                            setUnreadCount(triggered.length);
                         }
                     }
                     return;
@@ -71,8 +75,6 @@ export function DashboardLayout({ children }) {
                     .sort((a, b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
                 if (isMounted) {
                     setNotifications(triggered);
-                    // Just a basic sync for unread count
-                    setUnreadCount(triggered.length);
                 }
             } catch (err) {
                 console.error("Failed to fetch notifications", err);
@@ -88,7 +90,10 @@ export function DashboardLayout({ children }) {
     }, [token]);
 
     const handleMarkAllRead = () => {
-        setUnreadCount(0);
+        const newReadIds = new Set(readAlertIds);
+        notifications.forEach(n => newReadIds.add(n.id));
+        setReadAlertIds(newReadIds);
+        localStorage.setItem("readAlertIds", JSON.stringify([...newReadIds]));
     };
 
     const navigationItems = [

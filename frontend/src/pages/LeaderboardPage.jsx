@@ -98,8 +98,38 @@ const LeaderboardPage = () => {
                         <p>Leaderboard will populate as more users trade.</p>
                     </div>
                 ) : (
-                    <div style={{ overflowX: "auto" }}>
-                        <table className={styles.table}>
+                    <>
+                        {leaderboard.length >= 3 && (
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: "16px", margin: "32px 0 48px", minHeight: "200px" }}>
+                                {leaderboard[1] && (
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "120px", zIndex: 2 }}>
+                                        <div className={styles.avatar} style={{ width: "48px", height: "48px", marginBottom: "8px", background: "var(--bg-tertiary)" }}>{getInitials(leaderboard[1].email)}</div>
+                                        <div style={{ fontSize: "0.85rem", fontWeight: "bold", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%", marginBottom: "4px" }}>{leaderboard[1].email || "Anonymous"}</div>
+                                        <div style={{ color: leaderboard[1].returnPercent >= 0 ? "var(--accent-green)" : "var(--accent-red)", fontSize: "0.85rem", fontWeight: "bold", marginBottom: "8px" }}>{leaderboard[1].returnPercent >= 0 ? "+" : ""}{formatPercent(leaderboard[1].returnPercent || 0)}</div>
+                                        <div style={{ width: "100%", height: "80px", background: "linear-gradient(to top, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1))", borderTopLeftRadius: "8px", borderTopRightRadius: "8px", borderTop: "2px solid #C0C0C0", display: "flex", justifyContent: "center", paddingTop: "16px", fontSize: "1.5rem", fontWeight: "bold" }}>2</div>
+                                    </div>
+                                )}
+                                {leaderboard[0] && (
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "130px", zIndex: 3 }}>
+                                        <Trophy size={24} style={{ color: "#FFD700", marginBottom: "8px" }} />
+                                        <div className={styles.avatar} style={{ width: "64px", height: "64px", marginBottom: "8px", background: "var(--bg-tertiary)", border: "2px solid #FFD700" }}>{getInitials(leaderboard[0].email)}</div>
+                                        <div style={{ fontSize: "0.95rem", fontWeight: "bold", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%", marginBottom: "4px" }}>{leaderboard[0].email || "Anonymous"}</div>
+                                        <div style={{ color: leaderboard[0].returnPercent >= 0 ? "var(--accent-green)" : "var(--accent-red)", fontSize: "0.95rem", fontWeight: "bold", marginBottom: "8px" }}>{leaderboard[0].returnPercent >= 0 ? "+" : ""}{formatPercent(leaderboard[0].returnPercent || 0)}</div>
+                                        <div style={{ width: "100%", height: "120px", background: "linear-gradient(to top, rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.2))", borderTopLeftRadius: "8px", borderTopRightRadius: "8px", borderTop: "2px solid #FFD700", display: "flex", justifyContent: "center", paddingTop: "16px", fontSize: "2rem", fontWeight: "bold", color: "#FFD700" }}>1</div>
+                                    </div>
+                                )}
+                                {leaderboard[2] && (
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "110px", zIndex: 1 }}>
+                                        <div className={styles.avatar} style={{ width: "40px", height: "40px", marginBottom: "8px", background: "var(--bg-tertiary)" }}>{getInitials(leaderboard[2].email)}</div>
+                                        <div style={{ fontSize: "0.8rem", fontWeight: "bold", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%", marginBottom: "4px" }}>{leaderboard[2].email || "Anonymous"}</div>
+                                        <div style={{ color: leaderboard[2].returnPercent >= 0 ? "var(--accent-green)" : "var(--accent-red)", fontSize: "0.8rem", fontWeight: "bold", marginBottom: "8px" }}>{leaderboard[2].returnPercent >= 0 ? "+" : ""}{formatPercent(leaderboard[2].returnPercent || 0)}</div>
+                                        <div style={{ width: "100%", height: "60px", background: "linear-gradient(to top, rgba(205, 127, 50, 0.05), rgba(205, 127, 50, 0.15))", borderTopLeftRadius: "8px", borderTopRightRadius: "8px", borderTop: "2px solid #CD7F32", display: "flex", justifyContent: "center", paddingTop: "12px", fontSize: "1.2rem", fontWeight: "bold", color: "#CD7F32" }}>3</div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        <div style={{ overflowX: "auto" }}>
+                            <table className={styles.table}>
                             <thead>
                                 <tr>
                                     <th>Rank</th>
@@ -109,23 +139,17 @@ const LeaderboardPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {leaderboard.map((trader, index) => {
-                                    const rank = index + 1;
-                                    const isCurrentUser = user && trader.id === user.id;
+                                {leaderboard.slice(3).map((trader, index) => {
+                                    const rank = trader.rank || index + 4;
+                                    const isCurrentUser = user && trader.userId === user.id;
 
-                                    // Use robust defaults to try to catch whatever properties the API might send
-                                    const returnPercent =
-                                        trader.totalReturnPercent ??
-                                        trader.returnPercentage ??
-                                        trader.return_percent ??
-                                        0;
-                                    const equity =
-                                        trader.totalEquity ?? trader.portfolioValue ?? trader.total_equity ?? 0;
-                                    const nameStr = trader.username || trader.email || "Anonymous Trader";
+                                    const returnPercent = trader.returnPercent ?? 0;
+                                    const equity = trader.totalValue ?? 0;
+                                    const nameStr = trader.email || "Anonymous Trader";
 
                                     return (
                                         <tr
-                                            key={trader.id || index}
+                                            key={trader.userId || index}
                                             className={isCurrentUser ? styles.currentUser : ""}
                                         >
                                             <td>{getRankBadge(rank)}</td>
@@ -157,6 +181,7 @@ const LeaderboardPage = () => {
                             </tbody>
                         </table>
                     </div>
+                    </>
                 )}
             </div>
         </div>

@@ -34,10 +34,34 @@ export async function warmAllSymbols(): Promise<void> {
         return;
     }
 
-    massiveRateLimiter.record();
+    const symbolsToWarm = SUPPORTED_SYMBOLS.slice(0, massiveRateLimiter.remainingCalls);
+    if (symbolsToWarm.length === 0) {
+        console.warn("[Pre-Warmer] Skipped: no remaining call budget.");
+        return;
+    }
 
     try {
-        const snapshots = await MassiveService.fetchWithRetry(() => MassiveService.fetchAllFromAggs(SUPPORTED_SYMBOLS));
+        const snapshots = [];
+
+        for (const symbol of symbolsToWarm) {
+            if (!massiveRateLimiter.canCall() || MassiveService.isRateLimited() || MassiveService.isCircuitOpen()) {
+                break;
+            }
+
+            massiveRateLimiter.record();
+
+            try {
+                const quote = await MassiveService.fetchWithRetry(() => MassiveService.fetchQuote(symbol));
+                snapshots.push(quote);
+            } catch (error: any) {
+                if (axios.isAxiosError(error) && error.response?.status === 429) {
+                    console.warn("[Pre-Warmer] Massive returned 429. Ending warm cycle early.");
+                    break;
+                }
+
+                console.error(`[Pre-Warmer] Failed for ${symbol}:`, error?.message || "Unknown error");
+            }
+        }
 
         for (const quote of snapshots) {
             const key = `quote_${quote.symbol}`;
@@ -45,7 +69,6 @@ export async function warmAllSymbols(): Promise<void> {
             stockCache.setStale(key, quote);
         }
 
-        MassiveService.recordSuccess();
         console.log(`[Pre-Warmer] Cached ${snapshots.length} symbols.`);
     } catch (error: any) {
         if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {

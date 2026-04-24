@@ -52,3 +52,16 @@ export const getCompanyNews = async (req: Request, res: Response, next: NextFunc
         next(err);
     }
 };
+
+export const getSparkline = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const rawSymbol = req.params.symbol;
+        const symbol = Array.isArray(rawSymbol) ? rawSymbol[0] : rawSymbol;
+        const { StockCacheService } = await import("../services/stockCache.service");
+        // Use 30 days of daily data for sparkline
+        const data = await StockCacheService.getHistoricalDataWithCache(symbol, 30);
+        res.json(data);
+    } catch (error: any) {
+        next(error);
+    }
+};

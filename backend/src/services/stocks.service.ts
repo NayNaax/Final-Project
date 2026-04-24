@@ -17,7 +17,6 @@ const SUPPORTED_SYMBOLS = [
     "JPM",
     "PG",
     "MA",
-    "PG",
 ];
 
 export class StocksService {
@@ -25,7 +24,7 @@ export class StocksService {
         const promises = SUPPORTED_SYMBOLS.map(async (symbol) => {
             try {
                 const quote = await StockCacheService.getQuoteWithCache(symbol);
-                return { symbol, ...quote.data, error: null };
+                return { ...quote.data, symbol, error: null };
             } catch (err: any) {
                 return { symbol, error: err.message || "Failed to fetch" };
             }

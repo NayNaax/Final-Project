@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { prisma } from "../lib/prisma";
 import { PortfolioService } from "./portfolio.service";
+import { AlertsService } from "./alerts.service";
 
 // Run every night at midnight (server time)
 export const initCronJobs = () => {
@@ -28,6 +29,18 @@ export const initCronJobs = () => {
             console.log("Finished scheduled portfolio snapshots.");
         } catch (err) {
             console.error("Error during batch snapshot processing:", err);
+        }
+    });
+
+    // Check price alerts every 5 minutes
+    cron.schedule("*/5 * * * *", async () => {
+        try {
+            const { triggeredCount } = await AlertsService.checkAndTrigger();
+            if (triggeredCount > 0) {
+                console.log(`Triggered ${triggeredCount} new price alert(s)`);
+            }
+        } catch (err) {
+            console.error("Error during scheduled alert checking:", err);
         }
     });
 

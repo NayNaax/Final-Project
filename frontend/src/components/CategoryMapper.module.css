@@ -1,0 +1,122 @@
+.container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.title {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin: 0 0 16px 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.formGroup {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.input, .select {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.input {
+    flex: 1;
+}
+
+.select {
+    flex: 2;
+}
+
+.addBtn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addBtn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.addBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mappingItem {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.symbolBadge {
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.arrow {
+    color: var(--text-secondary);
+    margin: 0 12px;
+}
+
+.categoryBadge {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    flex: 2;
+}
+
+.removeBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.removeBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+}
+
+.empty {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 12px 0;
+}

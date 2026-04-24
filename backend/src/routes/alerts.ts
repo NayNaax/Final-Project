@@ -9,5 +9,6 @@ router.use(requireAuth);
 router.get("/", alertsController.getAllForUser);
 router.post("/", alertsController.create);
 router.delete("/:id", alertsController.deleteAlert);
+router.patch("/:id/rearm", alertsController.rearm);
 
 export default router;

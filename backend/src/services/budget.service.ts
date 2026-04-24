@@ -48,7 +48,7 @@ export class BudgetService {
         return budget;
     }
 
-    static async updateBudget(userId: number, allocations: { category: string; targetPct: number; color?: string }[]) {
+    static async updateBudget(userId: number, allocations: { category: string; targetPct: number; color?: string }[], symbolCategoryMap?: Record<string, string>) {
         const budget = await this.getBudget(userId);
 
         await prisma.allocation.deleteMany({
@@ -69,9 +69,17 @@ export class BudgetService {
             ),
         );
 
+        if (symbolCategoryMap) {
+            await prisma.budget.update({
+                where: { id: budget.id },
+                data: { symbolCategoryMap },
+            });
+        }
+
         return {
             ...budget,
             allocations: createdAllocations,
+            symbolCategoryMap: symbolCategoryMap || budget.symbolCategoryMap,
         };
     }
 
@@ -93,9 +101,11 @@ export class BudgetService {
             actualValues["Other"] = 0;
         }
 
+        const symbolMap = (budget.symbolCategoryMap as Record<string, string>) || {};
+
         portfolio.positions.forEach((pos) => {
             const equity = pos.shares * pos.currentPrice;
-            const category = SECTOR_MAP[pos.symbol] || "Other";
+            const category = symbolMap[pos.symbol] || SECTOR_MAP[pos.symbol] || "Other";
 
             if (actualValues[category] !== undefined) {
                 actualValues[category] += equity;
@@ -120,9 +130,26 @@ export class BudgetService {
             };
         });
 
+        const suggestions: string[] = [];
+        
+        status.forEach(s => {
+            if (Math.abs(s.drift) > 5) {
+                if (s.drift > 0) {
+                    // Overweight
+                    const excessValue = totalAllocatedValue * (s.drift / 100);
+                    suggestions.push(`Consider reducing ${s.category} by $${excessValue.toFixed(2)} to align with target.`);
+                } else {
+                    // Underweight
+                    const deficitValue = totalAllocatedValue * (Math.abs(s.drift) / 100);
+                    suggestions.push(`Consider investing $${deficitValue.toFixed(2)} more into ${s.category} to meet target.`);
+                }
+            }
+        });
+
         return {
             totalAllocatedValue,
             status,
+            suggestions,
         };
     }
 }

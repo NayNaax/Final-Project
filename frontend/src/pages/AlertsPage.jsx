@@ -17,6 +17,9 @@ export function AlertsPage() {
     const [targetPrice, setTargetPrice] = useState("");
     const [operator, setOperator] = useState("ABOVE");
     const [isCreating, setIsCreating] = useState(false);
+    
+    const [activeTab, setActiveTab] = useState("active");
+    const [currentPrice, setCurrentPrice] = useState(null);
 
     useEffect(() => {
         loadAlerts();
@@ -37,6 +40,34 @@ export function AlertsPage() {
         }
     };
 
+    const handleSymbolSelect = async (s) => {
+        setSymbol(s);
+        try {
+            const data = await api.get(`/stocks/${s}`);
+            if (data?.current?.price) {
+                const price = data.current.price;
+                setCurrentPrice(price);
+                if (targetPrice) {
+                    const tgt = parseFloat(targetPrice);
+                    if (!isNaN(tgt)) {
+                        setOperator(tgt > price ? "ABOVE" : "BELOW");
+                    }
+                }
+            }
+        } catch (err) {}
+    };
+
+    const handleTargetPriceChange = (e) => {
+        const val = e.target.value;
+        setTargetPrice(val);
+        if (currentPrice !== null) {
+            const tgt = parseFloat(val);
+            if (!isNaN(tgt)) {
+                setOperator(tgt > currentPrice ? "ABOVE" : "BELOW");
+            }
+        }
+    };
+
     const handleCreate = async (e) => {
         e.preventDefault();
         if (!symbol || !targetPrice) return;
@@ -52,6 +83,7 @@ export function AlertsPage() {
             setSymbol("");
             setTargetPrice("");
             setOperator("ABOVE");
+            setCurrentPrice(null);
         } catch (err) {
             setError(err.message || "Failed to create alert");
         } finally {
@@ -67,6 +99,19 @@ export function AlertsPage() {
             setError(err.message || "Failed to delete alert");
         }
     };
+
+    const handleRearm = async (id) => {
+        try {
+            await api.patch(`/alerts/${id}/rearm`);
+            setAlerts(alerts.map(a => a.id === id ? { ...a, triggered: false, status: "PENDING" } : a));
+        } catch(err) {
+            setError(err.message || "Failed to re-arm alert");
+        }
+    };
+
+    const activeAlerts = alerts.filter(a => !a.triggered);
+    const triggeredAlerts = alerts.filter(a => a.triggered);
+    const displayAlerts = activeTab === "active" ? activeAlerts : triggeredAlerts;
 
     if (loading && alerts.length === 0) return <LoadingSpinner />;
 
@@ -91,8 +136,13 @@ export function AlertsPage() {
                                     placeholder="Search symbols"
                                     value={symbol}
                                     onChange={(s) => setSymbol(s)}
-                                    onSelect={(s) => setSymbol(s)}
+                                    onSelect={handleSymbolSelect}
                                 />
+                                {currentPrice !== null && (
+                                    <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                                        Current price: ${currentPrice.toFixed(2)}
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.formRow}>
@@ -123,7 +173,7 @@ export function AlertsPage() {
                                         step="0.01"
                                         min="0"
                                         value={targetPrice}
-                                        onChange={(e) => setTargetPrice(e.target.value)}
+                                        onChange={handleTargetPriceChange}
                                         className={styles.input}
                                         placeholder="0.00"
                                         required
@@ -145,13 +195,27 @@ export function AlertsPage() {
                 {/* Active Alerts List */}
                 <div className={styles.listSection}>
                     <div className={`${styles.card} glass`}>
-                        <div className={styles.listHeader}>
-                            <h2>Your Alerts ({alerts.length})</h2>
+                        <div className={styles.listHeader} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <h2>Your Alerts ({displayAlerts.length})</h2>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <button
+                                    onClick={() => setActiveTab("active")}
+                                    style={{ padding: "4px 12px", borderRadius: "12px", background: activeTab === "active" ? "var(--primary-color)" : "transparent", border: "1px solid var(--glass-border)", color: "white", cursor: "pointer" }}
+                                >
+                                    Active ({activeAlerts.length})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("triggered")}
+                                    style={{ padding: "4px 12px", borderRadius: "12px", background: activeTab === "triggered" ? "var(--accent-red)" : "transparent", border: "1px solid var(--glass-border)", color: "white", cursor: "pointer" }}
+                                >
+                                    Triggered ({triggeredAlerts.length})
+                                </button>
+                            </div>
                         </div>
 
                         <div className={styles.alertsList}>
-                            {alerts.length > 0 ? (
-                                alerts.map((alert) => (
+                            {displayAlerts.length > 0 ? (
+                                displayAlerts.map((alert) => (
                                     <div key={alert.id} className={styles.alertItem}>
                                         <div className={styles.alertInfo}>
                                             <div className={styles.alertMain}>
@@ -165,19 +229,30 @@ export function AlertsPage() {
                                             <div className={styles.alertMeta}>
                                                 <span>Created {new Date(alert.createdAt).toLocaleDateString()}</span>
                                                 <span
-                                                    className={`${styles.statusBadge} ${alert.status === "TRIGGERED" ? styles.statusTriggered : styles.statusPending}`}
+                                                    className={`${styles.statusBadge} ${alert.triggered ? styles.statusTriggered : styles.statusPending}`}
                                                 >
-                                                    {alert.status}
+                                                    {alert.triggered ? "TRIGGERED" : "PENDING"}
                                                 </span>
                                             </div>
                                         </div>
-                                        <button
-                                            className={styles.deleteBtn}
-                                            onClick={() => handleDelete(alert.id)}
-                                            title="Delete Alert"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                            {alert.triggered && (
+                                                <button
+                                                    onClick={() => handleRearm(alert.id)}
+                                                    style={{ padding: "4px 8px", background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", color: "white", borderRadius: "4px", fontSize: "0.8rem", cursor: "pointer" }}
+                                                    title="Re-arm Alert"
+                                                >
+                                                    Re-arm
+                                                </button>
+                                            )}
+                                            <button
+                                                className={styles.deleteBtn}
+                                                onClick={() => handleDelete(alert.id)}
+                                                title="Delete Alert"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             ) : (

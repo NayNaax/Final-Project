@@ -16,6 +16,7 @@ const budgetSchema = z.object({
         },
         { message: "Total allocations must equal 100%" },
     ),
+    symbolCategoryMap: z.record(z.string()).optional(),
 });
 
 export const getBudget = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,8 +30,8 @@ export const getBudget = async (req: Request, res: Response, next: NextFunction)
 
 export const updateBudget = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { allocations } = budgetSchema.parse(req.body);
-        const budget = await BudgetService.updateBudget(req.user!.id, allocations);
+        const { allocations, symbolCategoryMap } = budgetSchema.parse(req.body);
+        const budget = await BudgetService.updateBudget(req.user!.id, allocations, symbolCategoryMap);
         res.json(budget);
     } catch (error) {
         next(error);

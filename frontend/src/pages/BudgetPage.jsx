@@ -16,12 +16,15 @@ import {
 import { api } from "../lib/apiClient";
 import { ErrorBanner } from "../components/ErrorBanner";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { CategoryMapper } from "../components/CategoryMapper";
+import { Link } from "react-router-dom";
 import styles from "./BudgetPage.module.css";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d", "#ffc658"];
 
 export const BudgetPage = () => {
     const [allocations, setAllocations] = useState([]);
+    const [symbolCategoryMap, setSymbolCategoryMap] = useState({});
     const [statusData, setStatusData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -39,8 +42,9 @@ export const BudgetPage = () => {
             const [budgetRes, statusRes] = await Promise.all([api.get("/budget"), api.get("/budget/status")]);
 
             // Format existing allocations or provide empty array
-            if (budgetRes && budgetRes.length > 0) {
-                setAllocations(budgetRes);
+            if (budgetRes && budgetRes.allocations) {
+                setAllocations(budgetRes.allocations);
+                setSymbolCategoryMap(budgetRes.symbolCategoryMap || {});
             } else {
                 setAllocations([]);
             }
@@ -55,7 +59,7 @@ export const BudgetPage = () => {
 
     const handleAllocationChange = (index, field, value) => {
         const newAllocations = [...allocations];
-        if (field === "targetPercentage") {
+        if (field === "targetPct") {
             newAllocations[index][field] = parseFloat(value) || 0;
         } else {
             newAllocations[index][field] = value;
@@ -65,7 +69,7 @@ export const BudgetPage = () => {
 
     const handleAddCategory = () => {
         const newColor = COLORS[allocations.length % COLORS.length];
-        setAllocations([...allocations, { category: "", targetPercentage: 0, color: newColor }]);
+        setAllocations([...allocations, { category: "", targetPct: 0, color: newColor }]);
         setIsEditing(true);
     };
 
@@ -80,13 +84,13 @@ export const BudgetPage = () => {
         setError("");
 
         // Validation
-        const total = allocations.reduce((sum, item) => sum + item.targetPercentage, 0);
+        const total = allocations.reduce((sum, item) => sum + (item.targetPct || 0), 0);
         if (Math.abs(total - 100) > 0.01 && allocations.length > 0) {
             setError(`Total allocation must equal 100%. Current total: ${total.toFixed(2)}%`);
             return;
         }
 
-        const validCategories = allocations.every((a) => a.category.trim() !== "");
+        const validCategories = allocations.every((a) => a.category && a.category.trim() !== "");
         if (!validCategories) {
             setError("All categories must have a name.");
             return;
@@ -94,7 +98,7 @@ export const BudgetPage = () => {
 
         setSaving(true);
         try {
-            await api.put("/budget", { allocations });
+            await api.put("/budget", { allocations, symbolCategoryMap });
             setIsEditing(false);
             // Refresh status to reflect new targets
             const statusRes = await api.get("/budget/status");
@@ -106,8 +110,34 @@ export const BudgetPage = () => {
         }
     };
 
+    const applyTemplate = (type) => {
+        let newAllocs = [];
+        if (type === "Conservative") {
+            newAllocs = [
+                { category: "Bonds/Cash", targetPct: 60, color: "#6b7280" },
+                { category: "ETF", targetPct: 30, color: "#8b5cf6" },
+                { category: "Equities", targetPct: 10, color: "#3b82f6" },
+            ];
+        } else if (type === "Balanced") {
+            newAllocs = [
+                { category: "Bonds/Cash", targetPct: 30, color: "#6b7280" },
+                { category: "ETF", targetPct: 40, color: "#8b5cf6" },
+                { category: "Equities", targetPct: 30, color: "#3b82f6" },
+            ];
+        } else if (type === "Aggressive") {
+            newAllocs = [
+                { category: "Tech", targetPct: 40, color: "#3b82f6" },
+                { category: "Healthcare", targetPct: 20, color: "#ef4444" },
+                { category: "ETF", targetPct: 20, color: "#8b5cf6" },
+                { category: "Other", targetPct: 20, color: "#f59e0b" },
+            ];
+        }
+        setAllocations(newAllocs);
+        setIsEditing(true);
+    };
+
     const totalPercentage = useMemo(() => {
-        return allocations.reduce((sum, item) => sum + item.targetPercentage, 0);
+        return allocations.reduce((sum, item) => sum + (item.targetPct || 0), 0);
     }, [allocations]);
 
     if (loading) return <LoadingSpinner />;
@@ -138,30 +168,44 @@ export const BudgetPage = () => {
                         )}
                     </div>
 
-                    <div className={styles.donutchartContainer}>
+                    <div className={styles.donutchartContainer} style={{ position: "relative" }}>
                         {allocations.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={250}>
-                                <PieChart>
-                                    <Pie
-                                        data={allocations}
-                                        dataKey="targetPercentage"
-                                        nameKey="category"
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={2}
-                                    >
-                                        {allocations.map((entry, index) => (
-                                            <Cell
-                                                key={`cell-${index}`}
-                                                fill={entry.color || COLORS[index % COLORS.length]}
-                                            />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip formatter={(value) => `${value.toFixed(2)}%`} />
-                                </PieChart>
-                            </ResponsiveContainer>
+                            <>
+                                <ResponsiveContainer width="100%" height={260}>
+                                    <PieChart>
+                                        <Pie
+                                            data={allocations}
+                                            dataKey="targetPct"
+                                            nameKey="category"
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={70}
+                                            outerRadius={90}
+                                            paddingAngle={2}
+                                        >
+                                            {allocations.map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={entry.color || COLORS[index % COLORS.length]}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip formatter={(value) => `${parseFloat(value).toFixed(2)}%`} />
+                                        <Legend verticalAlign="bottom" height={36} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div style={{
+                                    position: "absolute",
+                                    top: "43%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    textAlign: "center",
+                                    pointerEvents: "none"
+                                }}>
+                                    <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>100%</div>
+                                    <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Target</div>
+                                </div>
+                            </>
                         ) : (
                             <div className={styles.emptyChart}>No targets set yet.</div>
                         )}
@@ -188,9 +232,9 @@ export const BudgetPage = () => {
                                         <input
                                             type="number"
                                             className={styles.input}
-                                            value={item.targetPercentage}
+                                            value={item.targetPct || 0}
                                             onChange={(e) =>
-                                                handleAllocationChange(index, "targetPercentage", e.target.value)
+                                                handleAllocationChange(index, "targetPct", e.target.value)
                                             }
                                             min="0"
                                             max="100"
@@ -209,7 +253,7 @@ export const BudgetPage = () => {
                                 ) : (
                                     <>
                                         <span className={styles.cellStatic}>{item.category}</span>
-                                        <span className={styles.cellStatic}>{item.targetPercentage.toFixed(1)}%</span>
+                                        <span className={styles.cellStatic}>{(item.targetPct || 0).toFixed(1)}%</span>
                                         <div className={styles.colorDot} style={{ backgroundColor: item.color }}></div>
                                     </>
                                 )}
@@ -218,13 +262,20 @@ export const BudgetPage = () => {
 
                         {isEditing && (
                             <div className={styles.editFooter}>
-                                <button className={styles.addBtn} onClick={handleAddCategory}>
-                                    <Plus size={16} /> Add Category
-                                </button>
-                                <div
-                                    className={`${styles.total} ${Math.abs(totalPercentage - 100) > 0.01 ? styles.errorTotal : ""}`}
-                                >
-                                    Total: {totalPercentage.toFixed(1)}%
+                                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
+                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Conservative")}>Conservative</button>
+                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Balanced")}>Balanced</button>
+                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Aggressive")}>Aggressive</button>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+                                    <button className={styles.addBtn} onClick={handleAddCategory}>
+                                        <Plus size={16} /> Add Category
+                                    </button>
+                                    <div
+                                        className={`${styles.total} ${Math.abs(totalPercentage - 100) > 0.01 ? styles.errorTotal : ""}`}
+                                    >
+                                        Total: {totalPercentage.toFixed(1)}%
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -251,14 +302,20 @@ export const BudgetPage = () => {
                                         <YAxis dataKey="category" type="category" width={100} tick={{ fontSize: 12 }} />
                                         <Tooltip formatter={(value) => `${parseFloat(value).toFixed(2)}%`} />
                                         <Legend />
-                                        <Bar dataKey="actualPercentage" name="Actual %" fill="#8884d8" />
-                                        <Bar dataKey="targetPercentage" name="Target %" fill="#82ca9d" />
+                                        <Bar dataKey="actualPct" name="Actual %" fill="#8884d8" />
+                                        <Bar dataKey="targetPct" name="Target %" fill="#82ca9d" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         ) : (
                             <div className={styles.emptyState}>No portfolio or target data available.</div>
                         )}
+                        
+                        <CategoryMapper 
+                            mapping={symbolCategoryMap} 
+                            onMappingChange={setSymbolCategoryMap}
+                            allocations={allocations}
+                        />
                     </div>
 
                     <div className={styles.card}>
@@ -267,11 +324,15 @@ export const BudgetPage = () => {
                         </div>
                         <div className={styles.suggestionsList}>
                             {statusData && statusData.suggestions && statusData.suggestions.length > 0 ? (
-                                statusData.suggestions.map((suggestion, idx) => (
+                                statusData.suggestions.map((suggestion, idx) => {
+                                    // Extract symbol/category or something? The string already has text. Let's just render the text and a "Trade" link to generic /trade (or /stocks)
+                                    return (
                                     <div key={idx} className={styles.suggestionItem}>
                                         <div className={styles.suggestionText}>{suggestion}</div>
+                                        <Link to="/portfolio" className={styles.tradeLink}>Trade</Link>
                                     </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className={styles.emptyState}>
                                     {statusData?.status?.length > 0

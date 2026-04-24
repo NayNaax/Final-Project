@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Edit2, Trash2, X, Eye } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Eye, ShoppingCart, AlertCircle, ArrowUpDown } from "lucide-react";
 import { api } from "../lib/apiClient";
 import { StockSearch } from "../components/StockSearch";
 import { Modal } from "../components/Modal";
@@ -8,6 +8,8 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ErrorBanner } from "../components/ErrorBanner";
 import { StockPriceBadge } from "../components/StockPriceBadge";
 import { EmptyState } from "../components/EmptyState";
+import { SparklineChart } from "../components/SparklineChart";
+import { WatchlistNewsFeed } from "../components/WatchlistNewsFeed";
 import styles from "./WatchlistsPage.module.css";
 
 export function WatchlistsPage() {
@@ -24,6 +26,17 @@ export function WatchlistsPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [actionName, setActionName] = useState("");
     const [actionLoading, setActionLoading] = useState(false);
+    
+    // Sort state
+    const [sortConfig, setSortConfig] = useState({ key: "symbol", direction: "asc" });
+
+    const handleSort = (key) => {
+        let direction = "asc";
+        if (sortConfig.key === key && sortConfig.direction === "asc") {
+            direction = "desc";
+        }
+        setSortConfig({ key, direction });
+    };
 
     useEffect(() => {
         loadWatchlists();
@@ -165,6 +178,23 @@ export function WatchlistsPage() {
         setIsRenameOpen(true);
     };
 
+    const sortedSymbols = selectedList ? [...selectedList.symbols].sort((a, b) => {
+        const pA = prices[a];
+        const pB = prices[b];
+        let valA, valB;
+        if (sortConfig.key === "price") {
+            valA = pA ? pA.price : 0;
+            valB = pB ? pB.price : 0;
+        } else {
+            valA = a;
+            valB = b;
+        }
+
+        if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+    }) : [];
+
     if (loading && watchlists.length === 0) return <LoadingSpinner />;
 
     return (
@@ -246,13 +276,14 @@ export function WatchlistsPage() {
                                     <table className={styles.table}>
                                         <thead>
                                             <tr>
-                                                <th>Symbol</th>
-                                                <th>Price</th>
-                                                <th>Action</th>
+                                                <th onClick={() => handleSort("symbol")} style={{ cursor: "pointer", userSelect: "none" }}>Symbol <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }}/></th>
+                                                <th>Trend (30d)</th>
+                                                <th onClick={() => handleSort("price")} style={{ cursor: "pointer", userSelect: "none" }}>Price <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }}/></th>
+                                                <th style={{ textAlign: "right" }}>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {selectedList.symbols.map((symbol) => {
+                                            {sortedSymbols.map((symbol) => {
                                                 const pData = prices[symbol];
                                                 return (
                                                     <tr key={symbol}>
@@ -265,6 +296,9 @@ export function WatchlistsPage() {
                                                                 <Eye size={14} className={styles.viewIcon} />
                                                             </div>
                                                         </td>
+                                                        <td style={{ width: "120px", padding: "4px 16px" }}>
+                                                            <SparklineChart symbol={symbol} color={pData && pData.changePercent >= 0 ? "#10b981" : "#ef4444"} />
+                                                        </td>
                                                         <td>
                                                             {pData ? (
                                                                 <StockPriceBadge
@@ -276,17 +310,36 @@ export function WatchlistsPage() {
                                                                 <span className={styles.loadingPrice}>Loading...</span>
                                                             )}
                                                         </td>
-                                                        <td className={styles.actionCell}>
-                                                            <button
-                                                                className={styles.removeBtn}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleRemoveSymbol(symbol);
-                                                                }}
-                                                                title="Remove"
-                                                            >
-                                                                <X size={18} />
-                                                            </button>
+                                                        <td className={styles.actionCell} style={{ textAlign: "right" }}>
+                                                            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                                                                <button
+                                                                    className={styles.iconBtn}
+                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/stocks/${symbol}`); }}
+                                                                    title="Trade"
+                                                                    style={{ padding: "4px" }}
+                                                                >
+                                                                    <ShoppingCart size={16} />
+                                                                </button>
+                                                                <button
+                                                                    className={styles.iconBtn}
+                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/alerts`); }}
+                                                                    title="Set Alert"
+                                                                    style={{ padding: "4px" }}
+                                                                >
+                                                                    <AlertCircle size={16} />
+                                                                </button>
+                                                                <button
+                                                                    className={styles.removeBtn}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleRemoveSymbol(symbol);
+                                                                    }}
+                                                                    title="Remove from Watchlist"
+                                                                    style={{ padding: "4px" }}
+                                                                >
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 );
@@ -301,6 +354,10 @@ export function WatchlistsPage() {
                                     />
                                 )}
                             </div>
+                            
+                            {selectedList.symbols.length > 0 && (
+                                <WatchlistNewsFeed symbols={sortedSymbols} />
+                            )}
                         </div>
                     ) : (
                         <div className={`${styles.contentCard} ${styles.centerCard} glass`}>
