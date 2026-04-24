@@ -17,7 +17,7 @@ export function AlertsPage() {
     const [targetPrice, setTargetPrice] = useState("");
     const [operator, setOperator] = useState("ABOVE");
     const [isCreating, setIsCreating] = useState(false);
-    
+
     const [activeTab, setActiveTab] = useState("active");
     const [currentPrice, setCurrentPrice] = useState(null);
 
@@ -76,7 +76,7 @@ export function AlertsPage() {
             setIsCreating(true);
             setError("");
             const price = parseFloat(targetPrice);
-            const newAlert = await api.post("/alerts", { symbol, targetPrice: price, operator });
+            const newAlert = await api.post("/alerts", { symbol, targetPrice: price, direction: operator });
             setAlerts([newAlert, ...alerts]);
 
             // Reset form
@@ -103,14 +103,14 @@ export function AlertsPage() {
     const handleRearm = async (id) => {
         try {
             await api.patch(`/alerts/${id}/rearm`);
-            setAlerts(alerts.map(a => a.id === id ? { ...a, triggered: false, status: "PENDING" } : a));
-        } catch(err) {
+            setAlerts(alerts.map((a) => (a.id === id ? { ...a, triggered: false, status: "PENDING" } : a)));
+        } catch (err) {
             setError(err.message || "Failed to re-arm alert");
         }
     };
 
-    const activeAlerts = alerts.filter(a => !a.triggered);
-    const triggeredAlerts = alerts.filter(a => a.triggered);
+    const activeAlerts = alerts.filter((a) => !a.triggered);
+    const triggeredAlerts = alerts.filter((a) => a.triggered);
     const displayAlerts = activeTab === "active" ? activeAlerts : triggeredAlerts;
 
     if (loading && alerts.length === 0) return <LoadingSpinner />;
@@ -195,18 +195,35 @@ export function AlertsPage() {
                 {/* Active Alerts List */}
                 <div className={styles.listSection}>
                     <div className={`${styles.card} glass`}>
-                        <div className={styles.listHeader} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div
+                            className={styles.listHeader}
+                            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                        >
                             <h2>Your Alerts ({displayAlerts.length})</h2>
                             <div style={{ display: "flex", gap: "8px" }}>
                                 <button
                                     onClick={() => setActiveTab("active")}
-                                    style={{ padding: "4px 12px", borderRadius: "12px", background: activeTab === "active" ? "var(--primary-color)" : "transparent", border: "1px solid var(--glass-border)", color: "white", cursor: "pointer" }}
+                                    style={{
+                                        padding: "4px 12px",
+                                        borderRadius: "12px",
+                                        background: activeTab === "active" ? "var(--primary-color)" : "transparent",
+                                        border: "1px solid var(--glass-border)",
+                                        color: "white",
+                                        cursor: "pointer",
+                                    }}
                                 >
                                     Active ({activeAlerts.length})
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("triggered")}
-                                    style={{ padding: "4px 12px", borderRadius: "12px", background: activeTab === "triggered" ? "var(--accent-red)" : "transparent", border: "1px solid var(--glass-border)", color: "white", cursor: "pointer" }}
+                                    style={{
+                                        padding: "4px 12px",
+                                        borderRadius: "12px",
+                                        background: activeTab === "triggered" ? "var(--accent-red)" : "transparent",
+                                        border: "1px solid var(--glass-border)",
+                                        color: "white",
+                                        cursor: "pointer",
+                                    }}
                                 >
                                     Triggered ({triggeredAlerts.length})
                                 </button>
@@ -215,46 +232,60 @@ export function AlertsPage() {
 
                         <div className={styles.alertsList}>
                             {displayAlerts.length > 0 ? (
-                                displayAlerts.map((alert) => (
-                                    <div key={alert.id} className={styles.alertItem}>
-                                        <div className={styles.alertInfo}>
-                                            <div className={styles.alertMain}>
-                                                <span className={styles.symbol}>{alert.symbol}</span>
-                                                <ArrowRight size={14} className={styles.arrowIcon} />
-                                                <span className={styles.condition}>
-                                                    {alert.operator === "ABOVE" ? "≥" : "≤"} $
-                                                    {alert.targetPrice.toFixed(2)}
-                                                </span>
+                                displayAlerts.map((alert) => {
+                                    const alertDirection = alert.direction || alert.operator;
+
+                                    return (
+                                        <div key={alert.id} className={styles.alertItem}>
+                                            <div className={styles.alertInfo}>
+                                                <div className={styles.alertMain}>
+                                                    <span className={styles.symbol}>{alert.symbol}</span>
+                                                    <ArrowRight size={14} className={styles.arrowIcon} />
+                                                    <span className={styles.condition}>
+                                                        {alertDirection === "ABOVE" ? "≥" : "≤"} $
+                                                        {alert.targetPrice.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <div className={styles.alertMeta}>
+                                                    <span>
+                                                        Created {new Date(alert.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                    <span
+                                                        className={`${styles.statusBadge} ${alert.triggered ? styles.statusTriggered : styles.statusPending}`}
+                                                    >
+                                                        {alert.triggered ? "TRIGGERED" : "PENDING"}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className={styles.alertMeta}>
-                                                <span>Created {new Date(alert.createdAt).toLocaleDateString()}</span>
-                                                <span
-                                                    className={`${styles.statusBadge} ${alert.triggered ? styles.statusTriggered : styles.statusPending}`}
-                                                >
-                                                    {alert.triggered ? "TRIGGERED" : "PENDING"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                            {alert.triggered && (
+                                            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                                {alert.triggered && (
+                                                    <button
+                                                        onClick={() => handleRearm(alert.id)}
+                                                        style={{
+                                                            padding: "4px 8px",
+                                                            background: "var(--bg-tertiary)",
+                                                            border: "1px solid var(--glass-border)",
+                                                            color: "white",
+                                                            borderRadius: "4px",
+                                                            fontSize: "0.8rem",
+                                                            cursor: "pointer",
+                                                        }}
+                                                        title="Re-arm Alert"
+                                                    >
+                                                        Re-arm
+                                                    </button>
+                                                )}
                                                 <button
-                                                    onClick={() => handleRearm(alert.id)}
-                                                    style={{ padding: "4px 8px", background: "var(--bg-tertiary)", border: "1px solid var(--glass-border)", color: "white", borderRadius: "4px", fontSize: "0.8rem", cursor: "pointer" }}
-                                                    title="Re-arm Alert"
+                                                    className={styles.deleteBtn}
+                                                    onClick={() => handleDelete(alert.id)}
+                                                    title="Delete Alert"
                                                 >
-                                                    Re-arm
+                                                    <Trash2 size={18} />
                                                 </button>
-                                            )}
-                                            <button
-                                                className={styles.deleteBtn}
-                                                onClick={() => handleDelete(alert.id)}
-                                                title="Delete Alert"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <EmptyState
                                     icon={Bell}

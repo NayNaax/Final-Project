@@ -96,8 +96,20 @@ class ApiClient {
                 throw new Error(this.formatErrorMessage(error) || `HTTP ${response.status}`);
             }
 
-            // Parse and return JSON
-            return await response.json();
+            // 204/205 responses intentionally have no body.
+            if (response.status === 204 || response.status === 205) {
+                return null;
+            }
+
+            // Only parse JSON when a JSON content type is provided.
+            const contentType = response.headers.get("content-type") || "";
+            if (contentType.includes("application/json")) {
+                return await response.json();
+            }
+
+            // Some successful endpoints may return an empty body.
+            const text = await response.text();
+            return text ? text : null;
         } catch (error) {
             if (error instanceof TypeError) {
                 throw new Error(

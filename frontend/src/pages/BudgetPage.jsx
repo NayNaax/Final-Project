@@ -22,6 +22,8 @@ import styles from "./BudgetPage.module.css";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d", "#ffc658"];
 
+const createRowId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
 export const BudgetPage = () => {
     const [allocations, setAllocations] = useState([]);
     const [symbolCategoryMap, setSymbolCategoryMap] = useState({});
@@ -43,7 +45,12 @@ export const BudgetPage = () => {
 
             // Format existing allocations or provide empty array
             if (budgetRes && budgetRes.allocations) {
-                setAllocations(budgetRes.allocations);
+                setAllocations(
+                    budgetRes.allocations.map((allocation) => ({
+                        ...allocation,
+                        _rowId: allocation._rowId || createRowId(),
+                    })),
+                );
                 setSymbolCategoryMap(budgetRes.symbolCategoryMap || {});
             } else {
                 setAllocations([]);
@@ -58,25 +65,28 @@ export const BudgetPage = () => {
     };
 
     const handleAllocationChange = (index, field, value) => {
-        const newAllocations = [...allocations];
-        if (field === "targetPct") {
-            newAllocations[index][field] = parseFloat(value) || 0;
-        } else {
-            newAllocations[index][field] = value;
-        }
-        setAllocations(newAllocations);
+        setAllocations((prev) =>
+            prev.map((allocation, i) => {
+                if (i !== index) return allocation;
+
+                return {
+                    ...allocation,
+                    [field]: field === "targetPct" ? parseFloat(value) || 0 : value,
+                };
+            }),
+        );
     };
 
     const handleAddCategory = () => {
-        const newColor = COLORS[allocations.length % COLORS.length];
-        setAllocations([...allocations, { category: "", targetPct: 0, color: newColor }]);
+        setAllocations((prev) => {
+            const newColor = COLORS[prev.length % COLORS.length];
+            return [...prev, { _rowId: createRowId(), category: "", targetPct: 0, color: newColor }];
+        });
         setIsEditing(true);
     };
 
     const handleRemoveCategory = (index) => {
-        const newAllocations = [...allocations];
-        newAllocations.splice(index, 1);
-        setAllocations(newAllocations);
+        setAllocations((prev) => prev.filter((_, i) => i !== index));
         setIsEditing(true);
     };
 
@@ -98,7 +108,8 @@ export const BudgetPage = () => {
 
         setSaving(true);
         try {
-            await api.put("/budget", { allocations, symbolCategoryMap });
+            const payloadAllocations = allocations.map(({ _rowId, ...allocation }) => allocation);
+            await api.put("/budget", { allocations: payloadAllocations, symbolCategoryMap });
             setIsEditing(false);
             // Refresh status to reflect new targets
             const statusRes = await api.get("/budget/status");
@@ -114,22 +125,22 @@ export const BudgetPage = () => {
         let newAllocs = [];
         if (type === "Conservative") {
             newAllocs = [
-                { category: "Bonds/Cash", targetPct: 60, color: "#6b7280" },
-                { category: "ETF", targetPct: 30, color: "#8b5cf6" },
-                { category: "Equities", targetPct: 10, color: "#3b82f6" },
+                { _rowId: createRowId(), category: "Bonds/Cash", targetPct: 60, color: "#6b7280" },
+                { _rowId: createRowId(), category: "ETF", targetPct: 30, color: "#8b5cf6" },
+                { _rowId: createRowId(), category: "Equities", targetPct: 10, color: "#3b82f6" },
             ];
         } else if (type === "Balanced") {
             newAllocs = [
-                { category: "Bonds/Cash", targetPct: 30, color: "#6b7280" },
-                { category: "ETF", targetPct: 40, color: "#8b5cf6" },
-                { category: "Equities", targetPct: 30, color: "#3b82f6" },
+                { _rowId: createRowId(), category: "Bonds/Cash", targetPct: 30, color: "#6b7280" },
+                { _rowId: createRowId(), category: "ETF", targetPct: 40, color: "#8b5cf6" },
+                { _rowId: createRowId(), category: "Equities", targetPct: 30, color: "#3b82f6" },
             ];
         } else if (type === "Aggressive") {
             newAllocs = [
-                { category: "Tech", targetPct: 40, color: "#3b82f6" },
-                { category: "Healthcare", targetPct: 20, color: "#ef4444" },
-                { category: "ETF", targetPct: 20, color: "#8b5cf6" },
-                { category: "Other", targetPct: 20, color: "#f59e0b" },
+                { _rowId: createRowId(), category: "Tech", targetPct: 40, color: "#3b82f6" },
+                { _rowId: createRowId(), category: "Healthcare", targetPct: 20, color: "#ef4444" },
+                { _rowId: createRowId(), category: "ETF", targetPct: 20, color: "#8b5cf6" },
+                { _rowId: createRowId(), category: "Other", targetPct: 20, color: "#f59e0b" },
             ];
         }
         setAllocations(newAllocs);
@@ -153,15 +164,20 @@ export const BudgetPage = () => {
 
             <div className={styles.grid}>
                 {/* Allocation Editor */}
-                <section className={styles.card}>
+                <section className={`${styles.card} glass`}>
                     <div className={styles.cardHeader}>
                         <h2>Target Allocation</h2>
                         {!isEditing && allocations.length > 0 ? (
-                            <button className={styles.actionBtn} onClick={() => setIsEditing(true)}>
+                            <button type="button" className={styles.actionBtn} onClick={() => setIsEditing(true)}>
                                 Edit
                             </button>
                         ) : (
-                            <button className={styles.actionBtnPrimary} onClick={handleSave} disabled={saving}>
+                            <button
+                                type="button"
+                                className={styles.actionBtnPrimary}
+                                onClick={handleSave}
+                                disabled={saving}
+                            >
                                 {saving ? <RefreshCw className={styles.spinIcon} size={16} /> : <Save size={16} />}
                                 Save
                             </button>
@@ -194,14 +210,16 @@ export const BudgetPage = () => {
                                         <Legend verticalAlign="bottom" height={36} />
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div style={{
-                                    position: "absolute",
-                                    top: "43%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    textAlign: "center",
-                                    pointerEvents: "none"
-                                }}>
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "43%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        textAlign: "center",
+                                        pointerEvents: "none",
+                                    }}
+                                >
                                     <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>100%</div>
                                     <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Target</div>
                                 </div>
@@ -219,7 +237,7 @@ export const BudgetPage = () => {
                             {isEditing && <span></span>}
                         </div>
                         {allocations.map((item, index) => (
-                            <div key={index} className={styles.allocationRow}>
+                            <div key={item._rowId || `${item.category}-${index}`} className={styles.allocationRow}>
                                 {isEditing ? (
                                     <>
                                         <input
@@ -233,9 +251,7 @@ export const BudgetPage = () => {
                                             type="number"
                                             className={styles.input}
                                             value={item.targetPct || 0}
-                                            onChange={(e) =>
-                                                handleAllocationChange(index, "targetPct", e.target.value)
-                                            }
+                                            onChange={(e) => handleAllocationChange(index, "targetPct", e.target.value)}
                                             min="0"
                                             max="100"
                                             step="0.1"
@@ -246,7 +262,11 @@ export const BudgetPage = () => {
                                             value={item.color || "#000000"}
                                             onChange={(e) => handleAllocationChange(index, "color", e.target.value)}
                                         />
-                                        <button className={styles.iconBtn} onClick={() => handleRemoveCategory(index)}>
+                                        <button
+                                            type="button"
+                                            className={styles.iconBtn}
+                                            onClick={() => handleRemoveCategory(index)}
+                                        >
                                             <Trash2 size={16} />
                                         </button>
                                     </>
@@ -263,12 +283,37 @@ export const BudgetPage = () => {
                         {isEditing && (
                             <div className={styles.editFooter}>
                                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
-                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Conservative")}>Conservative</button>
-                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Balanced")}>Balanced</button>
-                                    <button className={styles.templateBtn} onClick={() => applyTemplate("Aggressive")}>Aggressive</button>
+                                    <button
+                                        type="button"
+                                        className={styles.templateBtn}
+                                        onClick={() => applyTemplate("Conservative")}
+                                    >
+                                        Conservative
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.templateBtn}
+                                        onClick={() => applyTemplate("Balanced")}
+                                    >
+                                        Balanced
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.templateBtn}
+                                        onClick={() => applyTemplate("Aggressive")}
+                                    >
+                                        Aggressive
+                                    </button>
                                 </div>
-                                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-                                    <button className={styles.addBtn} onClick={handleAddCategory}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <button type="button" className={styles.addBtn} onClick={handleAddCategory}>
                                         <Plus size={16} /> Add Category
                                     </button>
                                     <div
@@ -284,7 +329,7 @@ export const BudgetPage = () => {
 
                 {/* Allocation vs Reality & Suggestions */}
                 <section className={styles.sidebar}>
-                    <div className={styles.card}>
+                    <div className={`${styles.card} glass`}>
                         <div className={styles.cardHeader}>
                             <h2>Actual vs Target</h2>
                         </div>
@@ -310,15 +355,15 @@ export const BudgetPage = () => {
                         ) : (
                             <div className={styles.emptyState}>No portfolio or target data available.</div>
                         )}
-                        
-                        <CategoryMapper 
-                            mapping={symbolCategoryMap} 
+
+                        <CategoryMapper
+                            mapping={symbolCategoryMap}
                             onMappingChange={setSymbolCategoryMap}
                             allocations={allocations}
                         />
                     </div>
 
-                    <div className={styles.card}>
+                    <div className={`${styles.card} glass`}>
                         <div className={styles.cardHeader}>
                             <h2>Rebalancing Suggestions</h2>
                         </div>
@@ -327,10 +372,12 @@ export const BudgetPage = () => {
                                 statusData.suggestions.map((suggestion, idx) => {
                                     // Extract symbol/category or something? The string already has text. Let's just render the text and a "Trade" link to generic /trade (or /stocks)
                                     return (
-                                    <div key={idx} className={styles.suggestionItem}>
-                                        <div className={styles.suggestionText}>{suggestion}</div>
-                                        <Link to="/portfolio" className={styles.tradeLink}>Trade</Link>
-                                    </div>
+                                        <div key={idx} className={styles.suggestionItem}>
+                                            <div className={styles.suggestionText}>{suggestion}</div>
+                                            <Link to="/portfolio" className={styles.tradeLink}>
+                                                Trade
+                                            </Link>
+                                        </div>
                                     );
                                 })
                             ) : (

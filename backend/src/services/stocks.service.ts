@@ -6,6 +6,7 @@ const SUPPORTED_SYMBOLS = [
     "AAPL",
     "MSFT",
     "GOOG",
+    "GOOGL",
     "AMZN",
     "NVDA",
     "META",
@@ -34,31 +35,33 @@ export class StocksService {
     }
 
     static async getStockData(symbol: string) {
-        if (!SUPPORTED_SYMBOLS.includes(symbol.toUpperCase())) {
-            throw new Error(`Symbol ${symbol} is not currently supported.`);
+        const normalizedSymbol = symbol.toUpperCase().trim();
+
+        if (!SUPPORTED_SYMBOLS.includes(normalizedSymbol)) {
+            throw new Error(`Symbol ${normalizedSymbol} is not currently supported.`);
         }
 
         // Fetch historical data for the chart
         let historicalData: any[] = [];
         try {
-            historicalData = await StockCacheService.getHistoricalDataWithCache(symbol.toUpperCase(), 365);
+            historicalData = await StockCacheService.getHistoricalDataWithCache(normalizedSymbol, 365);
         } catch (err: any) {
-            console.error(`Failed to fetch historical data for ${symbol}:`, err.message);
+            console.error(`Failed to fetch historical data for ${normalizedSymbol}:`, err.message);
             // Continue without historical data - the current price will still load
         }
 
         // Fetch the live price from our cache / upstream wrapper
         let liveQuote;
         try {
-            liveQuote = await StockCacheService.getQuoteWithCache(symbol.toUpperCase());
+            liveQuote = await StockCacheService.getQuoteWithCache(normalizedSymbol);
         } catch (err: any) {
-            console.error(`Stock fetch error for ${symbol}:`, err.message);
+            console.error(`Stock fetch error for ${normalizedSymbol}:`, err.message);
             // Re-throw the error so the API can return a proper error response
             throw new Error(err.message || "Failed to fetch stock data");
         }
 
         return {
-            symbol: symbol.toUpperCase(),
+            symbol: normalizedSymbol,
             current: liveQuote.data,
             history: historicalData || [],
             historicalParams:
