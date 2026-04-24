@@ -1,3 +1,4 @@
+/* SkeletonBlock component styles for structure, interaction states, and visual hierarchy. */
 .skeleton {
     display: inline-block;
     background: linear-gradient(

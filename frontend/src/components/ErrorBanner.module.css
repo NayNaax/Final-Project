@@ -1,3 +1,4 @@
+/* ErrorBanner component styles for structure, interaction states, and visual hierarchy. */
 .errorBanner {
     display: flex;
     align-items: center;

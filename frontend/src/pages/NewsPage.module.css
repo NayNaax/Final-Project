@@ -1,3 +1,4 @@
+/* NewsPage page styles covering layout, section states, and responsive behavior. */
 .container {
     display: flex;
     flex-direction: column;
