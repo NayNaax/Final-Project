@@ -11,10 +11,10 @@ export function SparklineChart({ symbol, color = "#10b981", width = 120, height 
         let mounted = true;
         const fetchSparkline = async () => {
             try {
-                const res = await api.get(`/stocks/${symbol}/sparkline`);
+                const res = await api.get(`/stocks/${symbol}/sparkline`, { cacheMs: 60000 });
                 if (mounted && Array.isArray(res)) {
                     // Extract close prices
-                    setData(res.map(d => ({ price: d.close })));
+                    setData(res.map((d) => ({ price: d.close })));
                 }
             } catch (err) {
                 console.error("Failed to load sparkline for", symbol);
@@ -24,14 +24,26 @@ export function SparklineChart({ symbol, color = "#10b981", width = 120, height 
         };
 
         fetchSparkline();
-        return () => { mounted = false; };
+        return () => {
+            mounted = false;
+        };
     }, [symbol]);
 
-    if (loading) return <div style={{ width, height, display: "flex", alignItems: "center", justifyContent: "center" }}><LoadingSpinner /></div>;
-    if (data.length === 0) return <div style={{ width, height, opacity: 0.5, fontSize: '0.8rem', display: 'flex', alignItems: 'center' }}>No data</div>;
+    if (loading)
+        return (
+            <div style={{ width, height, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <LoadingSpinner />
+            </div>
+        );
+    if (data.length === 0)
+        return (
+            <div style={{ width, height, opacity: 0.5, fontSize: "0.8rem", display: "flex", alignItems: "center" }}>
+                No data
+            </div>
+        );
 
-    const min = Math.min(...data.map(d => d.price));
-    const max = Math.max(...data.map(d => d.price));
+    const min = Math.min(...data.map((d) => d.price));
+    const max = Math.max(...data.map((d) => d.price));
 
     return (
         <div style={{ width, height }}>
@@ -43,14 +55,14 @@ export function SparklineChart({ symbol, color = "#10b981", width = 120, height 
                             <stop offset="95%" stopColor={color} stopOpacity={0} />
                         </linearGradient>
                     </defs>
-                    <YAxis domain={['dataMin', 'dataMax']} hide />
-                    <Area 
-                        type="monotone" 
-                        dataKey="price" 
-                        stroke={color} 
-                        fillOpacity={1} 
-                        fill={`url(#color-${symbol})`} 
-                        strokeWidth={1.5} 
+                    <YAxis domain={["dataMin", "dataMax"]} hide />
+                    <Area
+                        type="monotone"
+                        dataKey="price"
+                        stroke={color}
+                        fillOpacity={1}
+                        fill={`url(#color-${symbol})`}
+                        strokeWidth={1.5}
                         isAnimationActive={false}
                     />
                 </AreaChart>

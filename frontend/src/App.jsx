@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { SettingsProvider } from "./context/SettingsContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -23,10 +23,11 @@ import { JournalPage } from "./pages/JournalPage";
 import { NewsPage } from "./pages/NewsPage";
 import "./index.css";
 
-// Dashboard layout placeholder - will be implemented in phases 3-8
-const DashboardShell = ({ children }) => (
+const DashboardShell = () => (
     <SettingsProvider>
-        <DashboardLayout>{children}</DashboardLayout>
+        <DashboardLayout>
+            <Outlet />
+        </DashboardLayout>
     </SettingsProvider>
 );
 
@@ -41,155 +42,24 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
 
                     {/* Protected routes */}
-                    <Route
-                        path="/"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <DashboardPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/stocks"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <StocksPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/stocks/:symbol"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <StockDetailPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/portfolio"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <PortfolioPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/trade"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <TradePage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/watchlists"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <WatchlistsPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/alerts"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <AlertsPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/budget"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <BudgetPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/leaderboard"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <LeaderboardPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/settings"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <SettingsPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/learn"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <LearnPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/learn/:lessonId"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <LessonPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/learn/journal"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <JournalPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/news"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardShell>
-                                    <NewsPage />
-                                </DashboardShell>
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={<DashboardShell />}>
+                            <Route path="/" element={<DashboardPage />} />
+                            <Route path="/stocks" element={<StocksPage />} />
+                            <Route path="/stocks/:symbol" element={<StockDetailPage />} />
+                            <Route path="/portfolio" element={<PortfolioPage />} />
+                            <Route path="/trade" element={<TradePage />} />
+                            <Route path="/watchlists" element={<WatchlistsPage />} />
+                            <Route path="/alerts" element={<AlertsPage />} />
+                            <Route path="/budget" element={<BudgetPage />} />
+                            <Route path="/leaderboard" element={<LeaderboardPage />} />
+                            <Route path="/settings" element={<SettingsPage />} />
+                            <Route path="/learn" element={<LearnPage />} />
+                            <Route path="/learn/:lessonId" element={<LessonPage />} />
+                            <Route path="/learn/journal" element={<JournalPage />} />
+                            <Route path="/news" element={<NewsPage />} />
+                        </Route>
+                    </Route>
 
                     {/* Catch-all redirect to home */}
                     <Route path="*" element={<Navigate to="/" replace />} />

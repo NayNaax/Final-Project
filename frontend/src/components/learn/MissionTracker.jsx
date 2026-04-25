@@ -10,7 +10,7 @@ export function MissionTracker() {
     useEffect(() => {
         const fetchMissions = async () => {
             try {
-                const res = await api.get("/learn/progress/missions");
+                const res = await api.get("/learn/missions");
                 setUserMissions(res);
             } catch (err) {
                 console.error("Failed to load missions:", err);

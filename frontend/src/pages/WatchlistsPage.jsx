@@ -26,7 +26,7 @@ export function WatchlistsPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [actionName, setActionName] = useState("");
     const [actionLoading, setActionLoading] = useState(false);
-    
+
     // Sort state
     const [sortConfig, setSortConfig] = useState({ key: "symbol", direction: "asc" });
 
@@ -64,10 +64,14 @@ export function WatchlistsPage() {
         if (!selectedList || selectedList.symbols.length === 0) return;
 
         const fetchPrices = async () => {
+            if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+                return;
+            }
+
             try {
                 const pricePromises = selectedList.symbols.map(async (symbol) => {
                     try {
-                        const data = await api.get(`/stocks/${symbol}`);
+                        const data = await api.get(`/stocks/${symbol}`, { cacheMs: 15000 });
                         return { symbol, data: data.current };
                     } catch (e) {
                         return { symbol, data: null };
@@ -178,22 +182,24 @@ export function WatchlistsPage() {
         setIsRenameOpen(true);
     };
 
-    const sortedSymbols = selectedList ? [...selectedList.symbols].sort((a, b) => {
-        const pA = prices[a];
-        const pB = prices[b];
-        let valA, valB;
-        if (sortConfig.key === "price") {
-            valA = pA ? pA.price : 0;
-            valB = pB ? pB.price : 0;
-        } else {
-            valA = a;
-            valB = b;
-        }
+    const sortedSymbols = selectedList
+        ? [...selectedList.symbols].sort((a, b) => {
+              const pA = prices[a];
+              const pB = prices[b];
+              let valA, valB;
+              if (sortConfig.key === "price") {
+                  valA = pA ? pA.price : 0;
+                  valB = pB ? pB.price : 0;
+              } else {
+                  valA = a;
+                  valB = b;
+              }
 
-        if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-        if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
-    }) : [];
+              if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+              if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+              return 0;
+          })
+        : [];
 
     if (loading && watchlists.length === 0) return <LoadingSpinner />;
 
@@ -276,9 +282,21 @@ export function WatchlistsPage() {
                                     <table className={styles.table}>
                                         <thead>
                                             <tr>
-                                                <th onClick={() => handleSort("symbol")} style={{ cursor: "pointer", userSelect: "none" }}>Symbol <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }}/></th>
+                                                <th
+                                                    onClick={() => handleSort("symbol")}
+                                                    style={{ cursor: "pointer", userSelect: "none" }}
+                                                >
+                                                    Symbol{" "}
+                                                    <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }} />
+                                                </th>
                                                 <th>Trend (30d)</th>
-                                                <th onClick={() => handleSort("price")} style={{ cursor: "pointer", userSelect: "none" }}>Price <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }}/></th>
+                                                <th
+                                                    onClick={() => handleSort("price")}
+                                                    style={{ cursor: "pointer", userSelect: "none" }}
+                                                >
+                                                    Price{" "}
+                                                    <ArrowUpDown size={12} style={{ opacity: 0.5, marginLeft: 4 }} />
+                                                </th>
                                                 <th style={{ textAlign: "right" }}>Actions</th>
                                             </tr>
                                         </thead>
@@ -297,7 +315,14 @@ export function WatchlistsPage() {
                                                             </div>
                                                         </td>
                                                         <td style={{ width: "120px", padding: "4px 16px" }}>
-                                                            <SparklineChart symbol={symbol} color={pData && pData.changePercent >= 0 ? "#10b981" : "#ef4444"} />
+                                                            <SparklineChart
+                                                                symbol={symbol}
+                                                                color={
+                                                                    pData && pData.changePercent >= 0
+                                                                        ? "#10b981"
+                                                                        : "#ef4444"
+                                                                }
+                                                            />
                                                         </td>
                                                         <td>
                                                             {pData ? (
@@ -310,11 +335,23 @@ export function WatchlistsPage() {
                                                                 <span className={styles.loadingPrice}>Loading...</span>
                                                             )}
                                                         </td>
-                                                        <td className={styles.actionCell} style={{ textAlign: "right" }}>
-                                                            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                                                        <td
+                                                            className={styles.actionCell}
+                                                            style={{ textAlign: "right" }}
+                                                        >
+                                                            <div
+                                                                style={{
+                                                                    display: "flex",
+                                                                    gap: "8px",
+                                                                    justifyContent: "flex-end",
+                                                                }}
+                                                            >
                                                                 <button
                                                                     className={styles.iconBtn}
-                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/stocks/${symbol}`); }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        navigate(`/stocks/${symbol}`);
+                                                                    }}
                                                                     title="Trade"
                                                                     style={{ padding: "4px" }}
                                                                 >
@@ -322,7 +359,10 @@ export function WatchlistsPage() {
                                                                 </button>
                                                                 <button
                                                                     className={styles.iconBtn}
-                                                                    onClick={(e) => { e.stopPropagation(); navigate(`/alerts`); }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        navigate(`/alerts`);
+                                                                    }}
                                                                     title="Set Alert"
                                                                     style={{ padding: "4px" }}
                                                                 >
@@ -354,10 +394,8 @@ export function WatchlistsPage() {
                                     />
                                 )}
                             </div>
-                            
-                            {selectedList.symbols.length > 0 && (
-                                <WatchlistNewsFeed symbols={sortedSymbols} />
-                            )}
+
+                            {selectedList.symbols.length > 0 && <WatchlistNewsFeed symbols={sortedSymbols} />}
                         </div>
                     ) : (
                         <div className={`${styles.contentCard} ${styles.centerCard} glass`}>

@@ -104,7 +104,6 @@ export function StocksPage() {
                             <th>Price</th>
                             <th>Change</th>
                             <th>Change %</th>
-                            <th>Volume</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,7 +111,6 @@ export function StocksPage() {
                             const price = stock.c ?? stock.price ?? "N/A";
                             const change = stock.d ?? stock.change ?? 0;
                             const changePercent = stock.dp ?? stock.changePercent ?? 0;
-                            const volume = stock.v ?? stock.volume ?? 0;
                             const companyName = COMPANY_NAMES[stock.symbol] || stock.symbol;
                             const isPositive = change >= 0;
 
@@ -139,9 +137,6 @@ export function StocksPage() {
                                             {isPositive ? "+" : ""}
                                             {changePercent.toFixed(2)}%
                                         </span>
-                                    </td>
-                                    <td className={styles.volume}>
-                                        {volume > 0 ? (volume / 1000000).toFixed(2) + "M" : "0.00M"}
                                     </td>
                                 </tr>
                             );

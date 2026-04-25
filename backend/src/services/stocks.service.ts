@@ -50,6 +50,14 @@ export class StocksService {
             // Continue without historical data - the current price will still load
         }
 
+        if (historicalData.length === 0) {
+            try {
+                historicalData = await StockCacheService.getHistoricalDataWithCache(normalizedSymbol, 30);
+            } catch (err: any) {
+                console.error(`Fallback historical data fetch failed for ${normalizedSymbol}:`, err.message);
+            }
+        }
+
         // Fetch the live price from our cache / upstream wrapper
         let liveQuote;
         try {

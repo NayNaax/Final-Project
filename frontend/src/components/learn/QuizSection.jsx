@@ -1,11 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CheckCircle, XCircle, ChevronRight, Award, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/apiClient";
 import styles from "./QuizSection.module.css";
 
-export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLessonId }) {
+function shuffleArray(array) {
+    const next = [...array];
+    for (let i = next.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [next[i], next[j]] = [next[j], next[i]];
+    }
+    return next;
+}
+
+function shuffleQuestionOptions(question) {
+    const indexedOptions = question.options.map((option, index) => ({ option, index }));
+    let shuffled = shuffleArray(indexedOptions);
+
+    // Ensure options do not stay in their original positions.
+    if (shuffled.length > 1 && shuffled.every((item, idx) => item.index === idx)) {
+        const offset = Math.floor(Math.random() * (shuffled.length - 1)) + 1;
+        shuffled = shuffled.map((_, idx) => indexedOptions[(idx + offset) % indexedOptions.length]);
+    }
+
+    const remappedCorrectIndex = shuffled.findIndex((item) => item.index === question.correctIndex);
+
+    return {
+        ...question,
+        options: shuffled.map((item) => item.option),
+        correctIndex: remappedCorrectIndex,
+    };
+}
+
+export function QuizSection({ lessonId, quiz, isCompleted, completedScore, onCompleted, nextLessonId }) {
     const navigate = useNavigate();
+    const totalQuestions = Array.isArray(quiz) ? quiz.length : 0;
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isChecking, setIsChecking] = useState(false);
@@ -16,6 +45,19 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
     const [earnedCash, setEarnedCash] = useState(0);
     const [score, setScore] = useState(0);
     const [hasPassed, setHasPassed] = useState(false);
+    const [attemptVersion, setAttemptVersion] = useState(0);
+
+    const clampScore = (value) => {
+        if (!Number.isFinite(value)) return 0;
+        const normalized = Math.max(0, Math.floor(value));
+        if (totalQuestions <= 0) return normalized;
+        return Math.min(totalQuestions, normalized);
+    };
+
+    const shuffledQuiz = useMemo(() => {
+        if (!quiz || quiz.length === 0) return [];
+        return quiz.map(shuffleQuestionOptions);
+    }, [quiz, lessonId, attemptVersion]);
 
     useEffect(() => {
         // Reset state when navigating between lessons so stale question indexes
@@ -27,15 +69,26 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
         setShowExplanation(false);
         setSubmitting(false);
         setEarnedCash(0);
-        setScore(0);
+        setScore(clampScore(completedScore));
         setQuizFinished(Boolean(isCompleted));
         setHasPassed(Boolean(isCompleted));
-    }, [lessonId, isCompleted]);
+    }, [lessonId, completedScore, isCompleted]);
+
+    useEffect(() => {
+        // Keep completion UI in sync without resetting in-progress score state.
+        if (isCompleted) {
+            setQuizFinished(true);
+            setHasPassed(true);
+            if (Number.isFinite(completedScore)) {
+                setScore(clampScore(completedScore));
+            }
+        }
+    }, [isCompleted, completedScore]);
 
     // If quiz is empty, skip rendering it
-    if (!quiz || quiz.length === 0) return null;
+    if (!shuffledQuiz || shuffledQuiz.length === 0) return null;
 
-    const question = quiz[currentQuestionIndex] ?? quiz[0];
+    const question = shuffledQuiz[currentQuestionIndex] ?? shuffledQuiz[0];
 
     const handleOptionSelect = (index) => {
         if (isChecking || showExplanation) return;
@@ -47,7 +100,6 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
         setIsChecking(true);
         const correct = selectedOption === question.correctIndex;
         setIsCorrect(correct);
-        if (correct) setScore((prev) => prev + 1);
         setShowExplanation(true);
     };
 
@@ -60,10 +112,14 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
         setQuizFinished(false);
         setScore(0);
         setHasPassed(false);
+        setAttemptVersion((prev) => prev + 1);
     };
 
     const handleNext = async () => {
-        if (currentQuestionIndex < quiz.length - 1) {
+        const updatedScore = clampScore(score + (isCorrect ? 1 : 0));
+
+        if (currentQuestionIndex < shuffledQuiz.length - 1) {
+            setScore(updatedScore);
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setSelectedOption(null);
             setIsChecking(false);
@@ -71,9 +127,10 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
             setShowExplanation(false);
         } else {
             setQuizFinished(true);
-            const finalScore = isCorrect ? score + 1 : score;
+            const finalScore = updatedScore;
+            setScore(finalScore);
             // E.g. Require 60% to pass
-            const passedCheck = finalScore / quiz.length >= 0.6;
+            const passedCheck = finalScore / shuffledQuiz.length >= 0.6;
             setHasPassed(passedCheck);
 
             if (!isCompleted && passedCheck) {
@@ -99,6 +156,8 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
     };
 
     if (quizFinished) {
+        const displayScore = clampScore(score);
+
         if (hasPassed) {
             return (
                 <div className={styles.quizCompleted}>
@@ -107,7 +166,8 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
                     </div>
                     <h3>Quiz Completed!</h3>
                     <p>
-                        You have successfully passed this lesson's knowledge check with {score}/{quiz.length} correct.
+                        You have successfully passed this lesson's knowledge check with {displayScore}/
+                        {shuffledQuiz.length} correct.
                     </p>
                     {earnedCash > 0 && (
                         <div className={styles.rewardBox}>
@@ -135,7 +195,7 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
                     </div>
                     <h3>Keep Learning!</h3>
                     <p>
-                        You got {score}/{quiz.length} correct. Review the lesson and try again to pass.
+                        You got {displayScore}/{shuffledQuiz.length} correct. Review the lesson and try again to pass.
                     </p>
                     <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
                         <button className={styles.checkButton} onClick={resetQuiz}>
@@ -152,7 +212,7 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
             <div className={styles.header}>
                 <span className={styles.badge}>Knowledge Check</span>
                 <span className={styles.progress}>
-                    Question {currentQuestionIndex + 1} of {quiz.length}
+                    Question {currentQuestionIndex + 1} of {shuffledQuiz.length}
                 </span>
             </div>
 
@@ -203,7 +263,7 @@ export function QuizSection({ lessonId, quiz, isCompleted, onCompleted, nextLess
                     <button className={styles.nextButton} onClick={handleNext} disabled={submitting}>
                         {submitting
                             ? "Submitting..."
-                            : currentQuestionIndex < quiz.length - 1
+                            : currentQuestionIndex < shuffledQuiz.length - 1
                               ? "Next Question"
                               : "Finish Quiz"}
                         {!submitting && <ChevronRight size={18} />}

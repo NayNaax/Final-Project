@@ -10,6 +10,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
 class ApiClient {
+    constructor() {
+        this.responseCache = new Map();
+        this.inFlightGets = new Map();
+    }
+
     // Turn backend error payloads into one simple message for UI banners.
     formatErrorMessage(error) {
         if (!error || typeof error !== "object") {
@@ -60,7 +65,11 @@ class ApiClient {
      * @param {object} body - Request body (optional)
      * @returns {Promise<any>} Parsed JSON response
      */
-    async request(method, endpoint, body = null) {
+    buildGetCacheKey(url, token) {
+        return `${url}::${token || "anon"}`;
+    }
+
+    async request(method, endpoint, body = null, requestOptions = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
         const headers = {
             "Content-Type": "application/json",
@@ -72,15 +81,42 @@ class ApiClient {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const options = {
+        const fetchOptions = {
             method,
             headers,
         };
 
         if (body) {
-            options.body = JSON.stringify(body);
+            fetchOptions.body = JSON.stringify(body);
         }
 
+        const isGet = method === "GET";
+        const cacheMs = Number(requestOptions.cacheMs || 0);
+        const force = Boolean(requestOptions.force);
+
+        if (isGet) {
+            const cacheKey = this.buildGetCacheKey(url, token);
+
+            if (!force && cacheMs > 0) {
+                const cached = this.responseCache.get(cacheKey);
+                if (cached && cached.expiresAt > Date.now()) {
+                    return cached.data;
+                }
+            }
+
+            if (this.inFlightGets.has(cacheKey)) {
+                return this.inFlightGets.get(cacheKey);
+            }
+
+            const requestPromise = this.performRequest(url, fetchOptions, cacheKey, cacheMs, force);
+            this.inFlightGets.set(cacheKey, requestPromise);
+            return requestPromise;
+        }
+
+        return this.performRequest(url, fetchOptions, null, 0, false);
+    }
+
+    async performRequest(url, options, cacheKey = null, cacheMs = 0, force = false) {
         try {
             const response = await fetch(url, options);
 
@@ -105,13 +141,17 @@ class ApiClient {
 
             // Parse JSON only when server says payload is JSON.
             const contentType = response.headers.get("content-type") || "";
-            if (contentType.includes("application/json")) {
-                return await response.json();
+            const data = contentType.includes("application/json") ? await response.json() : await response.text();
+            const normalizedData = data ? data : null;
+
+            if (!force && cacheKey && cacheMs > 0) {
+                this.responseCache.set(cacheKey, {
+                    data: normalizedData,
+                    expiresAt: Date.now() + cacheMs,
+                });
             }
 
-            // Fallback for plain text endpoints.
-            const text = await response.text();
-            return text ? text : null;
+            return normalizedData;
         } catch (error) {
             // Browser throws TypeError on network failure or blocked request.
             if (error instanceof TypeError) {
@@ -121,12 +161,16 @@ class ApiClient {
             }
 
             throw error;
+        } finally {
+            if (cacheKey) {
+                this.inFlightGets.delete(cacheKey);
+            }
         }
     }
 
     // Convenience methods
-    async get(endpoint) {
-        return this.request("GET", endpoint);
+    async get(endpoint, options = {}) {
+        return this.request("GET", endpoint, null, options);
     }
 
     async post(endpoint, body) {

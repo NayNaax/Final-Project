@@ -61,7 +61,7 @@ export function NewsPage() {
             if (selectedSymbol === "ALL") {
                 const requests = symbols.map((stockSymbol) => {
                     const endpoint = `/stocks/company-news?symbol=${encodeURIComponent(stockSymbol)}&from=${encodeURIComponent(selectedFrom)}&to=${encodeURIComponent(selectedTo)}`;
-                    return api.get(endpoint, { cacheMs: 120000, force: true }).then((response) => ({
+                    return api.get(endpoint, { cacheMs: 120000 }).then((response) => ({
                         symbol: stockSymbol,
                         items: Array.isArray(response?.items) ? response.items : [],
                     }));
@@ -94,7 +94,7 @@ export function NewsPage() {
             }
 
             const endpoint = `/stocks/company-news?symbol=${encodeURIComponent(selectedSymbol)}&from=${encodeURIComponent(selectedFrom)}&to=${encodeURIComponent(selectedTo)}`;
-            const response = await api.get(endpoint, { cacheMs: 120000, force: true });
+            const response = await api.get(endpoint, { cacheMs: 120000 });
             const newsItems = Array.isArray(response?.items) ? response.items : [];
             setItems(newsItems.map((article) => ({ ...article, symbol: selectedSymbol })));
         } catch (err) {

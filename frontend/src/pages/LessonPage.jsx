@@ -109,7 +109,9 @@ export function LessonPage() {
     if (!lessonInfo) return <div className={styles.centered}>Lesson not found</div>;
 
     const { lesson, module } = lessonInfo;
-    const isCompleted = progressData.some((p) => p.lessonId === lesson.id && p.completed);
+    const lessonProgress = progressData.find((p) => p.lessonId === lesson.id) || null;
+    const isCompleted = Boolean(lessonProgress?.completed);
+    const completedScore = Number.isFinite(lessonProgress?.quizScore) ? lessonProgress.quizScore : null;
 
     const renderMarkdown = (text) => {
         const blocks = text.split("\n\n");
@@ -207,6 +209,7 @@ export function LessonPage() {
                             lessonId={lesson.id}
                             quiz={lesson.quiz}
                             isCompleted={isCompleted}
+                            completedScore={completedScore}
                             nextLessonId={nextLessonId}
                             onCompleted={() => {
                                 api.get("/learn/progress").then((res) => setProgressData(res.lessons || []));

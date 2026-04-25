@@ -11,8 +11,6 @@ document.documentElement.setAttribute("data-theme", "dark");
 // Sync Electron title bar on startup
 window.electronAPI?.onThemeChanged("dark");
 
-createRoot(document.getElementById("root")).render(
-    <StrictMode>
-        <App />
-    </StrictMode>,
-);
+const app = <App />;
+
+createRoot(document.getElementById("root")).render(import.meta.env.DEV ? app : <StrictMode>{app}</StrictMode>);

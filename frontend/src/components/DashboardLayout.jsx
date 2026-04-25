@@ -57,20 +57,6 @@ export function DashboardLayout({ children }) {
                     },
                 });
                 if (!res.ok) {
-                    const relativeRes = await fetch("/api/alerts?triggered=true", {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    });
-                    if (relativeRes.ok) {
-                        const data = await relativeRes.json();
-                        const triggered = data
-                            .filter((a) => a.triggered === true)
-                            .sort((a, b) => new Date(b.triggeredAt) - new Date(a.triggeredAt));
-                        if (isMounted) {
-                            setNotifications(triggered);
-                        }
-                    }
                     return;
                 }
                 const data = await res.json();
