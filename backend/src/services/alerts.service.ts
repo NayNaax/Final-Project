@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma";
 import { FinnhubService } from "./finnhub.service";
 
 export class AlertsService {
+    // Return newest alerts first so UI can show the latest activity at the top.
     static async getAllForUser(userId: number) {
         return prisma.priceAlert.findMany({
             where: { userId },
@@ -9,6 +10,7 @@ export class AlertsService {
         });
     }
 
+    // Validate/normalize input before persisting to keep alert rules consistent.
     static async create(userId: number, symbol: string, targetPrice: number, direction: string) {
         if (!symbol || !targetPrice || !direction) {
             throw new Error("Symbol, targetPrice, and direction are required");
@@ -32,6 +34,7 @@ export class AlertsService {
         });
     }
 
+    // Delete is ownership-protected to prevent cross-user access.
     static async delete(userId: number, alertId: number) {
         const existing = await prisma.priceAlert.findUnique({
             where: { id: alertId },
@@ -55,9 +58,10 @@ export class AlertsService {
 
         if (untriggeredAlerts.length === 0) return { triggeredCount: 0 };
 
-        const symbols = [...new Set(untriggeredAlerts.map(a => a.symbol))];
+        const symbols = [...new Set(untriggeredAlerts.map((a) => a.symbol))];
         const prices: Record<string, number> = {};
 
+        // Fetch one quote per symbol and reuse it across all matching alerts.
         for (const sym of symbols) {
             try {
                 const quote = await FinnhubService.getQuote(sym);
@@ -70,6 +74,7 @@ export class AlertsService {
         let triggeredCount = 0;
         const now = new Date();
 
+        // Evaluate each alert against the latest price snapshot.
         for (const alert of untriggeredAlerts) {
             const currentPrice = prices[alert.symbol];
             if (currentPrice === undefined) continue;
@@ -96,6 +101,7 @@ export class AlertsService {
         return { triggeredCount };
     }
 
+    // Rearm resets trigger state so the same alert can fire again later.
     static async rearm(userId: number, alertId: number) {
         const existing = await prisma.priceAlert.findUnique({
             where: { id: alertId },

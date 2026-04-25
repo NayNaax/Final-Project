@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Restore session from stored token on mount
+    // On app start, try to restore previous login from local storage.
     useEffect(() => {
         const restoreSession = async () => {
             const storedToken = localStorage.getItem("authToken");
@@ -30,17 +30,18 @@ export function AuthProvider({ children }) {
                 api.setToken(storedToken);
                 setToken(storedToken);
 
-                // Verify token is still valid by calling /auth/me
+                // Always verify token with backend before trusting it.
                 try {
                     const userData = await api.get("/auth/me");
                     setUser(userData);
                 } catch {
-                    // Token is invalid, clear it
+                    // If verification fails, clear local auth state and force fresh login.
                     api.setToken(null);
                     setToken(null);
                     setUser(null);
                 }
             }
+            // Mark bootstrapping done so route guards can render correctly.
             setLoading(false);
         };
 
@@ -49,13 +50,15 @@ export function AuthProvider({ children }) {
 
     const login = async (email, password) => {
         try {
+            // Step 1: get token from credentials.
             const response = await api.post("/auth/login", { email, password });
             const newToken = response.token;
 
+            // Step 2: persist token in both API client and React state.
             api.setToken(newToken);
             setToken(newToken);
 
-            // Fetch user data
+            // Step 3: fetch profile for UI (name, settings, etc.).
             const userData = await api.get("/auth/me");
             setUser(userData);
 
@@ -66,13 +69,14 @@ export function AuthProvider({ children }) {
     };
 
     const register = async (email, password, username) => {
+        // Register returns token, so new users can continue without a separate login step.
         const response = await api.post("/auth/register", { email, password, username });
         const newToken = response.token;
 
         api.setToken(newToken);
         setToken(newToken);
 
-        // Fetch user data
+        // Load fresh user profile right away for consistent app state.
         const userData = await api.get("/auth/me");
         setUser(userData);
 
@@ -80,6 +84,7 @@ export function AuthProvider({ children }) {
     };
 
     const logout = () => {
+        // Clear auth from all layers so protected routes lock immediately.
         api.setToken(null);
         setToken(null);
         setUser(null);

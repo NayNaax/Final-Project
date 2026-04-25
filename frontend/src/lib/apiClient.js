@@ -10,6 +10,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
 class ApiClient {
+    // Turn backend error payloads into one simple message for UI banners.
     formatErrorMessage(error) {
         if (!error || typeof error !== "object") {
             return null;
@@ -47,6 +48,7 @@ class ApiClient {
      * Clear token and redirect to login
      */
     logout() {
+        // Keep logout behavior in one place so every auth failure acts the same.
         this.setToken(null);
         window.location.href = "/login";
     }
@@ -64,7 +66,7 @@ class ApiClient {
             "Content-Type": "application/json",
         };
 
-        // Attach JWT if available
+        // Add token automatically so callers do not repeat auth headers everywhere.
         const token = this.getToken();
         if (token) {
             headers["Authorization"] = `Bearer ${token}`;
@@ -82,13 +84,13 @@ class ApiClient {
         try {
             const response = await fetch(url, options);
 
-            // Handle 401 Unauthorized → logout and redirect to login
+            // If token is expired/invalid, force a clean logout.
             if (response.status === 401) {
                 this.logout();
                 throw new Error("Session expired. Please log in again.");
             }
 
-            // Handle other HTTP errors
+            // For other errors, read backend payload and throw a clean message.
             if (!response.ok) {
                 const error = await response.json().catch(() => ({
                     error: response.statusText,
@@ -96,21 +98,22 @@ class ApiClient {
                 throw new Error(this.formatErrorMessage(error) || `HTTP ${response.status}`);
             }
 
-            // 204/205 responses intentionally have no body.
+            // Some endpoints return success without content.
             if (response.status === 204 || response.status === 205) {
                 return null;
             }
 
-            // Only parse JSON when a JSON content type is provided.
+            // Parse JSON only when server says payload is JSON.
             const contentType = response.headers.get("content-type") || "";
             if (contentType.includes("application/json")) {
                 return await response.json();
             }
 
-            // Some successful endpoints may return an empty body.
+            // Fallback for plain text endpoints.
             const text = await response.text();
             return text ? text : null;
         } catch (error) {
+            // Browser throws TypeError on network failure or blocked request.
             if (error instanceof TypeError) {
                 throw new Error(
                     "Cannot reach the backend API. Make sure the server is running on http://localhost:3001.",

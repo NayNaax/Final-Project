@@ -29,38 +29,41 @@ type QuoteData = {
  */
 export class StockCacheService {
     private static TTL_SECONDS = parseInt(process.env.CACHE_TTL_SECONDS || "60", 10);
-    private static HISTORICAL_DATA_TTL_SECONDS = 24 * 60 * 60; // Cache historical data for 24 hours
+    // Historical candles change slowly, so we keep them much longer than live quotes.
+    private static HISTORICAL_DATA_TTL_SECONDS = 24 * 60 * 60;
 
     static async getQuoteWithCache(symbol: string): Promise<{ data: QuoteData; source: string }> {
         const normalizedSymbol = symbol.toUpperCase().trim();
         const cacheKey = `quote_${normalizedSymbol}`;
 
-        // 1. Try Cache First
+        // Fast path: recent quote in main cache.
         const cachedData = stockCache.get<QuoteData>(cacheKey);
         if (cachedData) {
             return { data: cachedData, source: "cache" };
         }
 
-        // 2. Fall back to stale cache before spending API quota
+        // Next best: stale cache (old but usable) to avoid hard failure and save API calls.
         const staleData = stockCache.getStale<QuoteData>(cacheKey);
         if (staleData) {
             return { data: staleData, source: "stale-cache" };
         }
 
-        // 3. Cache Miss - Need to hit Upstream API
+        // No cache hit: ask providers in priority order.
         let freshData: QuoteData;
         try {
-            // Try Finnhub first (you have this configured and it has generous rate limits)
+            // Provider order matters: try fastest/cheapest first.
             freshData = await FinnhubService.getQuote(normalizedSymbol);
         } catch (finnhubErr: any) {
             try {
-                // Fall back to Polygon
+                // If Finnhub fails, try Polygon.
                 freshData = await PolygonService.fetchQuote(normalizedSymbol);
             } catch (polygonErr: any) {
+                // If circuit breaker is open, skip Massive quickly instead of waiting for more failures.
                 if (MassiveService.isRateLimited() || MassiveService.isCircuitOpen()) {
                     throw new Error("All quote providers are currently unavailable. Please retry shortly.");
                 }
 
+                // Respect local request budget so we avoid 429 storms.
                 if (!massiveRateLimiter.canCall()) {
                     throw new Error(
                         `Massive request budget exhausted. Next available in ${Math.ceil(massiveRateLimiter.nextAvailableIn / 1000)}s.`,
@@ -68,11 +71,11 @@ export class StockCacheService {
                 }
 
                 try {
-                    // Fall back to Massive
+                    // Last fallback provider.
                     massiveRateLimiter.record();
                     freshData = await MassiveService.fetchQuote(normalizedSymbol);
                 } catch (massiveErr: any) {
-                    // If all fail, throw a helpful error
+                    // All providers failed: return one clear message for frontend.
                     throw new Error(
                         "Could not fetch stock data from any provider. Please ensure FINNHUB_API_KEY, POLYGON_API_KEY, or MASSIVE_API_KEY is configured.",
                     );
@@ -80,7 +83,7 @@ export class StockCacheService {
             }
         }
 
-        // Default caching behaviour for successful quote fetches
+        // Save both fresh and stale layers so next calls are faster and more resilient.
         stockCache.set(cacheKey, freshData, this.TTL_SECONDS);
         stockCache.setStale(cacheKey, freshData);
 
@@ -91,13 +94,13 @@ export class StockCacheService {
         const normalizedSymbol = symbol.toUpperCase().trim();
         const cacheKey = `historical_${normalizedSymbol}_${daysBack}d`;
 
-        // 1. Try Cache First
+        // Fast path for chart requests.
         const cachedData = stockCache.get<HistoricalBar[]>(cacheKey);
         if (cachedData) {
             return cachedData;
         }
 
-        // 2. Cache Miss - Fetch from API
+        // If missing in cache, try providers one by one and capture why each fails.
         let historicalData: HistoricalBar[] = [];
         const fallbackReasons: string[] = [];
         const hasFinnhubKey = Boolean(process.env.FINNHUB_API_KEY?.trim());
@@ -144,7 +147,7 @@ export class StockCacheService {
             );
         }
 
-        // Cache the result
+        // Only cache non-empty history so we do not hide temporary provider outages for too long.
         if (historicalData.length > 0) {
             stockCache.set(cacheKey, historicalData, this.HISTORICAL_DATA_TTL_SECONDS);
         }

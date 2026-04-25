@@ -26,6 +26,7 @@ export function DashboardPage() {
         const loadDashboardData = async () => {
             try {
                 setError("");
+                // Load all dashboard sections together so cards update at the same time.
                 const [portfolioData, historyData, tradesData, stocksData] = await Promise.all([
                     api.get("/portfolio"),
                     api.get("/portfolio/history"),
@@ -48,6 +49,7 @@ export function DashboardPage() {
 
                 const chartData = sortedHistory.map((snapshot) => {
                     const rawValue = Number(snapshot.totalValue ?? 0);
+                    // Rebase old snapshots to current account scale while keeping trend shape.
                     const rebasedValue = canRebase ? (rawValue / latestSnapshotValue) * currentEquity : rawValue;
 
                     return {
@@ -58,10 +60,10 @@ export function DashboardPage() {
                 });
                 setRawHistory(chartData);
 
-                // Get last 5 trades
+                // Show only recent activity so dashboard stays compact.
                 setRecentTrades(tradesData.slice(0, 5));
 
-                // Calculate Monthly Return
+                // Monthly return uses realized P&L from completed SELL trades only.
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
                 const monthTrades = tradesData.filter((trade) => {
@@ -71,7 +73,7 @@ export function DashboardPage() {
                 const calculatedMonthlyReturn = monthTrades.reduce((sum, trade) => sum + (trade.realizedPL || 0), 0);
                 setMonthlyReturn(calculatedMonthlyReturn);
 
-                // Top Movers
+                // Normalize provider fields so sorting works even if payload shapes vary.
                 if (Array.isArray(stocksData) && stocksData.length > 0) {
                     const normalizedStocks = stocksData.map((stock) => ({
                         ...stock,
@@ -80,6 +82,7 @@ export function DashboardPage() {
                     }));
 
                     const sortedStocks = normalizedStocks.sort((a, b) => b.changePercent - a.changePercent);
+                    // Keep lists short for quick scan value.
                     setTopGainers(sortedStocks.slice(0, 3));
                     setTopLosers(sortedStocks.slice(-3).reverse());
                 }
@@ -92,12 +95,12 @@ export function DashboardPage() {
 
         loadDashboardData();
 
-        // Refresh every 30 seconds
+        // Gentle polling keeps data fresh without overwhelming the API.
         const interval = setInterval(loadDashboardData, 30000);
         return () => clearInterval(interval);
     }, []);
 
-    // Filter chart data when range changes
+    // Rebuild visible chart points when user changes the selected time window.
     useEffect(() => {
         if (!rawHistory.length) return;
 
@@ -135,6 +138,7 @@ export function DashboardPage() {
     const activePositions = portfolio.positions?.length || 0;
     const displayHistory = history.map((item) => ({
         ...item,
+        // Currency conversion happens right before render so source data stays consistent.
         value: convertCurrency(item.value),
     }));
 
