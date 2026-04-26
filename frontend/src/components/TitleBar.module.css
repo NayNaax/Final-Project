@@ -1,40 +1,40 @@
 /* TitleBar component styles for structure, interaction states, and visual hierarchy. */
 .titleBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 40px;
-  background: var(--bg-secondary);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--glass-border);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  pointer-events: none; /* Allow clicks to pass through to the drag region */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    pointer-events: none; /* Allow clicks to pass through to the drag region */
 }
 
 .dragRegion {
-  flex: 1;
-  height: 100%;
-  -webkit-app-region: drag;
-  display: flex;
-  align-items: center;
-  pointer-events: auto; /* Re-enable pointer events for the drag region */
+    flex: 1;
+    height: 100%;
+    -webkit-app-region: drag;
+    display: flex;
+    align-items: center;
+    pointer-events: auto; /* Re-enable pointer events for the drag region */
 }
 
 .titleText {
-  font-family: var(--font-heading);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  user-select: none;
-  opacity: 0.7;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    user-select: none;
+    opacity: 0.7;
 }
 
 .windowControlsSpace {
-  width: 140px; /* Approximate width for Windows minimize, maximize, close buttons */
-  height: 100%;
-  -webkit-app-region: no-drag;
+    width: 140px; /* Approximate width for Windows minimize, maximize, close buttons */
+    height: 100%;
+    -webkit-app-region: no-drag;
 }

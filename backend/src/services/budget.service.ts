@@ -48,7 +48,11 @@ export class BudgetService {
         return budget;
     }
 
-    static async updateBudget(userId: number, allocations: { category: string; targetPct: number; color?: string }[], symbolCategoryMap?: Record<string, string>) {
+    static async updateBudget(
+        userId: number,
+        allocations: { category: string; targetPct: number; color?: string }[],
+        symbolCategoryMap?: Record<string, string>,
+    ) {
         const budget = await this.getBudget(userId);
 
         await prisma.allocation.deleteMany({
@@ -131,17 +135,21 @@ export class BudgetService {
         });
 
         const suggestions: string[] = [];
-        
-        status.forEach(s => {
+
+        status.forEach((s) => {
             if (Math.abs(s.drift) > 5) {
                 if (s.drift > 0) {
                     // Overweight
                     const excessValue = totalAllocatedValue * (s.drift / 100);
-                    suggestions.push(`Consider reducing ${s.category} by $${excessValue.toFixed(2)} to align with target.`);
+                    suggestions.push(
+                        `Consider reducing ${s.category} by $${excessValue.toFixed(2)} to align with target.`,
+                    );
                 } else {
                     // Underweight
                     const deficitValue = totalAllocatedValue * (Math.abs(s.drift) / 100);
-                    suggestions.push(`Consider investing $${deficitValue.toFixed(2)} more into ${s.category} to meet target.`);
+                    suggestions.push(
+                        `Consider investing $${deficitValue.toFixed(2)} more into ${s.category} to meet target.`,
+                    );
                 }
             }
         });

@@ -25,7 +25,8 @@
     margin-bottom: 16px;
 }
 
-.input, .select {
+.input,
+.select {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
@@ -107,7 +108,9 @@
     width: 24px;
     height: 24px;
     border-radius: 4px;
-    transition: background 0.2s, color 0.2s;
+    transition:
+        background 0.2s,
+        color 0.2s;
 }
 
 .removeBtn:hover {
