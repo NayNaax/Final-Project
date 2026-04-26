@@ -157,6 +157,15 @@ const LeaderboardPage = () => {
                                         </div>
                                         <div
                                             style={{
+                                                fontSize: "0.8rem",
+                                                color: "var(--text-secondary)",
+                                                marginBottom: "8px",
+                                            }}
+                                        >
+                                            {formatCurrency(leaderboard[1].totalValue ?? 0)}
+                                        </div>
+                                        <div
+                                            style={{
                                                 width: "100%",
                                                 height: "80px",
                                                 background:
@@ -227,6 +236,15 @@ const LeaderboardPage = () => {
                                         </div>
                                         <div
                                             style={{
+                                                fontSize: "0.9rem",
+                                                color: "var(--text-secondary)",
+                                                marginBottom: "8px",
+                                            }}
+                                        >
+                                            {formatCurrency(leaderboard[0].totalValue ?? 0)}
+                                        </div>
+                                        <div
+                                            style={{
                                                 width: "100%",
                                                 height: "120px",
                                                 background:
@@ -293,6 +311,15 @@ const LeaderboardPage = () => {
                                         >
                                             {leaderboard[2].returnPercent >= 0 ? "+" : ""}
                                             {formatPercent(leaderboard[2].returnPercent || 0)}
+                                        </div>
+                                        <div
+                                            style={{
+                                                fontSize: "0.75rem",
+                                                color: "var(--text-secondary)",
+                                                marginBottom: "8px",
+                                            }}
+                                        >
+                                            {formatCurrency(leaderboard[2].totalValue ?? 0)}
                                         </div>
                                         <div
                                             style={{

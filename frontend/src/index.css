@@ -37,6 +37,10 @@
     /* Shared glass effect values for cards and overlays. */
     --glass-border: rgba(255, 255, 255, 0.5);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+    /* Table and list interaction colors. */
+    --border-color: rgba(15, 23, 42, 0.1);
+    --hover-bg: rgba(15, 23, 42, 0.04);
 }
 
 /* Premium Dark Theme */
@@ -63,6 +67,10 @@
 
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
+    /* Table and list interaction colors. */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --hover-bg: rgba(255, 255, 255, 0.03);
 }
 
 * {
