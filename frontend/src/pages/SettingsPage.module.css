@@ -79,6 +79,20 @@
     transition: border-color 0.4s ease;
 }
 
+.select option {
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
+:global([data-theme="dark"]) .select {
+    color-scheme: dark;
+}
+
+:global([data-theme="dark"]) .select option {
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
 .select:hover,
 .select:focus {
     border-color: var(--primary-color);
