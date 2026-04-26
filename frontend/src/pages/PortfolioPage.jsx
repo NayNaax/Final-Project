@@ -296,6 +296,8 @@ export function PortfolioPage() {
                                             border: "1px solid var(--glass-border)",
                                             borderRadius: "8px",
                                         }}
+                                        itemStyle={{ color: "var(--text-primary)" }}
+                                        labelStyle={{ color: "var(--text-secondary)" }}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
