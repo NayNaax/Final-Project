@@ -14,12 +14,14 @@ export function StockDetailPage() {
     const navigate = useNavigate();
     const { formatCurrency, convertCurrency } = useCurrency();
     const [stockData, setStockData] = useState(null);
+    const [portfolio, setPortfolio] = useState(null);
     const [history, setHistory] = useState([]);
     const [alerts, setAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [dateRange, setDateRange] = useState("1M");
-    const [tradeShares, setTradeShares] = useState("1");
+    const [tradeValue, setTradeValue] = useState("1");
+    const [tradeInputMode, setTradeInputMode] = useState("SHARES");
     const [tradeSide, setTradeSide] = useState("BUY");
     const [isTrading, setIsTrading] = useState(false);
     const [tradeError, setTradeError] = useState("");
@@ -58,6 +60,17 @@ export function StockDetailPage() {
 
         fetchStockData();
 
+        const fetchPortfolio = async () => {
+            try {
+                const portfolioData = await api.get("/portfolio");
+                setPortfolio(portfolioData);
+            } catch (err) {
+                console.error("Failed to fetch portfolio for trade limits", err);
+            }
+        };
+
+        fetchPortfolio();
+
         const interval = setInterval(fetchStockData, 30000);
         return () => clearInterval(interval);
     }, [symbol]);
@@ -68,9 +81,23 @@ export function StockDetailPage() {
             setIsTrading(true);
             setTradeError("");
 
-            const numShares = parseInt(tradeShares, 10);
-            if (isNaN(numShares) || numShares < 1) {
-                throw new Error("Invalid number of shares");
+            const enteredValue = parseFloat(tradeValue);
+            if (isNaN(enteredValue) || enteredValue < 0.0001) {
+                throw new Error(tradeInputMode === "SHARES" ? "Invalid number of shares" : "Invalid dollar amount");
+            }
+
+            if (tradeInputMode === "SHARES" && enteredValue > maxShares + 0.000001) {
+                throw new Error("Amount exceeds what is available");
+            }
+
+            if (tradeInputMode === "DOLLARS" && enteredValue > maxDollars + 0.01) {
+                throw new Error("Amount exceeds what is available");
+            }
+
+            const rawShares = tradeInputMode === "SHARES" ? enteredValue : enteredValue / currentPrice;
+            const numShares = Number(rawShares.toFixed(6));
+            if (isNaN(numShares) || numShares < 0.0001) {
+                throw new Error("Trade amount is too small");
             }
 
             const endpoint = tradeSide === "BUY" ? "/portfolio/buy" : "/portfolio/sell";
@@ -139,8 +166,13 @@ export function StockDetailPage() {
         targetPrice: convertCurrency(alert.targetPrice),
     }));
 
-    const parsedShares = parseInt(tradeShares, 10);
-    const safeShares = isNaN(parsedShares) ? 0 : parsedShares;
+    const parsedValue = parseFloat(tradeValue);
+    const safeValue = isNaN(parsedValue) ? 0 : parsedValue;
+    const safeShares = tradeInputMode === "SHARES" ? safeValue : currentPrice ? safeValue / currentPrice : 0;
+    const estimatedAmount = currentPrice ? safeShares * currentPrice : 0;
+    const ownedShares = portfolio?.positions?.find((pos) => pos.symbol === symbol)?.shares || 0;
+    const maxShares = tradeSide === "BUY" ? (portfolio?.cash ?? 0) / currentPrice : ownedShares;
+    const maxDollars = tradeSide === "BUY" ? (portfolio?.cash ?? 0) : ownedShares * currentPrice;
 
     return (
         <div className={styles.container}>
@@ -300,16 +332,67 @@ export function StockDetailPage() {
                             </div>
 
                             <div className={styles.inputGroup}>
-                                <label>Shares</label>
+                                <label>Trade by</label>
+                                <div className={styles.tradeModeToggle}>
+                                    <button
+                                        type="button"
+                                        className={`${styles.toggleBtn} ${tradeInputMode === "SHARES" ? styles.activeBuy : ""}`}
+                                        onClick={() => setTradeInputMode("SHARES")}
+                                    >
+                                        Shares
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`${styles.toggleBtn} ${tradeInputMode === "DOLLARS" ? styles.activeSell : ""}`}
+                                        onClick={() => setTradeInputMode("DOLLARS")}
+                                    >
+                                        Dollars
+                                    </button>
+                                </div>
+                                <label>
+                                    {tradeInputMode === "SHARES"
+                                        ? "Shares"
+                                        : tradeSide === "BUY"
+                                          ? "Amount to spend"
+                                          : "Amount to receive"}
+                                </label>
                                 <input
                                     type="number"
-                                    min="0.0001"
+                                    min={tradeInputMode === "SHARES" ? "0.0001" : "0.01"}
                                     step="any"
-                                    value={tradeShares}
-                                    onChange={(e) => setTradeShares(e.target.value)}
+                                    value={tradeValue}
+                                    onChange={(e) => setTradeValue(e.target.value)}
                                     className={styles.input}
                                     required
                                 />
+                                <div className={styles.helperRow}>
+                                    <span>
+                                        {tradeInputMode === "SHARES"
+                                            ? tradeSide === "BUY"
+                                                ? `Buying Power: ${formatCurrency(portfolio?.cash ?? 0)}`
+                                                : `Available to sell: ${ownedShares} shares`
+                                            : tradeSide === "BUY"
+                                              ? `Buying Power: ${formatCurrency(portfolio?.cash ?? 0)}`
+                                              : `Max sale value: ${formatCurrency(maxDollars)}`}
+                                    </span>
+                                    {((tradeInputMode === "SHARES" && maxShares > 0) ||
+                                        (tradeInputMode === "DOLLARS" && maxDollars > 0)) && (
+                                        <span
+                                            className={styles.maxBtn}
+                                            onClick={() =>
+                                                setTradeValue(
+                                                    tradeInputMode === "SHARES"
+                                                        ? maxShares.toFixed(4)
+                                                        : maxDollars.toFixed(2),
+                                                )
+                                            }
+                                        >
+                                            {tradeInputMode === "SHARES"
+                                                ? maxShares.toFixed(4)
+                                                : formatCurrency(maxDollars)}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <div className={styles.orderSummary}>
@@ -318,9 +401,11 @@ export function StockDetailPage() {
                                     <span>{formatCurrency(currentPrice)}</span>
                                 </div>
                                 <div className={styles.summaryRow}>
-                                    <span>Estimated Total</span>
+                                    <span>{tradeInputMode === "SHARES" ? "Estimated Total" : "Equivalent Shares"}</span>
                                     <span className={styles.estimatedTotal}>
-                                        {formatCurrency(currentPrice * safeShares)}
+                                        {tradeInputMode === "SHARES"
+                                            ? formatCurrency(estimatedAmount)
+                                            : `${safeShares.toFixed(4)} shares`}
                                     </span>
                                 </div>
                             </div>
@@ -328,7 +413,7 @@ export function StockDetailPage() {
                             <button
                                 type="submit"
                                 className={`${styles.submitBtn} ${tradeSide === "BUY" ? styles.btnBuy : styles.btnSell}`}
-                                disabled={isTrading || !tradeShares || safeShares < 0.0001}
+                                disabled={isTrading || !tradeValue || safeShares < 0.0001}
                             >
                                 {isTrading ? <LoadingSpinner /> : `${tradeSide === "BUY" ? "Buy" : "Sell"} ${symbol}`}
                             </button>

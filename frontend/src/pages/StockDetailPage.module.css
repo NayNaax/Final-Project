@@ -177,6 +177,13 @@
     padding: 0.25rem;
 }
 
+.tradeModeToggle {
+    display: flex;
+    background: var(--bg-tertiary);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+}
+
 .toggleBtn {
     flex: 1;
     padding: 0.75rem;
@@ -223,6 +230,26 @@
 
 .input:focus {
     border-color: var(--accent-primary);
+}
+
+.helperRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.maxBtn {
+    cursor: pointer;
+    color: var(--accent-primary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.maxBtn:hover {
+    text-decoration: underline;
 }
 
 .orderSummary {
