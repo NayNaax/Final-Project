@@ -52,7 +52,6 @@ export class BudgetService {
             where: { budgetId: budget.id },
         });
 
-        // Ensure targetPct sums to 100? Assuming front-end validates or we just save what comes in.
         const createdAllocations = await Promise.all(
             allocations.map((a) =>
                 prisma.allocation.create({
@@ -92,8 +91,6 @@ export class BudgetService {
             actualValues[a.category] = 0;
         });
 
-        // Add "Cash" explicitly? Or is cash part of allocations? The user prompt did not say, we will map stocks.
-        // Let's create an "Other" category for unmapped holding.
         if (!actualValues["Other"]) {
             actualValues["Other"] = 0;
         }

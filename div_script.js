@@ -58,7 +58,7 @@ async function fetchDivInfo() {
                 const latest = divs[0];
                 exDate = latest.date;
                 payDate = latest.payDate;
-                actualDivRate = latest.amount * 4; // roughly annualizing assuming quarterly, but will use metric if available
+                actualDivRate = latest.amount * 4;
                 if (divRate > 0) {
                     actualDivRate = divRate;
                 }

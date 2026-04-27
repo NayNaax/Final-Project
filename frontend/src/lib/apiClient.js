@@ -31,16 +31,10 @@ class ApiClient {
         return error.error || null;
     }
 
-    /**
-     * Get the stored JWT token
-     */
     getToken() {
         return localStorage.getItem("authToken");
     }
 
-    /**
-     * Store JWT token
-     */
     setToken(token) {
         if (token) {
             localStorage.setItem("authToken", token);

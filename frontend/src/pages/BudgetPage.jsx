@@ -377,7 +377,6 @@ export const BudgetPage = () => {
                         <div className={styles.suggestionsList}>
                             {statusData && statusData.suggestions && statusData.suggestions.length > 0 ? (
                                 statusData.suggestions.map((suggestion, idx) => {
-                                    // Extract symbol/category or something? The string already has text. Let's just render the text and a "Trade" link to generic /trade (or /stocks)
                                     return (
                                         <div key={idx} className={styles.suggestionItem}>
                                             <div className={styles.suggestionText}>{suggestion}</div>

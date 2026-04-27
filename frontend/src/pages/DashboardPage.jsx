@@ -37,7 +37,6 @@ export function DashboardPage() {
                 setPortfolio(portfolioData);
 
                 // Format history data for chart and anchor series to current equity.
-                // This keeps the trend shape but prevents stale seeded history scales
                 // (e.g. ~100k) from displaying against a ~10k real account.
                 const sortedHistory = [...historyData].sort(
                     (a, b) => new Date(a.snapshotDate).getTime() - new Date(b.snapshotDate).getTime(),

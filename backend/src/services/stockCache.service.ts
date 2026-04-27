@@ -22,11 +22,6 @@ type QuoteData = {
     source?: string;
 };
 
-/*
- * This service sits in front of the actual API service to handle the heavy
- * restriction of 5 requests per minute, primarily using caches and
- * fallback structures depending on requirements.
- */
 export class StockCacheService {
     private static TTL_SECONDS = parseInt(process.env.CACHE_TTL_SECONDS || "60", 10);
     // Historical candles change slowly, so we keep them much longer than live quotes.
@@ -42,7 +37,6 @@ export class StockCacheService {
             return { data: cachedData, source: "cache" };
         }
 
-        // Next best: stale cache (old but usable) to avoid hard failure and save API calls.
         const staleData = stockCache.getStale<QuoteData>(cacheKey);
         if (staleData) {
             return { data: staleData, source: "stale-cache" };
