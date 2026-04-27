@@ -52,22 +52,32 @@ Please review [BeginnerGuide.md](BeginnerGuide.md) first.
     git clone https://github.com/NayNaax/Final-Project.git
     cd Final-Project
     ```
-2.  Install dependencies:
+2.  Install the root dependencies:
     ```bash
     npm install
+    ```
+3.  Install the frontend dependencies:
+    ```bash
+    npm install --prefix frontend
+    ```
+4.  Generate the Prisma client:
+    ```bash
+    npx prisma generate
     ```
 
 ### Configuration
 
-Ensure you have a `.env` file in the root and in the `backend/` directory with the necessary environment variables (see `.env.example`).
+Ensure you have a `.env` file in the root with the necessary environment variables, especially `DATABASE_URL` and `JWT_SECRET` (see `.env.example`).
 
 ### Running the App
 
-Start the development environment:
+Start the development environment from the project root:
 
 ```bash
 npm run dev
 ```
+
+This starts the backend on port `3001`, the frontend on port `5173`, and Electron.
 
 ## Documentation
 
