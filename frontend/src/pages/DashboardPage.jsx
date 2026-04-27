@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Wallet, Briefcase, Activity, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { Wallet, Briefcase, Activity, TrendingUp, TrendingDown, ArrowRight, LineChart } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../lib/apiClient";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -136,6 +136,7 @@ export function DashboardPage() {
     const totalEquity = portfolio.totalEquity || 0;
     const cash = portfolio.cash || 0;
     const activePositions = portfolio.positions?.length || 0;
+    const hasHistory = history.length > 0;
     const displayHistory = history.map((item) => ({
         ...item,
         // Currency conversion happens right before render so source data stays consistent.
@@ -223,7 +224,7 @@ export function DashboardPage() {
                             ))}
                         </div>
                     </div>
-                    {history.length > 0 ? (
+                    {hasHistory ? (
                         <div className={styles.chartContainer}>
                             <ResponsiveContainer width="100%" height={300}>
                                 <AreaChart data={displayHistory}>
@@ -271,9 +272,16 @@ export function DashboardPage() {
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <p className={styles.subtitle} style={{ padding: "2rem" }}>
-                            No historical data available for this range
-                        </p>
+                        <div className={styles.chartPlaceholder}>
+                            <div className={styles.placeholderIcon}>
+                                <LineChart size={22} />
+                            </div>
+                            <h4 className={styles.placeholderTitle}>Your portfolio chart will appear here soon</h4>
+                            <p className={styles.placeholderText}>
+                                We start plotting your portfolio value once your account has a history snapshot.
+                            </p>
+                            <p className={styles.placeholderHint}>Make your first trade and check back shortly.</p>
+                        </div>
                     )}
                 </div>
 
