@@ -68,6 +68,7 @@ Please review [BeginnerGuide.md](BeginnerGuide.md) first.
 ### Configuration
 
 Ensure you have a `.env` file in the root with the necessary environment variables, especially `DATABASE_URL` and `JWT_SECRET` (see `.env.example`).
+
 My current `.env` has been provided for testing
 
 ### Running the App
