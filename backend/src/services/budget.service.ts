@@ -21,31 +21,24 @@ const SECTOR_MAP: Record<string, string> = {
 
 export class BudgetService {
     static async getBudget(userId: number) {
-        let budget = await prisma.budget.findUnique({
+        return prisma.budget.upsert({
             where: { userId },
+            update: {},
+            create: {
+                userId,
+                allocations: {
+                    create: [
+                        { category: "Tech", targetPct: 30, color: "#3b82f6" },
+                        { category: "Consumer", targetPct: 20, color: "#10b981" },
+                        { category: "Healthcare", targetPct: 15, color: "#ef4444" },
+                        { category: "Finance", targetPct: 15, color: "#f59e0b" },
+                        { category: "ETF", targetPct: 10, color: "#8b5cf6" },
+                        { category: "Other", targetPct: 10, color: "#6b7280" },
+                    ],
+                },
+            },
             include: { allocations: true },
         });
-
-        if (!budget) {
-            budget = await prisma.budget.create({
-                data: {
-                    userId,
-                    allocations: {
-                        create: [
-                            { category: "Tech", targetPct: 30, color: "#3b82f6" },
-                            { category: "Consumer", targetPct: 20, color: "#10b981" },
-                            { category: "Healthcare", targetPct: 15, color: "#ef4444" },
-                            { category: "Finance", targetPct: 15, color: "#f59e0b" },
-                            { category: "ETF", targetPct: 10, color: "#8b5cf6" },
-                            { category: "Other", targetPct: 10, color: "#6b7280" },
-                        ],
-                    },
-                },
-                include: { allocations: true },
-            });
-        }
-
-        return budget;
     }
 
     static async updateBudget(

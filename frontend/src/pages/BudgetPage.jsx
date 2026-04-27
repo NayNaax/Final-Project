@@ -41,7 +41,7 @@ export const BudgetPage = () => {
         setLoading(true);
         setError("");
         try {
-            const [budgetRes, statusRes] = await Promise.all([api.get("/budget"), api.get("/budget/status")]);
+            const budgetRes = await api.get("/budget");
 
             // Format existing allocations or provide empty array
             if (budgetRes && budgetRes.allocations) {
@@ -56,8 +56,15 @@ export const BudgetPage = () => {
                 setAllocations([]);
             }
 
-            setStatusData(statusRes);
+            try {
+                const statusRes = await api.get("/budget/status");
+                setStatusData(statusRes);
+            } catch (statusErr) {
+                setStatusData(null);
+                setError(statusErr.message || "Budget loaded, but failed to load allocation status.");
+            }
         } catch (err) {
+            setStatusData(null);
             setError(err.message || "Failed to load budget data.");
         } finally {
             setLoading(false);
