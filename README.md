@@ -6,10 +6,6 @@ A modern, cross-platform financial portfolio tracker and educational platform bu
 
 First Fund is a desktop application designed to empower users with financial literacy and investment tracking tools. It combines a professional portfolio management suite with a "Learn & Earn" education system, featuring a sleek, responsive UI with advanced theming.
 
-## For Beginners
-
-Please review [BeginnerGuide.md](BeginnerGuide.md) first.
-
 ### Key Features
 
 - **Advanced Dashboard**: Real-time overview of portfolio performance, market indices, and personalized watchlists.
